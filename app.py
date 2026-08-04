@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Tool Nhập Liệu & Báo Giá Chi Tiết", layout="wide", page_icon="📝"
 )
 
-st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT (Công Thức Chuẩn)")
+st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT")
 
 # 1. Dữ liệu mẫu ban đầu
 initial_data = pd.DataFrame({
@@ -222,11 +222,11 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
             bottom=cell_k.border.bottom,
         )
 
-    st.success("✅ Đã tạo file thành công! Ô Đơn giá hiện đúng câu lệnh ROUNDUP.")
+    st.success("✅ Đã tạo file thành công!.")
     st.download_button(
         label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
         data=output.getvalue(),
-        file_name="Bang_Gia_Chi_Tiet_Formatted.xlsx",
+        file_name="BG - DVC.xlsx",
         mime=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
