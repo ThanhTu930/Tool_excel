@@ -30,7 +30,11 @@ if uploaded_file is not None:
   try:
     # 1. Đọc dữ liệu từ File Nguồn (Hình 2)
     df_source = pd.read_excel(uploaded_file)
-
+    # Đọc file tự động thích ứng với cả .xlsx và .xls
+    if uploaded_file.name.endswith('.xls'):
+      df_source = pd.read_excel(uploaded_file, engine='xlrd')
+    else:
+      df_source = pd.read_excel(uploaded_file, engine='openpyxl')
     with st.expander("👁️ Xem trước dữ liệu file nguồn vừa upload"):
       st.dataframe(df_source.head())
 
