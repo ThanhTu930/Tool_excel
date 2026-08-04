@@ -108,7 +108,7 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type=
     df_final["NCC"] = edited_df["NCC"]
     df_final["NOTE"] = edited_df["NOTE"]
 
-    # Đặt thứ tự cột chuẩn
+    # Đặt thứ tự cột chuẩn theo hình
     form_columns = [
         "STT",
         "Thiết bị",
@@ -142,8 +142,8 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type=
       workbook = writer.book
       worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
 
-      # --- A. BẬT CHẾ ĐỘ PAGE BREAK PREVIEW ---
-      worksheet.sheetView[0].sheetViewType = "pageBreakPreview"
+      # --- A. BẬT CHẾ ĐỘ PAGE BREAK PREVIEW (Cú pháp chuẩn sheet_views) ---
+      worksheet.sheet_views[0].sheetViewType = "pageBreakPreview"
 
       # --- B. MERGE CỘT VÀ TẠO TIÊU ĐỀ LỚN "BẢNG GIÁ CHI TIẾT" ---
       worksheet.merge_cells("B2:J2")
@@ -187,11 +187,10 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type=
         )
         cell.border = thin_border
 
-      # --- D. ĐẺ ĐƯỜNG PHÂN CÁCH DẦY GIỮA VÙNG IN VÀ VÙNG COST ---
+      # --- D. KẺ ĐƯỜNG PHÂN CÁCH DẦY MÀU XANH GIỮA VÙNG IN VÀ VÙNG COST ---
       blue_thick_side = Side(style="medium", color="0000FF")
       for row in range(4, len(df_final) + 5):
         cell_k = worksheet.cell(row=row, column=11)
-        # Thêm đường viền bên phải màu xanh lá/xanh lam cho cột K
         cell_k.border = Border(
             left=cell_k.border.left,
             top=cell_k.border.top,
@@ -199,17 +198,14 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type=
             bottom=cell_k.border.bottom,
         )
 
-      # --- E. ĐỊNH DẠNG CỘT SỐ VÀ CẠNH BẢNG ---
+      # --- E. ĐỊNH DẠNG DỮ LIỆU CÁC DÒNG BÊN DƯỚI ---
       for row in range(5, len(df_final) + 5):
         for col in range(1, 19):
           c = worksheet.cell(row=row, column=col)
           c.font = Font(name="Times New Roman", size=10)
           c.border = thin_border
 
-    st.success(
-        "✅ Đã tạo xong file Excel chuẩn giao diện Merge, Tô màu & Page Break"
-        " Preview!"
-    )
+    st.success("✅ Đã tạo xong file Excel chuẩn giao diện!")
     st.download_button(
         label="📥 Tải File BẢNG GIÁ CHI TIẾT Đã Định Dạng (.xlsx)",
         data=output.getvalue(),
