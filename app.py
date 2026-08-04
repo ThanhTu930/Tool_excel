@@ -222,7 +222,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
             bottom=cell_k.border.bottom,
         )
 
-    st.success("✅ Đã tạo file thành công! Ô Đơn giá hiện đúng câu lệnh ROUNDUP.")
+    st.success("✅ Đã tạo file thành công!.")
     st.download_button(
         label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
         data=output.getvalue(),
