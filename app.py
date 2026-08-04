@@ -7,13 +7,13 @@ st.set_page_config(
     page_title="Tool Xuất Báo Giá Theo Mẫu", layout="wide", page_icon="📊"
 )
 
-st.title("📊 Công Cụ Đổ Dữ Liệu Vào Mẫu Báo Giá Chi Tiết")
+st.title("📊 Công Cụ Đổ Dữ Liệu Vào Mẫu BẢNG GIÁ CHI TIẾT")
 st.markdown(
     "Upload **File Dữ Liệu Nguồn (Hình 2)** -> Tool tự động map dữ liệu, tính"
     " toán công thức và xuất ra **Bảng Giá Chi Tiết (Hình 1)**."
 )
 
-# Upload File Nguồn (Hình 2)
+# Upload File Nguồn
 uploaded_file = st.file_uploader(
     "Tải lên File Nguồn dữ liệu nhập vào (.xlsx, .xls)", type=["xlsx", "xls"]
 )
@@ -27,32 +27,29 @@ def roundup_thousand(val):
 
 
 if uploaded_file is not None:
-  # --------------------------------------------------------------------------
-    # Đoạn code đọc file tự động xử lý ngoại lệ (Đặt vào khoảng dòng 30)
-    # --------------------------------------------------------------------------
+  try:
+    # --- ĐỌC FILE VỚI NHIỀU PHƯƠNG ÁN TỰ ĐỘNG ---
+    df_source = None
     try:
-        # Thử đọc bằng openpyxl (.xlsx chuẩn)
-        df_source = pd.read_excel(uploaded_file, engine='openpyxl')
+      df_source = pd.read_excel(uploaded_file, engine="openpyxl")
     except Exception:
+      try:
+        uploaded_file.seek(0)
+        df_source = pd.read_excel(uploaded_file, engine="xlrd")
+      except Exception:
         try:
-            # Thử đọc bằng xlrd (.xls chuẩn)
-            uploaded_file.seek(0) # Đưa con trỏ đọc về đầu file
-            df_source = pd.read_excel(uploaded_file, engine='xlrd')
+          uploaded_file.seek(0)
+          df_source = pd.read_html(uploaded_file)[0]
         except Exception:
-            try:
-                # Nếu file thực chất là HTML/XML đổi đuôi thành XLS (rất phổ biến khi xuất từ phần mềm)
-                uploaded_file.seek(0)
-                df_source = pd.read_html(uploaded_file)[0]
-            except Exception:
-                # Trường hợp cuối: Thử đọc dạng CSV/Text
-                uploaded_file.seek(0)
-                df_source = pd.read_csv(uploaded_file)
-    # --------------------------------------------------------------------------
+          uploaded_file.seek(0)
+          df_source = pd.read_csv(uploaded_file)
 
-    # 2. Tạo Khung Dữ Liệu Theo Đúng Cấu Trúc Form Mẫu Đích (Hình 1)
+    with st.expander("👁️ Xem trước dữ liệu file nguồn vừa upload"):
+      st.dataframe(df_source.head())
+
+    # --- KHỞI TẠO DATAFRAME THEO MẪU ĐÍCH ---
     df_final = pd.DataFrame()
 
-    # Hàm hỗ trợ tìm tên cột linh hoạt từ File Nguồn
     def get_source_col(possible_names):
       for col in df_source.columns:
         if str(col).strip().lower() in [
@@ -61,40 +58,36 @@ if uploaded_file is not None:
           return df_source[col]
       return ""
 
-    # --- LẤY DỮ LIỆU TỪ HÌNH 2 ĐỔ SANG HÌNH 1 ---
+    # --- LẤY DỮ LIỆU TỪ FILE NGUỒN ---
     df_final["STT"] = get_source_col(["STT", "No"])
     df_final["Thiết bị"] = get_source_col(["Thiết bị", "Tên thiết bị"])
     df_final["Mã hàng"] = get_source_col(["Mã hàng", "Part Number"])
-    df_final["Hình ảnh"] = ""  # Cột Hình ảnh để trống để chèn sau
+    df_final["Hình ảnh"] = ""
     df_final["Hãng / Xuất xứ"] = get_source_col(["Hãng / Xuất xứ", "Xuất xứ"])
     df_final["ĐVT"] = get_source_col(["ĐVT", "Đơn vị tính"])
 
-    # Ép kiểu dữ liệu số để tính toán
     df_final["Số lượng"] = pd.to_numeric(
-      get_source_col(["Số lượng", "SL"]), errors="coerce"
+        get_source_col(["Số lượng", "SL"]), errors="coerce"
     ).fillna(0)
     df_final["Ghi chú"] = get_source_col(["Ghi chú"])
 
     df_final["Margin Thiết bị"] = pd.to_numeric(
-      get_source_col(["Margin Thiết bị", "Margin"]), errors="coerce"
+        get_source_col(["Margin Thiết bị", "Margin"]), errors="coerce"
     ).fillna(0)
     df_final["ĐG COST Thiết bị"] = pd.to_numeric(
-      get_source_col(["ĐG COST Thiết bị", "DG COST Thiet bi"]), errors="coerce"
+        get_source_col(["ĐG COST Thiết bị", "DG COST Thiet bi"]), errors="coerce"
     ).fillna(0)
     df_final["ĐG COST Lắp đặt"] = pd.to_numeric(
-      get_source_col(["ĐG COST Lắp đặt", "DG COST Lap dat"]), errors="coerce"
+        get_source_col(["ĐG COST Lắp đặt", "DG COST Lap dat"]), errors="coerce"
     ).fillna(0)
 
     df_final["NCC"] = get_source_col(["NCC", "Nhà cung cấp"])
     df_final["NOTE"] = get_source_col(["NOTE", "Note"])
 
-    # --- TÍNH TOÁN CÁC CỘT TỰ ĐỘNG CHO FORM HÌNH 1 ---
-
-    # Tính Đơn giá (VNĐ) = ROUNDUP( ĐG COST Thiết bị / (1 - Margin Thiết bị) ; -3 )
+    # --- CÔNG THỨC TÍNH TOÁN ---
     def calc_don_gia(row):
       cost = row["ĐG COST Thiết bị"]
       margin = row["Margin Thiết bị"]
-      # Nếu margin nhập dạng 20 thì tự chia 100 thành 0.2
       if margin >= 1:
         margin = margin / 100
       if (1 - margin) <= 0:
@@ -102,23 +95,17 @@ if uploaded_file is not None:
       return roundup_thousand(cost / (1 - margin))
 
     df_final["Đơn giá (VNĐ)"] = df_final.apply(calc_don_gia, axis=1)
-
-    # Tính Thành tiền (VNĐ) = Số lượng * Đơn giá (VNĐ)
     df_final["Thành tiền (VNĐ)"] = (
         df_final["Số lượng"] * df_final["Đơn giá (VNĐ)"]
     )
-
-    # Tính TT COST Thiết bị = Số lượng * ĐG COST Thiết bị
     df_final["TT COST Thiết bị"] = (
         df_final["Số lượng"] * df_final["ĐG COST Thiết bị"]
     )
-
-    # Tính TT COST Lắp đặt = Số lượng * ĐG COST Lắp đặt
     df_final["TT COST Lắp đặt"] = (
         df_final["Số lượng"] * df_final["ĐG COST Lắp đặt"]
     )
 
-    # --- SẮP XẾP CHUẨN THỨ TỰ CÁC CỘT THEO FORM HÌNH 1 ---
+    # --- SẮP XẾP CỘT THEO CẤU TRÚC HÌNH 1 ---
     form_1_columns = [
         "STT",
         "Thiết bị",
@@ -140,7 +127,6 @@ if uploaded_file is not None:
     ]
     df_final = df_final.reindex(columns=form_1_columns)
 
-    # Display Preview
     st.success(
         "✅ Đã xử lý và tính toán thành công dữ liệu sang Form BẢNG GIÁ CHI"
         " TIẾT!"
@@ -148,7 +134,7 @@ if uploaded_file is not None:
     st.subheader("📋 Kết quả File Cuối Cùng (Mẫu Hình 1):")
     st.dataframe(df_final)
 
-    # --- XUẤT FILE EXCEL CUỐI CÙNG ---
+    # --- XUẤT FILE EXCEL ---
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
       df_final.to_excel(writer, index=False, sheet_name="BANG_GIA_CHI_TIET")
