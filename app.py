@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Tool Nhập Liệu & Báo Giá Chi Tiết", layout="wide", page_icon="📝"
 )
 
-st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT (Giữ Công Thức Excel)")
+st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT (Công Thức Chuẩn)")
 
 # 1. Dữ liệu mẫu ban đầu
 initial_data = pd.DataFrame({
@@ -50,7 +50,7 @@ edited_df = st.data_editor(
 
 st.divider()
 
-if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", type="primary"):
+if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
   try:
     # 2. Xử lý khung Dataframe cơ bản
     df_final = pd.DataFrame()
@@ -65,7 +65,7 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
         edited_df["Số lượng"], errors="coerce"
     ).fillna(0)
 
-    # Đặt giá trị mặc định cho cột tính toán (sẽ chèn công thức Excel vào sau)
+    # Đặt giá trị rỗng cho các cột tính bằng công thức Excel
     df_final["Đơn giá (VNĐ)"] = 0
     df_final["Thành tiền (VNĐ)"] = 0
     df_final["Ghi chú"] = edited_df["Ghi chú"]
@@ -85,7 +85,7 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
     df_final["NCC"] = edited_df["NCC"]
     df_final["NOTE"] = edited_df["NOTE"]
 
-    # Đặt đúng vị trí cột theo thứ tự
+    # Đặt đúng vị trí các cột
     form_columns = [
         "STT",
         "Thiết bị",
@@ -108,10 +108,9 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
     ]
     df_final = df_final.reindex(columns=form_columns)
 
-    # 3. Xuất ra Excel và chèn công thức bằng OPENPYXL
+    # 3. Xuất ra Excel và chèn công thức ROUNDUP trực tiếp
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-      # Ghi dữ liệu từ dòng 4 (Tiêu đề cột ở dòng 4, dữ liệu bắt đầu từ dòng 5)
       df_final.to_excel(
           writer, index=False, sheet_name="BANG_GIA_CHI_TIET", startrow=3
       )
@@ -119,7 +118,7 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
       workbook = writer.book
       worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
 
-      # --- A. BẬT CHẾ ĐỘ PAGE BREAK PREVIEW (An toàn) ---
+      # --- A. PAGE BREAK PREVIEW (Bọc an toàn) ---
       try:
         if not hasattr(worksheet, "sheet_views") or not worksheet.sheet_views:
           worksheet.views.sheetView[0].sheetViewType = "pageBreakPreview"
@@ -135,46 +134,44 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
       title_cell.font = Font(name="Times New Roman", size=18, bold=True)
       title_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-      # --- C. CHÈN CÔNG THỨC EXCEL VÀ ĐỊNH DẠNG DỮ LIỆU TỪNG DÒNG ---
-      num_format_vnd = (
-          "#,##0"  # Định dạng hiển thị số tiền có dấu phân cách hàng nghìn
-      )
+      # --- C. CHÈN CÔNG THỨC ROUNDUP VÀ CÁC CÔNG THỨC TÍNH TOÁN ---
+      num_format_vnd = "#,##0"
 
       for i in range(len(df_final)):
-        r = 5 + i  # Dòng thực tế trong Excel (Bắt đầu từ 5)
+        r = 5 + i  # Dòng dữ liệu bắt đầu từ dòng 5 trong Excel
 
-        # 1. Công thức Đơn giá (Cột I - Cột thứ 9)
-        # =ROUNDUP( ĐG_COST / (1 - IF(Margin>=1, Margin/100, Margin)) ; -3 )
-        formula_don_gia = f"=ROUNDUP(M{r} / (1 - L{r})), -3))"
+        # 1. Công thức Đơn giá (Cột I): Trực tiếp ROUNDUP không dùng IF so sánh
         cell_don_gia = worksheet.cell(row=r, column=9)
-        cell_don_gia.value = formula_don_gia
+        cell_don_gia.value = (
+            f"=ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3)"
+        )
         cell_don_gia.number_format = num_format_vnd
 
-        # 2. Công thức Thành tiền (Cột J - Cột thứ 10) = Số lượng (H) * Đơn giá (I)
+        # 2. Công thức Thành tiền (Cột J) = Số lượng (H) * Đơn giá (I)
         cell_thanh_tien = worksheet.cell(row=r, column=10)
         cell_thanh_tien.value = f"=H{r}*I{r}"
         cell_thanh_tien.number_format = num_format_vnd
 
-        # 3. Định dạng ĐG COST Thiết bị (Cột M - Cột thứ 13)
+        # 3. Format ĐG COST Thiết bị (Cột M)
         worksheet.cell(row=r, column=13).number_format = num_format_vnd
 
-        # 4. Công thức TT COST Thiết bị (Cột N - Cột thứ 14) = Số lượng (H) * ĐG COST Thiết bị (M)
+        # 4. Công thức TT COST Thiết bị (Cột N) = Số lượng (H) * ĐG COST Thiết bị (M)
         cell_tt_cost_tb = worksheet.cell(row=r, column=14)
         cell_tt_cost_tb.value = f"=H{r}*M{r}"
         cell_tt_cost_tb.number_format = num_format_vnd
 
-        # 5. Định dạng ĐG COST Lắp đặt (Cột O - Cột thứ 15)
+        # 5. Format ĐG COST Lắp đặt (Cột O)
         worksheet.cell(row=r, column=15).number_format = num_format_vnd
 
-        # 6. Công thức TT COST Lắp đặt (Cột P - Cột thứ 16) = Số lượng (H) * ĐG COST Lắp đặt (O)
+        # 6. Công thức TT COST Lắp đặt (Cột P) = Số lượng (H) * ĐG COST Lắp đặt (O)
         cell_tt_cost_ld = worksheet.cell(row=r, column=16)
         cell_tt_cost_ld.value = f"=H{r}*O{r}"
         cell_tt_cost_ld.number_format = num_format_vnd
 
-        # Định dạng Margin (Cột L - Cột 12) theo %
+        # Format Margin (Cột L)
         worksheet.cell(row=r, column=12).number_format = "0.00%"
 
-      # --- D. TÔ MÀU & KẺ VIỀN CHO HEADER VÀ DỮ LIỆU ---
+      # --- D. TÔ MÀU & KẺ VIỀN CỦA BẢNG ---
       gray_fill = PatternFill(
           start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
       )
@@ -209,14 +206,14 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
         )
         cell.border = thin_border
 
-      # Format Border & Font cho dữ liệu
+      # Format dữ liệu bên dưới
       for row in range(5, len(df_final) + 5):
         for col in range(1, 19):
           c = worksheet.cell(row=row, column=col)
           c.font = Font(name="Times New Roman", size=10)
           c.border = thin_border
 
-        # Đường viền phân cách xanh lục ở cột K
+        # Đường phân cách viền xanh dương ở cột K
         cell_k = worksheet.cell(row=row, column=11)
         cell_k.border = Border(
             left=cell_k.border.left,
@@ -225,11 +222,11 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
             bottom=cell_k.border.bottom,
         )
 
-    st.success("✅ Đã xuất file thành công! Tất cả ô tính toán đều giữ công thức Excel sống.")
+    st.success("✅ Đã tạo file thành công! Ô Đơn giá hiện đúng câu lệnh ROUNDUP.")
     st.download_button(
-        label="📥 Tải File BẢNG GIÁ CHI TIẾT (Có Công Thức) (.xlsx)",
+        label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
         data=output.getvalue(),
-        file_name="Bang_Gia_Chi_Tiet_With_Formulas.xlsx",
+        file_name="Bang_Gia_Chi_Tiet_Formatted.xlsx",
         mime=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
