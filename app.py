@@ -143,7 +143,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
         # 1. Công thức Đơn giá (Cột I): Trực tiếp ROUNDUP không dùng IF so sánh
         cell_don_gia = worksheet.cell(row=r, column=9)
         cell_don_gia.value = (
-            f"=ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3)"
+            f"=ROUNDUP(M{r}/(1-L{r}),-3)"
         )
         cell_don_gia.number_format = num_format_vnd
 
