@@ -2,33 +2,25 @@ import io
 import math
 import pandas as pd
 import streamlit as st
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-# Cấu hình trang Web
 st.set_page_config(
     page_title="Tool Nhập Liệu & Báo Giá Chi Tiết", layout="wide", page_icon="📝"
 )
 
-st.title("📝 Công Cụ Nhập Liệu & Tự Động Xuất BẢNG GIÁ CHI TIẾT")
-st.markdown(
-    "Nhập trực tiếp dữ liệu thiết bị vào bảng bên dưới (giống mẫu **Hình 2**) ->"
-    " Bấm nút **Xuất File Báo Giá** để tải về kết quả theo **Hình 1**."
-)
+st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT (Định Dạng Chuẩn)")
 
 
 def roundup_thousand(val):
-  """Làm tròn lên đến hàng nghìn =ROUNDUP(val, -3)"""
   if pd.isna(val) or val <= 0:
     return 0
   return math.ceil(val / 1000) * 1000
 
 
-# 1. Dữ liệu mẫu ban đầu theo form Hình 2
+# 1. Dữ liệu mẫu ban đầu
 initial_data = pd.DataFrame({
     "STT": [1, 2],
-    "Thiết bị": [
-        "Camera IP Dome 2MP",
-        "Switch PoE 24 Port Gigabit",
-    ],
+    "Thiết bị": ["Camera IP Dome 2MP", "Switch PoE 24 Port Gigabit"],
     "Mã hàng": ["DS-2CD1123G0-I", "CBS220-24P-4G"],
     "Mô tả chi tiết": [
         "Camera quan sát trong nhà",
@@ -38,31 +30,22 @@ initial_data = pd.DataFrame({
     "ĐVT": ["Cái", "Cái"],
     "Số lượng": [4, 1],
     "Ghi chú": ["Kèm chân đế", "Tủ rack trung tâm"],
-    "Margin Thiết bị": [0.20, 0.15],  # 20% và 15%
+    "Margin Thiết bị": [0.20, 0.15],
     "ĐG COST Thiết bị": [850000, 9800000],
     "ĐG COST Lắp đặt": [150000, 500000],
     "NCC": ["Phúc Bình", "FPT"],
     "NOTE": ["Hàng có sẵn", "Đặt hàng 2 tuần"],
 })
 
-st.subheader("📋 Bảng Nhập Dữ Liệu Đầu Vào (Nhập trực tiếp vào đây):")
-st.info(
-    "💡 **Mẹo:** Bạn có thể copy nhiều dòng/cột từ Excel rồi **Paste (Ctrl+V)**"
-    " trực tiếp vào bảng dưới đây, hoặc nhấn nút **'+'** ở cuối bảng để thêm dòng"
-    " mới!"
-)
-
-# 2. Hiển thị bảng tương tác cho người dùng sửa/nhập dữ liệu trực tiếp (Bảng theo Hình 2)
+st.subheader("📋 Bảng Nhập Dữ Liệu Đầu Vào:")
 edited_df = st.data_editor(
     initial_data,
-    num_rows="dynamic",  # Cho phép thêm/xóa dòng linh hoạt
+    num_rows="dynamic",
     use_container_width=True,
     column_config={
         "STT": st.column_config.NumberColumn("STT", width="small"),
         "Margin Thiết bị": st.column_config.NumberColumn(
-            "Margin Thiết bị",
-            help="Nhập dạng số thập phân (Ví dụ: 0.2 là 20%) hoặc số 20",
-            format="%.2f",
+            "Margin Thiết bị", format="%.2f"
         ),
         "ĐG COST Thiết bị": st.column_config.NumberColumn(
             "ĐG COST Thiết bị", format="%d VNĐ"
@@ -75,38 +58,22 @@ edited_df = st.data_editor(
 
 st.divider()
 
-# 3. Nút bấm tính toán và xuất file theo Form Hình 1
-if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT", type="primary"):
+if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type="primary"):
   try:
+    # 2. Xử lý tính toán Dataframe
     df_final = pd.DataFrame()
-
-    # Chép dữ liệu cơ bản từ Bảng Nhập Liệu
     df_final["STT"] = edited_df["STT"]
     df_final["Thiết bị"] = edited_df["Thiết bị"]
     df_final["Mã hàng"] = edited_df["Mã hàng"]
-    df_final["Hình ảnh"] = ""  # Để trống cột hình ảnh
+    df_final["Mô tả chi tiết"] = edited_df["Mô tả chi tiết"]
+    df_final["Hình ảnh"] = ""
     df_final["Hãng / Xuất xứ"] = edited_df["Hãng / Xuất xứ"]
     df_final["ĐVT"] = edited_df["ĐVT"]
-
     df_final["Số lượng"] = pd.to_numeric(
         edited_df["Số lượng"], errors="coerce"
     ).fillna(0)
-    df_final["Ghi chú"] = edited_df["Ghi chú"]
 
-    df_final["Margin Thiết bị"] = pd.to_numeric(
-        edited_df["Margin Thiết bị"], errors="coerce"
-    ).fillna(0)
-    df_final["ĐG COST Thiết bị"] = pd.to_numeric(
-        edited_df["ĐG COST Thiết bị"], errors="coerce"
-    ).fillna(0)
-    df_final["ĐG COST Lắp đặt"] = pd.to_numeric(
-        edited_df["ĐG COST Lắp đặt"], errors="coerce"
-    ).fillna(0)
-
-    df_final["NCC"] = edited_df["NCC"]
-    df_final["NOTE"] = edited_df["NOTE"]
-
-    # Công thức tính Đơn giá = ROUNDUP( ĐG COST / (1 - Margin) ; -3 )
+    # Tính Đơn giá & Thành tiền
     def calc_don_gia(row):
       cost = row["ĐG COST Thiết bị"]
       margin = row["Margin Thiết bị"]
@@ -116,24 +83,37 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT", type="primary
         return 0
       return roundup_thousand(cost / (1 - margin))
 
-    df_final["Đơn giá (VNĐ)"] = df_final.apply(calc_don_gia, axis=1)
+    df_final["ĐG COST Thiết bị"] = pd.to_numeric(
+        edited_df["ĐG COST Thiết bị"], errors="coerce"
+    ).fillna(0)
+    df_final["Margin Thiết bị"] = pd.to_numeric(
+        edited_df["Margin Thiết bị"], errors="coerce"
+    ).fillna(0)
+    df_final["ĐG COST Lắp đặt"] = pd.to_numeric(
+        edited_df["ĐG COST Lắp đặt"], errors="coerce"
+    ).fillna(0)
 
-    # Các công thức nhân Thành tiền & TT COST
+    df_final["Đơn giá (VNĐ)"] = df_final.apply(calc_don_gia, axis=1)
     df_final["Thành tiền (VNĐ)"] = (
         df_final["Số lượng"] * df_final["Đơn giá (VNĐ)"]
     )
+    df_final["Ghi chú"] = edited_df["Ghi chú"]
+
     df_final["TT COST Thiết bị"] = (
         df_final["Số lượng"] * df_final["ĐG COST Thiết bị"]
     )
     df_final["TT COST Lắp đặt"] = (
         df_final["Số lượng"] * df_final["ĐG COST Lắp đặt"]
     )
+    df_final["NCC"] = edited_df["NCC"]
+    df_final["NOTE"] = edited_df["NOTE"]
 
-    # Sắp xếp đúng 100% thứ tự các cột của Form Hình 1
-    form_1_columns = [
+    # Đặt thứ tự cột chuẩn
+    form_columns = [
         "STT",
         "Thiết bị",
         "Mã hàng",
+        "Mô tả chi tiết",
         "Hình ảnh",
         "Hãng / Xuất xứ",
         "ĐVT",
@@ -149,21 +129,91 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT", type="primary
         "NCC",
         "NOTE",
     ]
-    df_final = df_final.reindex(columns=form_1_columns)
+    df_final = df_final.reindex(columns=form_columns)
 
-    # Hiển thị kết quả tính toán
-    st.success("✅ Đã tính toán xong! Xem trước BẢNG GIÁ CHI TIẾT chuẩn:")
-    st.dataframe(df_final)
-
-    # Tạo file Excel để người dùng tải về
+    # 3. Xuất ra Excel và áp dụng định dạng nâng cao bằng OPENPYXL
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-      df_final.to_excel(writer, index=False, sheet_name="BANG_GIA_CHI_TIET")
+      # Ghi dữ liệu từ dòng thứ 4 (chừa dòng 1, 2, 3 làm Tiêu đề)
+      df_final.to_excel(
+          writer, index=False, sheet_name="BANG_GIA_CHI_TIET", startrow=3
+      )
 
+      workbook = writer.book
+      worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
+
+      # --- A. BẬT CHẾ ĐỘ PAGE BREAK PREVIEW ---
+      worksheet.sheetView[0].sheetViewType = "pageBreakPreview"
+
+      # --- B. MERGE CỘT VÀ TẠO TIÊU ĐỀ LỚN "BẢNG GIÁ CHI TIẾT" ---
+      worksheet.merge_cells("B2:J2")
+      title_cell = worksheet["B2"]
+      title_cell.value = "BẢNG GIÁ CHI TIẾT"
+      title_cell.font = Font(name="Times New Roman", size=18, bold=True)
+      title_cell.alignment = Alignment(horizontal="center", vertical="center")
+
+      # --- C. TÔ MÀU & ĐỊNH DẠNG CÁC DÒNG TIÊU ĐỀ CỘT (HEADER - Dòng 4) ---
+      gray_fill = PatternFill(
+          start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
+      )
+      thin_border = Border(
+          left=Side(style="thin"),
+          right=Side(style="thin"),
+          top=Side(style="thin"),
+          bottom=Side(style="thin"),
+      )
+
+      # Định dạng Cột A -> K (Chữ Đen, Nền Xám, Căn Giữa)
+      for col in range(1, 12):
+        cell = worksheet.cell(row=4, column=col)
+        cell.fill = gray_fill
+        cell.font = Font(
+            name="Times New Roman", size=10, bold=True, color="000000"
+        )
+        cell.alignment = Alignment(
+            horizontal="center", vertical="center", wrap_text=True
+        )
+        cell.border = thin_border
+
+      # Định dạng Cột L -> R (COST/Margin: Chữ Đỏ, Nền Xám, Căn Giữa)
+      for col in range(12, 19):
+        cell = worksheet.cell(row=4, column=col)
+        cell.fill = gray_fill
+        cell.font = Font(
+            name="Times New Roman", size=10, bold=True, color="FF0000"
+        )  # Màu đỏ
+        cell.alignment = Alignment(
+            horizontal="center", vertical="center", wrap_text=True
+        )
+        cell.border = thin_border
+
+      # --- D. ĐẺ ĐƯỜNG PHÂN CÁCH DẦY GIỮA VÙNG IN VÀ VÙNG COST ---
+      blue_thick_side = Side(style="medium", color="0000FF")
+      for row in range(4, len(df_final) + 5):
+        cell_k = worksheet.cell(row=row, column=11)
+        # Thêm đường viền bên phải màu xanh lá/xanh lam cho cột K
+        cell_k.border = Border(
+            left=cell_k.border.left,
+            top=cell_k.border.top,
+            right=blue_thick_side,
+            bottom=cell_k.border.bottom,
+        )
+
+      # --- E. ĐỊNH DẠNG CỘT SỐ VÀ CẠNH BẢNG ---
+      for row in range(5, len(df_final) + 5):
+        for col in range(1, 19):
+          c = worksheet.cell(row=row, column=col)
+          c.font = Font(name="Times New Roman", size=10)
+          c.border = thin_border
+
+    st.success(
+        "✅ Đã tạo xong file Excel chuẩn giao diện Merge, Tô màu & Page Break"
+        " Preview!"
+    )
     st.download_button(
-        label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
+        label="📥 Tải File BẢNG GIÁ CHI TIẾT Đã Định Dạng (.xlsx)",
         data=output.getvalue(),
-        file_name="Bang_Gia_Chi_Tiet_Final.xlsx",
+        file_name="Bang_Gia_Chi_Tiet_Formatted.xlsx",
         mime=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
@@ -171,4 +221,4 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT", type="primary
     )
 
   except Exception as e:
-    st.error(f"⚠️ Có lỗi xảy ra trong quá trình xử lý: {e}")
+    st.error(f"⚠️ Có lỗi xảy ra: {e}")
