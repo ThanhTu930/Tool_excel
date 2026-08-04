@@ -28,21 +28,47 @@ def roundup_thousand(val):
 
 if uploaded_file is not None:
   try:
-    # --- ĐỌC FILE VỚI NHIỀU PHƯƠNG ÁN TỰ ĐỘNG ---
+    # --- ĐỌC FILE VỚI NHIỀU PHƯƠNG ÁN TỰ ĐỘNG & BẢNG MÃ KHÁC NHAU ---
     df_source = None
+
+    # Thử 1: Đọc .xlsx chuẩn
     try:
       df_source = pd.read_excel(uploaded_file, engine="openpyxl")
     except Exception:
+      pass
+
+    # Thử 2: Đọc .xls chuẩn
+    if df_source is None:
       try:
         uploaded_file.seek(0)
         df_source = pd.read_excel(uploaded_file, engine="xlrd")
       except Exception:
+        pass
+
+    # Thử 3: Đọc file HTML/XML đổi đuôi (Xuất từ phần mềm)
+    if df_source is None:
+      try:
+        uploaded_file.seek(0)
+        df_source = pd.read_html(uploaded_file)[0]
+      except Exception:
+        pass
+
+    # Thử 4: Đọc CSV/Text với các loại Encoding khác nhau
+    if df_source is None:
+      encodings = ["utf-8", "cp1252", "latin1", "utf-16", "utf-8-sig"]
+      for enc in encodings:
         try:
           uploaded_file.seek(0)
-          df_source = pd.read_html(uploaded_file)[0]
+          df_source = pd.read_csv(uploaded_file, encoding=enc)
+          break
         except Exception:
-          uploaded_file.seek(0)
-          df_source = pd.read_csv(uploaded_file)
+          continue
+
+    if df_source is None:
+      raise ValueError(
+        "Không thể đọc định dạng file này. Vui lòng mở file bằng Excel và Save"
+        " As lại thành đuôi .xlsx chuẩn."
+      )
 
     with st.expander("👁️ Xem trước dữ liệu file nguồn vừa upload"):
       st.dataframe(df_source.head())
