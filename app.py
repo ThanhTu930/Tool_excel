@@ -18,7 +18,7 @@ initial_data = pd.DataFrame({
         "Camera quan sát trong nhà",
         "Switch chia mạng cấp nguồn PoE",
     ],
-    "Hãng / Xuất xứ": ["Hikvision / China", "Cisco / China"],
+    "Hãng/Xuất xứ": ["Hikvision / China", "Cisco / China"],
     "ĐVT": ["Cái", "Cái"],
     "Số lượng": [4, 1],
     "Ghi chú": ["Kèm chân đế", "Tủ rack trung tâm"],
@@ -59,7 +59,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
     df_final["Mã hàng"] = edited_df["Mã hàng"]
     df_final["Mô tả chi tiết"] = edited_df["Mô tả chi tiết"]
     df_final["Hình ảnh"] = ""
-    df_final["Hãng / Xuất xứ"] = edited_df["Hãng / Xuất xứ"]
+    df_final["Hãng/Xuất xứ"] = edited_df["Hãng/Xuất xứ"]
     df_final["ĐVT"] = edited_df["ĐVT"]
     df_final["Số lượng"] = pd.to_numeric(
         edited_df["Số lượng"], errors="coerce"
@@ -90,9 +90,9 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
         "STT",
         "Thiết bị",
         "Mã hàng",
-        "Mô tả chi tiết",
+        "Mô tả",
         "Hình ảnh",
-        "Hãng / Xuất xứ",
+        "Hãng/Xuất xứ",
         "ĐVT",
         "Số lượng",
         "Đơn giá (VNĐ)",
@@ -112,7 +112,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
       df_final.to_excel(
-          writer, index=False, sheet_name="BANG_GIA_CHI_TIET", startrow=3
+          writer, index=False, sheet_name="CHI TIẾT", startrow=3
       )
 
       workbook = writer.book
