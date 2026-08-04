@@ -145,7 +145,7 @@ if st.button("🚀 Xử Lý & Xuất File Giữ Nguyên Công Thức Excel", typ
 
         # 1. Công thức Đơn giá (Cột I - Cột thứ 9)
         # =ROUNDUP( ĐG_COST / (1 - IF(Margin>=1, Margin/100, Margin)) ; -3 )
-        formula_don_gia = f"=IF(M{r}<=0, 0, ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3))"
+        formula_don_gia = f"=ROUNDUP(M{r} / (1 - L{r})), -3))"
         cell_don_gia = worksheet.cell(row=r, column=9)
         cell_don_gia.value = formula_don_gia
         cell_don_gia.number_format = num_format_vnd
