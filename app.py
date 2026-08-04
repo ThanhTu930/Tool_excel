@@ -1,4 +1,5 @@
 import io
+import re
 import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -7,43 +8,65 @@ st.set_page_config(
     page_title="Tool Nhập Liệu & Báo Giá Chi Tiết", layout="wide", page_icon="📝"
 )
 
-st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT (Công Thức Chuẩn)")
+st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT")
 
-# 1. Dữ liệu mẫu ban đầu
+
+# Hàm làm sạch dữ liệu số khi copy/paste từ Excel vào (Loại bỏ dấu chấm hàng nghìn 300.000 -> 300000)
+def clean_currency(val):
+  if pd.isna(val) or val == "" or val is None:
+    return 0.0
+  if isinstance(val, (int, float)):
+    return float(val)
+
+  # Chuyển thành chuỗi
+  val_str = str(val).strip()
+
+  # Trường hợp có dạng 300.000 hoặc 10.299.000 (Dấu chấm đóng vai trò phân cách hàng nghìn)
+  # Xóa toàn bộ dấu chấm, dấu phẩy, ký tự % hoặc chữ VNĐ
+  clean_str = re.sub(r"[^\d]", "", val_str)
+
+  try:
+    return float(clean_str) if clean_str else 0.0
+  except ValueError:
+    return 0.0
+
+
+# 1. Dữ liệu mẫu ban đầu đúng với mẫu của bạn
 initial_data = pd.DataFrame({
-    "STT": [1, 2],
-    "Thiết bị": ["Camera IP Dome 2MP", "Switch PoE 24 Port Gigabit"],
-    "Mã hàng": ["DS-2CD1123G0-I", "CBS220-24P-4G"],
-    "Mô tả chi tiết": [
-        "Camera quan sát trong nhà",
-        "Switch chia mạng cấp nguồn PoE",
+    "Stt": [1, 2],
+    "Tên hàng hóa/Dịch vụ": [
+        "Ổ cứng Synology 4 TB 3.5” Enterprise-Grade SATA HDD Bảo hành 5 năm",
+        "Nhân công cấu hình, cài đặt thiết bị NAS",
     ],
-    "Hãng / Xuất xứ": ["Hikvision / China", "Cisco / China"],
-    "ĐVT": ["Cái", "Cái"],
-    "Số lượng": [4, 1],
-    "Ghi chú": ["Kèm chân đế", "Tủ rack trung tâm"],
-    "Margin Thiết bị": [0.20, 0.15],
-    "ĐG COST Thiết bị": [850000, 9800000],
-    "ĐG COST Lắp đặt": [150000, 500000],
-    "NCC": ["Phúc Bình", "FPT"],
-    "NOTE": ["Hàng có sẵn", "Đặt hàng 2 tuần"],
+    "Mã hàng": ["HAT5320-4T", ""],
+    "Mô tả": ["", ""],
+    "Nhãn hiệu/Xuất xứ": ["Synology", "Việt Nam"],
+    "ĐVT": ["Cái", "Gói"],
+    "Số lượng": [2, 1],
+    "Ghi chú": ["", ""],
+    "Margin": [20, 20],  # Nhập 20 sẽ hiểu 20%
+    "Giá Cost": [10299000, 1000000],  # Lưu dưới dạng số nguyên thuần túy
+    "Giá lắp đặt": [300000, 300000],
+    "NCC": ["VIETCORP", ""],
 })
 
-st.subheader("📋 Bảng Nhập Dữ Liệu Đầu Vào:")
+st.subheader("📋 Bảng Nhập Dữ Liệu Đầu Vào (Hỗ trợ Copy/Paste từ Excel):")
+
 edited_df = st.data_editor(
     initial_data,
     num_rows="dynamic",
     use_container_width=True,
     column_config={
-        "STT": st.column_config.NumberColumn("STT", width="small"),
-        "Margin Thiết bị": st.column_config.NumberColumn(
-            "Margin Thiết bị", format="%.2f"
+        "Stt": st.column_config.NumberColumn("Stt", width="small"),
+        "Margin": st.column_config.NumberColumn(
+            "Margin", min_value=0, max_value=100, step=1, format="%d%%"
         ),
-        "ĐG COST Thiết bị": st.column_config.NumberColumn(
-            "ĐG COST Thiết bị", format="%d VNĐ"
+        # Cấu hình format hiển thị phân cách hàng nghìn bằng định dạng chuẩn của Streamlit
+        "Giá Cost": st.column_config.NumberColumn(
+            "Giá Cost", step=1, format="%d VNĐ"
         ),
-        "ĐG COST Lắp đặt": st.column_config.NumberColumn(
-            "ĐG COST Lắp đặt", format="%d VNĐ"
+        "Giá lắp đặt": st.column_config.NumberColumn(
+            "Giá lắp đặt", step=1, format="%d VNĐ"
         ),
     },
 )
@@ -52,40 +75,41 @@ st.divider()
 
 if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
   try:
-    # 2. Xử lý khung Dataframe cơ bản
-    df_final = pd.DataFrame()
-    df_final["STT"] = edited_df["STT"]
-    df_final["Thiết bị"] = edited_df["Thiết bị"]
-    df_final["Mã hàng"] = edited_df["Mã hàng"]
-    df_final["Mô tả chi tiết"] = edited_df["Mô tả chi tiết"]
-    df_final["Hình ảnh"] = ""
-    df_final["Hãng / Xuất xứ"] = edited_df["Hãng / Xuất xứ"]
-    df_final["ĐVT"] = edited_df["ĐVT"]
-    df_final["Số lượng"] = pd.to_numeric(
-        edited_df["Số lượng"], errors="coerce"
-    ).fillna(0)
+    # Làm sạch toàn bộ các cột số bị lỗi copy/paste trước khi xử lý
+    df_clean = edited_df.copy()
 
-    # Đặt giá trị rỗng cho các cột tính bằng công thức Excel
+    df_clean["Số lượng"] = df_clean["Số lượng"].apply(clean_currency)
+    df_clean["Margin"] = df_clean["Margin"].apply(clean_currency)
+    df_clean["Giá Cost"] = df_clean["Giá Cost"].apply(clean_currency)
+    df_clean["Giá lắp đặt"] = df_clean["Giá lắp đặt"].apply(clean_currency)
+
+    # 2. Xử lý dữ liệu ra file Excel
+    df_final = pd.DataFrame()
+    df_final["STT"] = df_clean["Stt"]
+    df_final["Thiết bị"] = df_clean["Tên hàng hóa/Dịch vụ"]
+    df_final["Mã hàng"] = df_clean["Mã hàng"]
+    df_final["Mô tả chi tiết"] = df_clean["Mô tả"]
+    df_final["Hình ảnh"] = ""
+    df_final["Hãng / Xuất xứ"] = df_clean["Nhãn hiệu/Xuất xứ"]
+    df_final["ĐVT"] = df_clean["ĐVT"]
+    df_final["Số lượng"] = df_clean["Số lượng"]
+
     df_final["Đơn giá (VNĐ)"] = 0
     df_final["Thành tiền (VNĐ)"] = 0
-    df_final["Ghi chú"] = edited_df["Ghi chú"]
+    df_final["Ghi chú"] = df_clean["Ghi chú"]
 
-    df_final["Margin Thiết bị"] = pd.to_numeric(
-        edited_df["Margin Thiết bị"], errors="coerce"
-    ).fillna(0)
-    df_final["ĐG COST Thiết bị"] = pd.to_numeric(
-        edited_df["ĐG COST Thiết bị"], errors="coerce"
-    ).fillna(0)
+    # Chuyển Margin từ dạng 20 -> 0.20 để ghi vào Excel
+    df_final["Margin Thiết bị"] = df_clean["Margin"].apply(
+        lambda x: x / 100 if x >= 1 else x
+    )
+    df_final["ĐG COST Thiết bị"] = df_clean["Giá Cost"]
     df_final["TT COST Thiết bị"] = 0
-    df_final["ĐG COST Lắp đặt"] = pd.to_numeric(
-        edited_df["ĐG COST Lắp đặt"], errors="coerce"
-    ).fillna(0)
+    df_final["ĐG COST Lắp đặt"] = df_clean["Giá lắp đặt"]
     df_final["TT COST Lắp đặt"] = 0
 
-    df_final["NCC"] = edited_df["NCC"]
-    df_final["NOTE"] = edited_df["NOTE"]
+    df_final["NCC"] = df_clean["NCC"]
+    df_final["NOTE"] = ""
 
-    # Đặt đúng vị trí các cột
     form_columns = [
         "STT",
         "Thiết bị",
@@ -108,7 +132,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
     ]
     df_final = df_final.reindex(columns=form_columns)
 
-    # 3. Xuất ra Excel và chèn công thức ROUNDUP trực tiếp
+    # 3. Xuất file bằng OPENPYXL
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
       df_final.to_excel(
@@ -118,60 +142,46 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
       workbook = writer.book
       worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
 
-      # --- A. PAGE BREAK PREVIEW (Bọc an toàn) ---
-      try:
-        if not hasattr(worksheet, "sheet_views") or not worksheet.sheet_views:
-          worksheet.views.sheetView[0].sheetViewType = "pageBreakPreview"
-        else:
-          worksheet.sheet_views[0].sheetViewType = "pageBreakPreview"
-      except Exception:
-        pass
-
-      # --- B. MERGE CỘT TIÊU ĐỀ LỚN ---
+      # Merge Tiêu đề
       worksheet.merge_cells("B2:J2")
       title_cell = worksheet["B2"]
       title_cell.value = "BẢNG GIÁ CHI TIẾT"
       title_cell.font = Font(name="Times New Roman", size=18, bold=True)
       title_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-      # --- C. CHÈN CÔNG THỨC ROUNDUP VÀ CÁC CÔNG THỨC TÍNH TOÁN ---
+      # Định dạng hiển thị tiền trong Excel có dấu phân cách hàng nghìn (10.299.000)
       num_format_vnd = "#,##0"
 
       for i in range(len(df_final)):
-        r = 5 + i  # Dòng dữ liệu bắt đầu từ dòng 5 trong Excel
+        r = 5 + i
 
-        # 1. Công thức Đơn giá (Cột I): Trực tiếp ROUNDUP không dùng IF so sánh
+        # Công thức Đơn giá ROUNDUP giữ nguyên
         cell_don_gia = worksheet.cell(row=r, column=9)
         cell_don_gia.value = (
-            f"=ROUNDUP(M{r}/(1-L{r}),-3)"
+            f"=ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3)"
         )
         cell_don_gia.number_format = num_format_vnd
 
-        # 2. Công thức Thành tiền (Cột J) = Số lượng (H) * Đơn giá (I)
         cell_thanh_tien = worksheet.cell(row=r, column=10)
         cell_thanh_tien.value = f"=H{r}*I{r}"
         cell_thanh_tien.number_format = num_format_vnd
 
-        # 3. Format ĐG COST Thiết bị (Cột M)
         worksheet.cell(row=r, column=13).number_format = num_format_vnd
 
-        # 4. Công thức TT COST Thiết bị (Cột N) = Số lượng (H) * ĐG COST Thiết bị (M)
         cell_tt_cost_tb = worksheet.cell(row=r, column=14)
         cell_tt_cost_tb.value = f"=H{r}*M{r}"
         cell_tt_cost_tb.number_format = num_format_vnd
 
-        # 5. Format ĐG COST Lắp đặt (Cột O)
         worksheet.cell(row=r, column=15).number_format = num_format_vnd
 
-        # 6. Công thức TT COST Lắp đặt (Cột P) = Số lượng (H) * ĐG COST Lắp đặt (O)
         cell_tt_cost_ld = worksheet.cell(row=r, column=16)
         cell_tt_cost_ld.value = f"=H{r}*O{r}"
         cell_tt_cost_ld.number_format = num_format_vnd
 
-        # Format Margin (Cột L)
+        # Margin dạng %
         worksheet.cell(row=r, column=12).number_format = "0.00%"
 
-      # --- D. TÔ MÀU & KẺ VIỀN CỦA BẢNG ---
+      # Format Header & Đường viền
       gray_fill = PatternFill(
           start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
       )
@@ -183,7 +193,6 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
       )
       blue_thick_side = Side(style="medium", color="0000FF")
 
-      # Format Header (Dòng 4)
       for col in range(1, 12):
         cell = worksheet.cell(row=4, column=col)
         cell.fill = gray_fill
@@ -206,14 +215,12 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
         )
         cell.border = thin_border
 
-      # Format dữ liệu bên dưới
       for row in range(5, len(df_final) + 5):
         for col in range(1, 19):
           c = worksheet.cell(row=row, column=col)
           c.font = Font(name="Times New Roman", size=10)
           c.border = thin_border
 
-        # Đường phân cách viền xanh dương ở cột K
         cell_k = worksheet.cell(row=row, column=11)
         cell_k.border = Border(
             left=cell_k.border.left,
@@ -222,7 +229,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
             bottom=cell_k.border.bottom,
         )
 
-    st.success("✅ Đã tạo file thành công!.")
+    st.success("✅ Đã xử lý xong dữ liệu!")
     st.download_button(
         label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
         data=output.getvalue(),
