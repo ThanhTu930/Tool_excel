@@ -142,8 +142,14 @@ if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type=
       workbook = writer.book
       worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
 
-      # --- A. BẬT CHẾ ĐỘ PAGE BREAK PREVIEW (Cú pháp chuẩn sheet_views) ---
-      worksheet.sheet_views[0].sheetViewType = "pageBreakPreview"
+      # --- A. BẬT CHẾ ĐỘ PAGE BREAK PREVIEW (An toàn tuyệt đối) ---
+      try:
+        if not hasattr(worksheet, "sheet_views") or not worksheet.sheet_views:
+          worksheet.views.sheetView[0].sheetViewType = "pageBreakPreview"
+        else:
+          worksheet.sheet_views[0].sheetViewType = "pageBreakPreview"
+      except Exception:
+        pass  # Nếu môi trường không hỗ trợ view type thì bỏ qua để không gián đoạn xuất file
 
       # --- B. MERGE CỘT VÀ TẠO TIÊU ĐỀ LỚN "BẢNG GIÁ CHI TIẾT" ---
       worksheet.merge_cells("B2:J2")
