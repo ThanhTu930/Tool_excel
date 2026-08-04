@@ -27,16 +27,27 @@ def roundup_thousand(val):
 
 
 if uploaded_file is not None:
-  try:
-    # 1. Đọc dữ liệu từ File Nguồn (Hình 2)
-    df_source = pd.read_excel(uploaded_file)
-    # Đọc file tự động thích ứng với cả .xlsx và .xls
-    if uploaded_file.name.endswith('.xls'):
-      df_source = pd.read_excel(uploaded_file, engine='xlrd')
-    else:
-      df_source = pd.read_excel(uploaded_file, engine='openpyxl')
-    with st.expander("👁️ Xem trước dữ liệu file nguồn vừa upload"):
-      st.dataframe(df_source.head())
+  # --------------------------------------------------------------------------
+    # Đoạn code đọc file tự động xử lý ngoại lệ (Đặt vào khoảng dòng 30)
+    # --------------------------------------------------------------------------
+    try:
+        # Thử đọc bằng openpyxl (.xlsx chuẩn)
+        df_source = pd.read_excel(uploaded_file, engine='openpyxl')
+    except Exception:
+        try:
+            # Thử đọc bằng xlrd (.xls chuẩn)
+            uploaded_file.seek(0) # Đưa con trỏ đọc về đầu file
+            df_source = pd.read_excel(uploaded_file, engine='xlrd')
+        except Exception:
+            try:
+                # Nếu file thực chất là HTML/XML đổi đuôi thành XLS (rất phổ biến khi xuất từ phần mềm)
+                uploaded_file.seek(0)
+                df_source = pd.read_html(uploaded_file)[0]
+            except Exception:
+                # Trường hợp cuối: Thử đọc dạng CSV/Text
+                uploaded_file.seek(0)
+                df_source = pd.read_csv(uploaded_file)
+    # --------------------------------------------------------------------------
 
     # 2. Tạo Khung Dữ Liệu Theo Đúng Cấu Trúc Form Mẫu Đích (Hình 1)
     df_final = pd.DataFrame()
