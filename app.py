@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Tool Nhập Liệu & Báo Giá Chi Tiết", layout="wide", page_icon="📝"
 )
 
-st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT")
+st.title("📝 Công Cụ Nhập Liệu & Xuất BẢNG GIÁ CHI TIẾT (Công Thức Chuẩn)")
 
 # 1. Dữ liệu mẫu ban đầu
 initial_data = pd.DataFrame({
@@ -18,7 +18,7 @@ initial_data = pd.DataFrame({
         "Camera quan sát trong nhà",
         "Switch chia mạng cấp nguồn PoE",
     ],
-    "Hãng/Xuất xứ": ["Hikvision / China", "Cisco / China"],
+    "Hãng / Xuất xứ": ["Hikvision / China", "Cisco / China"],
     "ĐVT": ["Cái", "Cái"],
     "Số lượng": [4, 1],
     "Ghi chú": ["Kèm chân đế", "Tủ rack trung tâm"],
@@ -59,7 +59,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
     df_final["Mã hàng"] = edited_df["Mã hàng"]
     df_final["Mô tả chi tiết"] = edited_df["Mô tả chi tiết"]
     df_final["Hình ảnh"] = ""
-    df_final["Hãng/Xuất xứ"] = edited_df["Hãng/Xuất xứ"]
+    df_final["Hãng / Xuất xứ"] = edited_df["Hãng / Xuất xứ"]
     df_final["ĐVT"] = edited_df["ĐVT"]
     df_final["Số lượng"] = pd.to_numeric(
         edited_df["Số lượng"], errors="coerce"
@@ -90,9 +90,9 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
         "STT",
         "Thiết bị",
         "Mã hàng",
-        "Mô tả",
+        "Mô tả chi tiết",
         "Hình ảnh",
-        "Hãng/Xuất xứ",
+        "Hãng / Xuất xứ",
         "ĐVT",
         "Số lượng",
         "Đơn giá (VNĐ)",
@@ -112,7 +112,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
       df_final.to_excel(
-          writer, index=False, sheet_name="CHI TIẾT", startrow=3
+          writer, index=False, sheet_name="BANG_GIA_CHI_TIET", startrow=3
       )
 
       workbook = writer.book
@@ -143,7 +143,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
         # 1. Công thức Đơn giá (Cột I): Trực tiếp ROUNDUP không dùng IF so sánh
         cell_don_gia = worksheet.cell(row=r, column=9)
         cell_don_gia.value = (
-            f"=ROUNDUP(M{r} / (1 - L{r}), -3)"
+            f"=ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3)"
         )
         cell_don_gia.number_format = num_format_vnd
 
@@ -222,11 +222,11 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
             bottom=cell_k.border.bottom,
         )
 
-    st.success("✅ Đã tạo file thành công!.")
+    st.success("✅ Đã tạo file thành công! Ô Đơn giá hiện đúng câu lệnh ROUNDUP.")
     st.download_button(
         label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
         data=output.getvalue(),
-        file_name="BG - DVC.xlsx",
+        file_name="Bang_Gia_Chi_Tiet_Formatted.xlsx",
         mime=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
