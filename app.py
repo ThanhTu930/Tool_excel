@@ -3,193 +3,172 @@ import math
 import pandas as pd
 import streamlit as st
 
-# Cấu hình giao diện Web
+# Cấu hình trang Web
 st.set_page_config(
-    page_title="Tool Xuất Báo Giá Chi Tiết", layout="wide", page_icon="📊"
+    page_title="Tool Nhập Liệu & Báo Giá Chi Tiết", layout="wide", page_icon="📝"
 )
 
-st.title("📊 Công Cụ Đổ Dữ Liệu Vào Mẫu BẢNG GIÁ CHI TIẾT")
+st.title("📝 Công Cụ Nhập Liệu & Tự Động Xuất BẢNG GIÁ CHI TIẾT")
 st.markdown(
-    "Upload **File Dữ Liệu Nguồn (Hình 2)** -> Tool tự động map dữ liệu, tính"
-    " toán công thức và xuất ra **Bảng Giá Chi Tiết (Hình 1)**."
-)
-
-# Khung tải file
-uploaded_file = st.file_uploader(
-    "Tải lên File Nguồn dữ liệu nhập vào (.xlsx, .xls)", type=["xlsx", "xls"]
+    "Nhập trực tiếp dữ liệu thiết bị vào bảng bên dưới (giống mẫu **Hình 2**) ->"
+    " Bấm nút **Xuất File Báo Giá** để tải về kết quả theo **Hình 1**."
 )
 
 
 def roundup_thousand(val):
-  """Hàm làm tròn lên hàng nghìn tương đương =ROUNDUP(val, -3) trong Excel"""
+  """Làm tròn lên đến hàng nghìn =ROUNDUP(val, -3)"""
   if pd.isna(val) or val <= 0:
     return 0
   return math.ceil(val / 1000) * 1000
 
 
-if uploaded_file is not None:
+# 1. Dữ liệu mẫu ban đầu theo form Hình 2
+initial_data = pd.DataFrame({
+    "STT": [1, 2],
+    "Thiết bị": [
+        "Camera IP Dome 2MP",
+        "Switch PoE 24 Port Gigabit",
+    ],
+    "Mã hàng": ["DS-2CD1123G0-I", "CBS220-24P-4G"],
+    "Mô tả chi tiết": [
+        "Camera quan sát trong nhà",
+        "Switch chia mạng cấp nguồn PoE",
+    ],
+    "Hãng / Xuất xứ": ["Hikvision / China", "Cisco / China"],
+    "ĐVT": ["Cái", "Cái"],
+    "Số lượng": [4, 1],
+    "Ghi chú": ["Kèm chân đế", "Tủ rack trung tâm"],
+    "Margin Thiết bị": [0.20, 0.15],  # 20% và 15%
+    "ĐG COST Thiết bị": [850000, 9800000],
+    "ĐG COST Lắp đặt": [150000, 500000],
+    "NCC": ["Phúc Bình", "FPT"],
+    "NOTE": ["Hàng có sẵn", "Đặt hàng 2 tuần"],
+})
+
+st.subheader("📋 Bảng Nhập Dữ Liệu Đầu Vào (Nhập trực tiếp vào đây):")
+st.info(
+    "💡 **Mẹo:** Bạn có thể copy nhiều dòng/cột từ Excel rồi **Paste (Ctrl+V)**"
+    " trực tiếp vào bảng dưới đây, hoặc nhấn nút **'+'** ở cuối bảng để thêm dòng"
+    " mới!"
+)
+
+# 2. Hiển thị bảng tương tác cho người dùng sửa/nhập dữ liệu trực tiếp (Bảng theo Hình 2)
+edited_df = st.data_editor(
+    initial_data,
+    num_rows="dynamic",  # Cho phép thêm/xóa dòng linh hoạt
+    use_container_width=True,
+    column_config={
+        "STT": st.column_config.NumberColumn("STT", width="small"),
+        "Margin Thiết bị": st.column_config.NumberColumn(
+            "Margin Thiết bị",
+            help="Nhập dạng số thập phân (Ví dụ: 0.2 là 20%) hoặc số 20",
+            format="%.2f",
+        ),
+        "ĐG COST Thiết bị": st.column_config.NumberColumn(
+            "ĐG COST Thiết bị", format="%d VNĐ"
+        ),
+        "ĐG COST Lắp đặt": st.column_config.NumberColumn(
+            "ĐG COST Lắp đặt", format="%d VNĐ"
+        ),
+    },
+)
+
+st.divider()
+
+# 3. Nút bấm tính toán và xuất file theo Form Hình 1
+if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT", type="primary"):
   try:
-    # --- 1. ĐỌC FILE VỚI CÁC PHƯƠNG ÁN TỰ ĐỘNG THÍCH ỨNG ---
-    df_source = None
+    df_final = pd.DataFrame()
 
-    # Phương án 1: Đọc .xlsx chuẩn
-    try:
-      df_source = pd.read_excel(uploaded_file, engine="openpyxl")
-    except Exception:
-      pass
+    # Chép dữ liệu cơ bản từ Bảng Nhập Liệu
+    df_final["STT"] = edited_df["STT"]
+    df_final["Thiết bị"] = edited_df["Thiết bị"]
+    df_final["Mã hàng"] = edited_df["Mã hàng"]
+    df_final["Hình ảnh"] = ""  # Để trống cột hình ảnh
+    df_final["Hãng / Xuất xứ"] = edited_df["Hãng / Xuất xứ"]
+    df_final["ĐVT"] = edited_df["ĐVT"]
 
-    # Phương án 2: Đọc .xls chuẩn (Excel 97-2003)
-    if df_source is None:
-      try:
-        uploaded_file.seek(0)
-        df_source = pd.read_excel(uploaded_file, engine="xlrd")
-      except Exception:
-        pass
+    df_final["Số lượng"] = pd.to_numeric(
+        edited_df["Số lượng"], errors="coerce"
+    ).fillna(0)
+    df_final["Ghi chú"] = edited_df["Ghi chú"]
 
-    # Phương án 3: Đọc file XML/HTML đổi đuôi (Xuất từ phần mềm Kế toán/ERP)
-    if df_source is None:
-      try:
-        uploaded_file.seek(0)
-        dfs = pd.read_html(uploaded_file)
-        df_source = dfs[0]
-      except Exception:
-        pass
+    df_final["Margin Thiết bị"] = pd.to_numeric(
+        edited_df["Margin Thiết bị"], errors="coerce"
+    ).fillna(0)
+    df_final["ĐG COST Thiết bị"] = pd.to_numeric(
+        edited_df["ĐG COST Thiết bị"], errors="coerce"
+    ).fillna(0)
+    df_final["ĐG COST Lắp đặt"] = pd.to_numeric(
+        edited_df["ĐG COST Lắp đặt"], errors="coerce"
+    ).fillna(0)
 
-    # Phương án 4: Đọc file CSV/Text (nếu có)
-    if df_source is None:
-      for enc in ["utf-8", "cp1252", "latin1", "utf-16", "utf-8-sig"]:
-        try:
-          uploaded_file.seek(0)
-          df_source = pd.read_csv(uploaded_file, encoding=enc)
-          break
-        except Exception:
-          continue
+    df_final["NCC"] = edited_df["NCC"]
+    df_final["NOTE"] = edited_df["NOTE"]
 
-    if df_source is None:
-      st.error(
-          "⚠️ Không thể đọc định dạng file này. Vui lòng mở file bằng Excel,"
-          " bấm 'Save As' và chọn định dạng 'Excel Workbook (*.xlsx)'."
-      )
-    else:
-      with st.expander("👁️ Xem trước dữ liệu file nguồn vừa upload"):
-        st.dataframe(df_source.head())
+    # Công thức tính Đơn giá = ROUNDUP( ĐG COST / (1 - Margin) ; -3 )
+    def calc_don_gia(row):
+      cost = row["ĐG COST Thiết bị"]
+      margin = row["Margin Thiết bị"]
+      if margin >= 1:
+        margin = margin / 100
+      if (1 - margin) <= 0:
+        return 0
+      return roundup_thousand(cost / (1 - margin))
 
-      # --- 2. ÁNH XẠ DỮ LIỆU SANG FORM MẪU CHI TIẾT (HÌNH 1) ---
-      df_final = pd.DataFrame()
+    df_final["Đơn giá (VNĐ)"] = df_final.apply(calc_don_gia, axis=1)
 
-      def get_source_col(possible_names):
-        """Hàm tìm kiếm tên cột linh hoạt từ File Nguồn"""
-        for col in df_source.columns:
-          if str(col).strip().lower() in [
-              name.lower() for name in possible_names
-          ]:
-            return df_source[col]
-        return ""
+    # Các công thức nhân Thành tiền & TT COST
+    df_final["Thành tiền (VNĐ)"] = (
+        df_final["Số lượng"] * df_final["Đơn giá (VNĐ)"]
+    )
+    df_final["TT COST Thiết bị"] = (
+        df_final["Số lượng"] * df_final["ĐG COST Thiết bị"]
+    )
+    df_final["TT COST Lắp đặt"] = (
+        df_final["Số lượng"] * df_final["ĐG COST Lắp đặt"]
+    )
 
-      # Lấy dữ liệu cơ bản
-      df_final["STT"] = get_source_col(["STT", "No"])
-      df_final["Thiết bị"] = get_source_col(["Thiết bị", "Tên thiết bị"])
-      df_final["Mã hàng"] = get_source_col(["Mã hàng", "Part Number"])
-      df_final["Hình ảnh"] = ""  # Để trống cột hình ảnh
-      df_final["Hãng / Xuất xứ"] = get_source_col(
-          ["Hãng / Xuất xứ", "Xuất xứ", "Hãng"]
-      )
-      df_final["ĐVT"] = get_source_col(["ĐVT", "Đơn vị tính"])
+    # Sắp xếp đúng 100% thứ tự các cột của Form Hình 1
+    form_1_columns = [
+        "STT",
+        "Thiết bị",
+        "Mã hàng",
+        "Hình ảnh",
+        "Hãng / Xuất xứ",
+        "ĐVT",
+        "Số lượng",
+        "Đơn giá (VNĐ)",
+        "Thành tiền (VNĐ)",
+        "Ghi chú",
+        "Margin Thiết bị",
+        "ĐG COST Thiết bị",
+        "TT COST Thiết bị",
+        "ĐG COST Lắp đặt",
+        "TT COST Lắp đặt",
+        "NCC",
+        "NOTE",
+    ]
+    df_final = df_final.reindex(columns=form_1_columns)
 
-      # Chuyển đổi dữ liệu số
-      df_final["Số lượng"] = pd.to_numeric(
-          get_source_col(["Số lượng", "SL"]), errors="coerce"
-      ).fillna(0)
-      df_final["Ghi chú"] = get_source_col(["Ghi chú"])
+    # Hiển thị kết quả tính toán
+    st.success("✅ Đã tính toán xong! Xem trước BẢNG GIÁ CHI TIẾT chuẩn:")
+    st.dataframe(df_final)
 
-      df_final["Margin Thiết bị"] = pd.to_numeric(
-          get_source_col(["Margin Thiết bị", "Margin"]), errors="coerce"
-      ).fillna(0)
-      df_final["ĐG COST Thiết bị"] = pd.to_numeric(
-          get_source_col(["ĐG COST Thiết bị", "DG COST Thiet bi"]),
-          errors="coerce",
-      ).fillna(0)
-      df_final["ĐG COST Lắp đặt"] = pd.to_numeric(
-          get_source_col(["ĐG COST Lắp đặt", "DG COST Lap dat"]),
-          errors="coerce",
-      ).fillna(0)
+    # Tạo file Excel để người dùng tải về
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+      df_final.to_excel(writer, index=False, sheet_name="BANG_GIA_CHI_TIET")
 
-      df_final["NCC"] = get_source_col(["NCC", "Nhà cung cấp"])
-      df_final["NOTE"] = get_source_col(["NOTE", "Note"])
-
-      # --- 3. CÔNG THỨC TÍNH TOÁN ---
-
-      # Tính Đơn giá (VNĐ) = ROUNDUP( ĐG COST Thiết bị / (1 - Margin Thiết bị) ; -3 )
-      def calc_don_gia(row):
-        cost = row["ĐG COST Thiết bị"]
-        margin = row["Margin Thiết bị"]
-        if margin >= 1:
-          margin = margin / 100  # Đổi dạng 20 sang 0.2
-        if (1 - margin) <= 0:
-          return 0
-        return roundup_thousand(cost / (1 - margin))
-
-      df_final["Đơn giá (VNĐ)"] = df_final.apply(calc_don_gia, axis=1)
-
-      # Tính Thành tiền (VNĐ) = Số lượng * Đơn giá (VNĐ)
-      df_final["Thành tiền (VNĐ)"] = (
-          df_final["Số lượng"] * df_final["Đơn giá (VNĐ)"]
-      )
-
-      # Tính TT COST Thiết bị = Số lượng * ĐG COST Thiết bị
-      df_final["TT COST Thiết bị"] = (
-          df_final["Số lượng"] * df_final["ĐG COST Thiết bị"]
-      )
-
-      # Tính TT COST Lắp đặt = Số lượng * ĐG COST Lắp đặt
-      df_final["TT COST Lắp đặt"] = (
-          df_final["Số lượng"] * df_final["ĐG COST Lắp đặt"]
-      )
-
-      # --- 4. SẮP XẾP ĐÚNG THỨ TỰ CÁC CỘT THEO HÌNH 1 ---
-      form_1_columns = [
-          "STT",
-          "Thiết bị",
-          "Mã hàng",
-          "Hình ảnh",
-          "Hãng / Xuất xứ",
-          "ĐVT",
-          "Số lượng",
-          "Đơn giá (VNĐ)",
-          "Thành tiền (VNĐ)",
-          "Ghi chú",
-          "Margin Thiết bị",
-          "ĐG COST Thiết bị",
-          "TT COST Thiết bị",
-          "ĐG COST Lắp đặt",
-          "TT COST Lắp đặt",
-          "NCC",
-          "NOTE",
-      ]
-      df_final = df_final.reindex(columns=form_1_columns)
-
-      # Hiển thị kết quả trên Web
-      st.success(
-          "✅ Đã xử lý và tính toán thành công dữ liệu sang Form BẢNG GIÁ CHI"
-          " TIẾT!"
-      )
-      st.subheader("📋 Kết quả File Cuối Cùng (Mẫu Hình 1):")
-      st.dataframe(df_final)
-
-      # --- 5. TẠO NÚT TẢI FILE EXCEL HOÀN CHỈNH ---
-      output = io.BytesIO()
-      with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df_final.to_excel(writer, index=False, sheet_name="BANG_GIA_CHI_TIET")
-
-      st.download_button(
-          label="📥 Tải File BẢNG GIÁ CHI TIẾT Hoàn Chỉnh (.xlsx)",
-          data=output.getvalue(),
-          file_name="Bang_Gia_Chi_Tiet_Final.xlsx",
-          mime=(
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          ),
-          type="primary",
-      )
+    st.download_button(
+        label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
+        data=output.getvalue(),
+        file_name="Bang_Gia_Chi_Tiet_Final.xlsx",
+        mime=(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ),
+        type="primary",
+    )
 
   except Exception as e:
-    st.error(f"Lỗi khi xử lý dữ liệu: {e}")
+    st.error(f"⚠️ Có lỗi xảy ra trong quá trình xử lý: {e}")
