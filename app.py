@@ -195,7 +195,7 @@ if uploaded_file is not None:
           cell_tt_cost_ld.number_format = num_format_vnd
 
           # Margin hiển thị dạng %
-          worksheet.cell(row=r, column=12).number_format = "0.00%"
+          worksheet.cell(row=r, column=12).number_format = "0%"
 
         # --- D. ĐỊNH DẠNG TÔ MÀU HEADER VÀ VIỀN BẢNG ---
         gray_fill = PatternFill(
