@@ -15,20 +15,17 @@ st.title("📊 Chuyển Đổi File Excel Đầu Vào -> BẢNG GIÁ CHI TIẾT 
 def generate_sample_template():
   sample_df = pd.DataFrame({
       "Stt": [1, 2],
-      "Tên thiết bị": [
-          "Ổ cứng Synology 4 TB 3.5” Enterprise-Grade SATA HDD",
-          "Nhân công cấu hình, cài đặt thiết bị NAS",
-      ],
-      "Mã hàng": ["HAT5320-4T", ""],
-      "Mô tả": ["Bảo hành 5 năm", ""],
-      "Nhãn hiệu/Xuất xứ": ["Synology", "Việt Nam"],
-      "ĐVT": ["Cái", "Gói"],
-      "Số lượng": [2, 1],
-      "Ghi chú": ["Kèm phụ kiện", ""],
-      "Margin": ["20%", "20%"],
-      "Giá Cost": [10299000, 1000000],
-      "Giá lắp đặt": [300000, 300000],
-      "NCC": ["VIETCORP", ""],
+      "Tên thiết bị": [],
+      "Mã hàng": [],
+      "Mô tả": [],
+      "Nhãn hiệu/Xuất xứ": [],
+      "ĐVT": [],
+      "Số lượng": [],
+      "Ghi chú": [],
+      "Margin": [],
+      "Giá Cost": [],
+      "Giá lắp đặt": [],
+      "NCC": [],
   })
 
   output = io.BytesIO()
