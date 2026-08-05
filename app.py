@@ -158,7 +158,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
         # Công thức Đơn giá ROUNDUP giữ nguyên
         cell_don_gia = worksheet.cell(row=r, column=9)
         cell_don_gia.value = (
-            f"=ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3)"
+            f"=ROUNDUP(M{r}/(1-L{r}),-3)"
         )
         cell_don_gia.number_format = num_format_vnd
 
@@ -233,7 +233,7 @@ if st.button("🚀 Xử Lý & Xuất File Excel", type="primary"):
     st.download_button(
         label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
         data=output.getvalue(),
-        file_name="Bang_Gia_Chi_Tiet_Formatted.xlsx",
+        file_name="BG - DVC.xlsx",
         mime=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
