@@ -14,7 +14,7 @@ st.title("📊 Chuyển Đổi File Excel Đầu Vào -> BẢNG GIÁ CHI TIẾT 
 # --- 1. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ ---
 def generate_sample_template():
   sample_df = pd.DataFrame({
-      "Stt": [1, 2],
+      "Stt": [],
       "Tên thiết bị": [],
       "Mã hàng": [],
       "Mô tả": [],
