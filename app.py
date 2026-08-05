@@ -74,7 +74,7 @@ if uploaded_file is not None:
       )
 
       df_final["Mã hàng"] = get_col_val(input_df, ["mã hàng"], "")
-      df_final["Mô tả chi tiết"] = get_col_val(input_df, ["mô tả"], "")
+      df_final["Mô tả"] = get_col_val(input_df, ["mô tả"], "")
       df_final["Hình ảnh"] = ""
       df_final["Hãng / Xuất xứ"] = get_col_val(
           input_df, ["nhãn hiệu/xuất xứ", "xuất xứ", "hãng"], ""
@@ -114,7 +114,7 @@ if uploaded_file is not None:
           "STT",
           "Thiết bị",
           "Mã hàng",
-          "Mô tả chi tiết",
+          "Mô tả",
           "Hình ảnh",
           "Hãng / Xuất xứ",
           "ĐVT",
