@@ -8,15 +8,31 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 st.markdown(
     """
     <style>
-    /* Tăng cỡ chữ & độ đậm cho nút Download */
+    /* 1. Đổi màu nút Tải Form Mẫu ở trên */
     div.stDownloadButton > button {
-        min-height: 50px !important; /* Tăng chiều cao nút cho cân đối */
-        width: Auto;
-        background-color: Green
+        background-color: #008000 !important; /* Màu xanh lá chuẩn */
+        color: #FFFFFF !important;             /* Mặc định chữ màu trắng */
+        font-weight: bold !important;          /* Chữ in đậm */
+        border-radius: 6px !important;         /* Bo góc nút */
+        border: none !important;
+        padding: 0.5rem 1.2rem !important;
     }
-    div.stDownloadButton > button p {
-        font-size: 16px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
-        font-weight: bold !important; /* Chữ đậm */
+    div.stDownloadButton > button:hover {
+        background-color: #006400 !important; /* Xanh đậm khi rê chuột */
+        color: #FFFFFF !important;
+    }
+
+    /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
+    div[data-testid="stFileUploader"] button {
+        background-color: #008000 !important; /* Màu xanh lá đồng bộ */
+        color: #FFFFFF !important;             /* Chữ màu trắng */
+        font-weight: bold !important;          /* Chữ in đậm */
+        border-radius: 6px !important;         /* Bo góc nút */
+        border: none !important;
+    }
+    div[data-testid="stFileUploader"] button:hover {
+        background-color: #006400 !important; /* Xanh đậm khi rê chuột */
+        color: #FFFFFF !important;
     }
     </style>
 """,
@@ -98,22 +114,23 @@ def clean_currency(val):
   except ValueError:
     return 0.0
 
+# --- 2. PHẦN TẢI FORM MẪU (Ở TRÊN) ---
+st.write("**TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM CỦA HỆ THỐNG**")
 
-# --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
-st.markdown(
-    " TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM CỦA HỆ THỐNG"
-)
 sample_file_data = generate_sample_template()
 st.download_button(
     label="FORM BÁO GIÁ MẪU (.xlsx)",
     data=sample_file_data,
     file_name="BG Mẫu - DVC.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    use_container_width=False,  # Đặt False để nút gọn lại vừa với chữ giống như hình
 )
+
 st.divider()
 
-# --- 4. UPLOAD FILE ĐẦU VÀO ---
-st.markdown("UPLOAD FILE EXCEL TẠI ĐÂY (.xlsx, .xls):")
+# --- 3. PHẦN UPLOAD FILE (Ở DƯỚI) ---
+st.write("**UPLOAD FILE EXCEL TẠI ĐÂY (.xlsx, .xls):**")
+
 uploaded_file = st.file_uploader(
     "Upload", type=["xlsx", "xls"], label_visibility="collapsed"
 )
