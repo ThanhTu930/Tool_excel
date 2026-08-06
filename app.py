@@ -172,8 +172,7 @@ if uploaded_file is not None:
           "Thiết bị",
           "Mã hàng",
           "Mô tả",
-          "Hình ảnh",
-          "Hãng / Xuất xứ",
+          "Hãng/Xuất xứ",
           "ĐVT",
           "Số lượng",
           "Đơn giá (VNĐ)",
@@ -222,7 +221,7 @@ if uploaded_file is not None:
           # Công thức Đơn giá ROUNDUP
           cell_don_gia = worksheet.cell(row=r, column=9)
           cell_don_gia.value = (
-              f"=ROUNDUP(M{r} / (1 - IF(L{r}>=1, L{r}/100, L{r})), -3)"
+              f"=ROUNDUP(M{r}/(1 -L{r}),-3)"
           )
           cell_don_gia.number_format = num_format_vnd
 
@@ -298,7 +297,7 @@ if uploaded_file is not None:
       st.download_button(
           label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
           data=output.getvalue(),
-          file_name="Bang_Gia_Chi_Tiet_Output.xlsx",
+          file_name="BG - DVC.xlsx",
           mime=(
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           ),
