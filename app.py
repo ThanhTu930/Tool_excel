@@ -5,10 +5,10 @@ import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 st.set_page_config(
-    page_title="Tool Chuyển Đổi Báo Giá Chi Tiết", layout="wide", page_icon="📊"
+    page_title="TOOL CHUYỂN ĐỔI BÁO GIÁ", layout="wide", page_icon="📊"
 )
 
-st.title("📊 Chuyển Đổi File Excel Đầu Vào -> BẢNG GIÁ CHI TIẾT Chuẩn")
+st.title("TẢI FILE MẪU ĐỂ NHẬP DỮ LIỆU")
 
 
 # --- 1. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ ---
@@ -85,9 +85,6 @@ col1, col2 = st.columns([3, 1])
 
 with col1:
   st.info(
-      "💡 **Hướng dẫn:** Tải file Form mẫu bên phải, nhập đầy đủ thông tin"
-      " hàng hóa/giá cost, sau đó tải file lên để hệ thống tự động xuất Bảng"
-      " Giá Chi Tiết chuẩn."
   )
 
 with col2:
