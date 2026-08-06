@@ -290,7 +290,7 @@ if uploaded_file is not None:
       st.download_button(
           label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
           data=output.getvalue(),
-          file_name=original_filename,  # 🔥 ĐÃ SỬA: Giữ nguyên tên file khi tải lên
+          file_name=original_filename + " - R1",  # 🔥 ĐÃ SỬA: Giữ nguyên tên file khi tải lên
           mime=(
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           ),
