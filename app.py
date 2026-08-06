@@ -13,7 +13,7 @@ st.markdown(
         min-height: 50px !important; /* Tăng chiều cao nút cho cân đối */
     }
     div.stDownloadButton > button p {
-        font-size: 18px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-size: 26px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
         font-weight: bold !important; /* Chữ đậm */
     }
     </style>
@@ -99,7 +99,7 @@ def clean_currency(val):
 
 # --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
 st.markdown(
-    " Tải file BG mẫu để nhập dữ liệu theo form của hệ thống:"
+    " TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM CỦA HỆ THỐNG"
 )
 sample_file_data = generate_sample_template()
 st.download_button(
