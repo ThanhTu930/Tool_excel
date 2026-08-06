@@ -11,9 +11,11 @@ st.markdown(
     /* Tăng cỡ chữ & độ đậm cho nút Download */
     div.stDownloadButton > button {
         min-height: 50px !important; /* Tăng chiều cao nút cho cân đối */
+        width: Auto;
+        background-color: Green
     }
     div.stDownloadButton > button p {
-        font-size: 26px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-size: 20px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
         font-weight: bold !important; /* Chữ đậm */
     }
     </style>
@@ -106,8 +108,7 @@ st.download_button(
     label="FORM BÁO GIÁ MẪU (.xlsx)",
     data=sample_file_data,
     file_name="BG Mẫu - DVC.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    use_container_width=True
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 st.divider()
 
