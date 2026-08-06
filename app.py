@@ -10,7 +10,7 @@ st.markdown(
     <style>
     /* 1. Đổi màu nút Tải Form Mẫu ở trên */
     div.stDownloadButton > button {
-        background-color: #008000 !important; /* Màu xanh lá chuẩn */
+        background-color: LightGreen !important; /* Màu xanh lá chuẩn */
         color: #FFFFFF !important;             /* Mặc định chữ màu trắng */
         font-weight: bold !important;          /* Chữ in đậm */
         border-radius: 6px !important;         /* Bo góc nút */
@@ -18,7 +18,7 @@ st.markdown(
         padding: 0.5rem 1.2rem !important;
     }
     div.stDownloadButton > button:hover {
-        background-color: #006400 !important; /* Xanh đậm khi rê chuột */
+        background-color: Green !important; /* Xanh đậm khi rê chuột */
         color: #FFFFFF !important;
     }
     div.stDownloadButton > button p {
@@ -27,7 +27,7 @@ st.markdown(
     }
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
     div[data-testid="stFileUploader"] button {
-        background-color: blue !important; /* Màu xanh lá đồng bộ */
+        background-color: LightBlue !important; /* Màu xanh lá đồng bộ */
         color: #FFFFFF !important;             /* Chữ màu trắng */
         font-weight: bold !important;          /* Chữ in đậm */
         border-radius: 6px !important;         /* Bo góc nút */
