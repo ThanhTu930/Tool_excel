@@ -15,7 +15,7 @@ st.markdown(
         background-color: Green
     }
     div.stDownloadButton > button p {
-        font-size: 10px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-size: 16px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
         font-weight: bold !important; /* Chữ đậm */
     }
     </style>
