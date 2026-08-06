@@ -21,18 +21,25 @@ st.markdown(
         background-color: #006400 !important; /* Xanh đậm khi rê chuột */
         color: #FFFFFF !important;
     }
-
+    div.stDownloadButton > button p {
+        font-size: 18px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-weight: bold !important; /* Chữ đậm */
+    }
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
     div[data-testid="stFileUploader"] button {
-        background-color: #008000 !important; /* Màu xanh lá đồng bộ */
+        background-color: #C6E2FF !important; /* Màu xanh lá đồng bộ */
         color: #FFFFFF !important;             /* Chữ màu trắng */
         font-weight: bold !important;          /* Chữ in đậm */
         border-radius: 6px !important;         /* Bo góc nút */
         border: none !important;
     }
     div[data-testid="stFileUploader"] button:hover {
-        background-color: #006400 !important; /* Xanh đậm khi rê chuột */
+        background-color: #9FB6CD !important; /* Xanh đậm khi rê chuột */
         color: #FFFFFF !important;
+    }
+    div[data-testid="stFileUploader"] p {
+        font-size: 18px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-weight: bold !important; /* Chữ đậm */
     }
     </style>
 """,
