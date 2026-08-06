@@ -114,7 +114,6 @@ st.divider()
 # --- 4. UPLOAD FILE ĐẦU VÀO ---
 st.markdown("UPLOAD FILE EXCEL TẠI ĐÂY (.xlsx, .xls):")
 uploaded_file = st.file_uploader(
-    "UPLOAD FILE EXCEL TẠI ĐÂY(.xlsx, .xls):**",
     type=["xlsx", "xls"],
 )
 
