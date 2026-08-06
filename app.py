@@ -286,16 +286,16 @@ if uploaded_file is not None:
           )
     
       # Lấy tên file gốc (ví dụ: "Bao_Gia_Duan_A.xlsx")
-    original_filename = uploaded_file.name
+      original_filename = uploaded_file.name
     
-    st.success("🎉 Đã xử lý xong!")
-    st.download_button(
-        label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
-        data=output.getvalue(),
-        file_name=original_filename,  # 🔥 ĐÃ SỬA: Giữ nguyên tên file khi tải lên
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        type="primary",
-    )
+      st.success("🎉 Đã xử lý xong!")
+      st.download_button(
+          label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
+          data=output.getvalue(),
+          file_name=original_filename,  # 🔥 ĐÃ SỬA: Giữ nguyên tên file khi tải lên
+          mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          type="primary",
+      )
 
   except Exception as e:
     st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
