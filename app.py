@@ -284,7 +284,7 @@ if uploaded_file is not None:
           )
 
       # Lấy tên file gốc (ví dụ: "Bao_Gia_Duan_A.xlsx")
-      original_filename = uploaded_file.name + " - R1"
+      original_filename = uploaded_file.name
 
       st.success("🎉 Đã xử lý xong!")
       st.download_button(
