@@ -212,9 +212,7 @@ if uploaded_file is not None:
 
           # Công thức Đơn giá ROUNDUP
           cell_don_gia = worksheet.cell(row=r, column=9)
-          cell_don_gia.value = (
-              f"=ROUNDUP(M{r}/(1 -L{r}),-3)"
-          )
+          cell_don_gia.value = f"=ROUNDUP(M{r}/(1 -L{r}),-3)"
           cell_don_gia.number_format = num_format_vnd
 
           # Thành tiền = Số lượng * Đơn giá
@@ -284,16 +282,18 @@ if uploaded_file is not None:
               right=blue_thick_side,
               bottom=cell_k.border.bottom,
           )
-    
+
       # Lấy tên file gốc (ví dụ: "Bao_Gia_Duan_A.xlsx")
       original_filename = uploaded_file.name
-    
+
       st.success("🎉 Đã xử lý xong!")
       st.download_button(
           label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
           data=output.getvalue(),
           file_name=original_filename,  # 🔥 ĐÃ SỬA: Giữ nguyên tên file khi tải lên
-          mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          mime=(
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          ),
           type="primary",
       )
 
