@@ -6,7 +6,7 @@ import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 st.set_page_config(
-    page_title="Tool nhập liệu DVCTECH", layout="wide", page_icon="📊"
+    page_title="Tool nhập liệu DVCTECH", layout="wide"
 )
 
 st.title("TOOL NHẬP LIỆU BẢNG BÁO GIÁ")
