@@ -91,7 +91,6 @@ st.download_button(
     file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
-    width="150px"
 )
 
 st.divider()
