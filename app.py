@@ -83,17 +83,16 @@ def clean_currency(val):
 
 
 # --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
-st.info("Tải file BG mẫu để nhập dữ liệu theo form của hệ thống")
+st.write("Tải file BG mẫu để nhập dữ liệu theo form của hệ thống:")
 
 sample_file_data = generate_sample_template()
 st.download_button(
     label="Tải Form BG Mẫu tại đây (.xlsx)",
     data=sample_file_data,
-    file_name="BG MẪU - DVC.xlsx",
+    file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
 )
-
 st.divider()
 
 # --- 4. UPLOAD FILE ĐẦU VÀO ---
