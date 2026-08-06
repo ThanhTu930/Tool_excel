@@ -34,7 +34,7 @@ st.markdown(
         border: none !important;
     }
     div[data-testid="stFileUploader"] button:hover {
-        background-color: #9FB6CD !important; /* Xanh đậm khi rê chuột */
+        background-color: darkblue !important; /* Xanh đậm khi rê chuột */
         color: #FFFFFF !important;
     }
     div[data-testid="stFileUploader"] p {
