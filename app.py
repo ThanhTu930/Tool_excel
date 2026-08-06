@@ -91,7 +91,6 @@ st.download_button(
     data=sample_file_data,
     file_name="BG Mẫu - DVC.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    width=auto
 )
 st.divider()
 
