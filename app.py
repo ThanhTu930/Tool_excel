@@ -83,7 +83,6 @@ def clean_currency(val):
 # --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
 # 1. Hiển thị thông báo/hướng dẫn
 st.info("Tải file BG mẫu để nhập dữ liệu theo form của hệ thống")
-
 # 2. Nút tải file form mẫu đặt ngay bên dưới
 sample_file_data = generate_sample_template()
 st.download_button(
@@ -92,6 +91,7 @@ st.download_button(
     file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
+    width="150px"
 )
 
 st.divider()
