@@ -89,7 +89,7 @@ sample_file_data = generate_sample_template()
 st.download_button(
     label="Tải Form BG Mẫu tại đây (.xlsx)",
     data=sample_file_data,
-    file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
+    file_name="BG Mẫu - DVC.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
 )
@@ -97,7 +97,7 @@ st.divider()
 
 # --- 4. UPLOAD FILE ĐẦU VÀO ---
 uploaded_file = st.file_uploader(
-    "UPLOAD File Excel dữ liệu đầu vào của bạn tại đây (.xlsx, .xls):**",
+    "UPLOAD FILE EXCEL TẠI ĐÂY(.xlsx, .xls):**",
     type=["xlsx", "xls"],
 )
 
@@ -118,7 +118,7 @@ if uploaded_file is not None:
             return df[c]
       return pd.Series([default] * len(df))
 
-    if st.button("XUẤT FILE BẢNG GIÁ CHI TIẾT CHUẨN", type="primary"):
+    if st.button("XUẤT FILE BẢNG GIÁ CHI TIẾT", type="primary"):
       df_final = pd.DataFrame()
 
       df_final["STT"] = get_col_val(input_df, ["stt"], 1)
@@ -300,7 +300,7 @@ if uploaded_file is not None:
 
       st.success("Đã xử lý xong!")
       st.download_button(
-          label="📥 TẢI FILE BẢNG GIÁ CHI TIẾT TẠI ĐÂY (.xlsx)",
+          label="DOWNLOAD FILE TẠI ĐÂY (.xlsx)",
           data=output.getvalue(),
           file_name=output_filename,
           mime=(
