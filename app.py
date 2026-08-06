@@ -5,10 +5,10 @@ import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 st.set_page_config(
-    page_title="TOOL CHUYỂN ĐỔI BÁO GIÁ", layout="wide", page_icon="📊"
+    page_title="Tool nhập liệu DVCTECH", layout="wide", page_icon="📊"
 )
 
-st.title("TẢI FILE MẪU ĐỂ NHẬP DỮ LIỆU")
+st.title("TOOL NHẬP LIỆU BẢNG BÁO GIÁ")
 
 
 # --- 1. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ ---
@@ -81,18 +81,18 @@ def clean_currency(val):
 
 
 # --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
-col1, col2 = st.columns([3, 1])
+# 1. Hiển thị thông báo/hướng dẫn
+st.info("Tải file BG mẫu để nhập dữ liệu theo form của hệ thống")
 
-with col2:
-  # NÚT TẢI FILE FORM MẪU ĐẦU VÀO
-  sample_file_data = generate_sample_template()
-  st.download_button(
-      label="📥 Tải Form Mẫu Đầu Vào (.xlsx)",
-      data=sample_file_data,
-      file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
-      mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      use_container_width=True,
-  )
+# 2. Nút tải file form mẫu đặt ngay bên dưới
+sample_file_data = generate_sample_template()
+st.download_button(
+    label="📥 Tải Form Mẫu Đầu Vào (.xlsx)",
+    data=sample_file_data,
+    file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    use_container_width=True,
+)
 
 st.divider()
 
@@ -285,17 +285,18 @@ if uploaded_file is not None:
               right=blue_thick_side,
               bottom=cell_k.border.bottom,
           )
-
-      st.success("🎉 Đã xử lý xong!")
-      st.download_button(
-          label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
-          data=output.getvalue(),
-          file_name="BG - DVC.xlsx",
-          mime=(
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          ),
-          type="primary",
-      )
+    
+      # Lấy tên file gốc (ví dụ: "Bao_Gia_Duan_A.xlsx")
+    original_filename = uploaded_file.name
+    
+    st.success("🎉 Đã xử lý xong!")
+    st.download_button(
+        label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
+        data=output.getvalue(),
+        file_name=original_filename,  # 🔥 ĐÃ SỬA: Giữ nguyên tên file khi tải lên
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type="primary",
+    )
 
   except Exception as e:
     st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
