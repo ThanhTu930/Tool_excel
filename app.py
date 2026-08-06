@@ -81,7 +81,7 @@ def clean_currency(val):
 
 
 # --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
-col2 = st.columns([3, 1])
+col1, col2 = st.columns([3, 1])
 
 with col2:
   # NÚT TẢI FILE FORM MẪU ĐẦU VÀO
