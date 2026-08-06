@@ -4,7 +4,22 @@ import re
 import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-
+# --- 1. CSS CHỈNH CHỮ TO CHO NÚT BẤM VÀ KHUNG UPLOAD ---
+st.markdown(
+    """
+    <style>
+    /* Tăng cỡ chữ & độ đậm cho nút Download */
+    div.stDownloadButton > button {
+        min-height: 50px !important; /* Tăng chiều cao nút cho cân đối */
+    }
+    div.stDownloadButton > button p {
+        font-size: 18px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-weight: bold !important; /* Chữ đậm */
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
 st.set_page_config(
     page_title="Tool nhập liệu DVCTECH", layout="wide"
 )
@@ -83,8 +98,9 @@ def clean_currency(val):
 
 
 # --- 3. GIAO DIỆN HƯỚNG DẪN & NÚT TẢI FORM MẪU ---
-st.write("Tải file BG mẫu để nhập dữ liệu theo form của hệ thống:")
-
+st.markdown(
+    " Tải file BG mẫu để nhập dữ liệu theo form của hệ thống:"
+)
 sample_file_data = generate_sample_template()
 st.download_button(
     label="FORM BÁO GIÁ MẪU (.xlsx)",
@@ -96,6 +112,7 @@ st.download_button(
 st.divider()
 
 # --- 4. UPLOAD FILE ĐẦU VÀO ---
+st.markdown("UPLOAD FILE EXCEL TẠI ĐÂY (.xlsx, .xls):")
 uploaded_file = st.file_uploader(
     "UPLOAD FILE EXCEL TẠI ĐÂY(.xlsx, .xls):**",
     type=["xlsx", "xls"],
