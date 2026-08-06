@@ -87,9 +87,9 @@ st.info("Tải file BG mẫu để nhập dữ liệu theo form của hệ thố
 
 sample_file_data = generate_sample_template()
 st.download_button(
-    label="📥 Tải Form Mẫu Đầu Vào (.xlsx)",
+    label="📥 Tải Form BG Mẫu tại đây (.xlsx)",
     data=sample_file_data,
-    file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
+    file_name="BG MẪU - DVC.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
 )
@@ -98,7 +98,7 @@ st.divider()
 
 # --- 4. UPLOAD FILE ĐẦU VÀO ---
 uploaded_file = st.file_uploader(
-    "📥 **Tải file Excel dữ liệu đầu vào của bạn tại đây (.xlsx, .xls):**",
+    "UPLOAD File Excel dữ liệu đầu vào của bạn tại đây (.xlsx, .xls):**",
     type=["xlsx", "xls"],
 )
 
@@ -106,7 +106,7 @@ if uploaded_file is not None:
   try:
     input_df = pd.read_excel(uploaded_file)
 
-    st.subheader("👀 Xem trước dữ liệu vừa tải lên:")
+    st.subheader("Xem trước dữ liệu vừa tải lên:")
     st.dataframe(input_df, use_container_width=True, hide_index=True)
 
     cols = [str(c).strip() for c in input_df.columns]
@@ -119,7 +119,7 @@ if uploaded_file is not None:
             return df[c]
       return pd.Series([default] * len(df))
 
-    if st.button("🚀 Xử Lý & Xuất File BẢNG GIÁ CHI TIẾT Chuẩn", type="primary"):
+    if st.button("XUẤT FILE BẢNG GIÁ CHI TIẾT CHUẨN", type="primary"):
       df_final = pd.DataFrame()
 
       df_final["STT"] = get_col_val(input_df, ["stt"], 1)
@@ -227,7 +227,7 @@ if uploaded_file is not None:
           # I (Cột 9) = Đơn giá bán = ROUNDUP(Cost / (1 - Margin), -3)
           cell_don_gia = worksheet.cell(row=r, column=9)
           cell_don_gia.value = (
-              f"=ROUNDUP(M{r}/(1-IF(L{r}>=1, L{r}/100, L{r})), -3)"
+              f"=ROUNDUP(M{r}/(1-L{r}),-3)"
           )
           cell_don_gia.number_format = num_format_vnd
 
@@ -300,9 +300,9 @@ if uploaded_file is not None:
       name_without_ext, ext = os.path.splitext(uploaded_file.name)
       output_filename = f"{name_without_ext} - R1{ext}"
 
-      st.success("🎉 Đã xử lý xong!")
+      st.success("Đã xử lý xong!")
       st.download_button(
-          label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
+          label="📥 TẢI FILE BẢNG GIÁ CHI TIẾT TẠI ĐÂY (.xlsx)",
           data=output.getvalue(),
           file_name=output_filename,
           mime=(
