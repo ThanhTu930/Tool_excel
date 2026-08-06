@@ -87,11 +87,12 @@ st.write("Tải file BG mẫu để nhập dữ liệu theo form của hệ th�
 
 sample_file_data = generate_sample_template()
 st.download_button(
-    label="Tải Form BG Mẫu tại đây (.xlsx)",
+    label="FORM BÁO GIÁ MẪU (.xlsx)",
     data=sample_file_data,
     file_name="BG Mẫu - DVC.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
+    color=green,
 )
 st.divider()
 
