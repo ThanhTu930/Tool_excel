@@ -12,21 +12,22 @@ st.set_page_config(
 st.title("TOOL NHẬP LIỆU BẢNG BÁO GIÁ")
 
 
-# --- 1. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ ---
+# --- 1. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ (ĐÃ CẬP NHẬT CHUẨN THEO ẢNH) ---
 def generate_sample_template():
   sample_df = pd.DataFrame({
       "Stt": [],
-      "Tên thiết bị": [],
+      "Thiết bị": [],
       "Mã hàng": [],
       "Mô tả": [],
-      "Nhãn hiệu/Xuất xứ": [],
+      "Hãng/Xuất xứ": [],
       "ĐVT": [],
       "Số lượng": [],
       "Ghi chú": [],
-      "Margin": [],
-      "Giá Cost": [],
-      "Giá lắp đặt": [],
+      "Margin Thiết bị": [],
+      "ĐG COST Thiết bị": [],
+      "ĐG COST Lắp đặt": [],
       "NCC": [],
+      "NOTE": [],
   })
 
   output = io.BytesIO()
@@ -44,7 +45,8 @@ def generate_sample_template():
         bottom=Side(style="thin"),
     )
 
-    for col in range(1, 13):
+    # Format 13 cột của form mẫu
+    for col in range(1, 14):
       cell = worksheet.cell(row=1, column=col)
       cell.fill = gray_fill
       cell.font = Font(bold=True)
@@ -52,7 +54,7 @@ def generate_sample_template():
       cell.border = thin_border
 
     for row in range(2, 4):
-      for col in range(1, 13):
+      for col in range(1, 14):
         worksheet.cell(row=row, column=col).border = thin_border
 
   return output.getvalue()
@@ -87,14 +89,16 @@ sample_file_data = generate_sample_template()
 st.download_button(
     label="📥 Tải Form Mẫu Đầu Vào (.xlsx)",
     data=sample_file_data,
-    file_name="Form_Mau.xlsx",
+    file_name="Form_Mau_Nhap_Lieu_Dau_Vao.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True,
 )
 
+st.divider()
+
 # --- 4. UPLOAD FILE ĐẦU VÀO ---
 uploaded_file = st.file_uploader(
-    "UPLOAD FILE TẠI ĐÂY (.xlsx, .xls):**",
+    "📥 **Tải file Excel dữ liệu đầu vào của bạn tại đây (.xlsx, .xls):**",
     type=["xlsx", "xls"],
 )
 
@@ -103,7 +107,7 @@ if uploaded_file is not None:
     input_df = pd.read_excel(uploaded_file)
 
     st.subheader("👀 Xem trước dữ liệu vừa tải lên:")
-    st.dataframe(input_df, use_container_width=True)
+    st.dataframe(input_df, use_container_width=True, hide_index=True)
 
     cols = [str(c).strip() for c in input_df.columns]
     input_df.columns = cols
@@ -121,14 +125,14 @@ if uploaded_file is not None:
       df_final["STT"] = get_col_val(input_df, ["stt"], 1)
       df_final["Thiết bị"] = get_col_val(
           input_df,
-          ["tên thiết bị", "tên hàng hóa/dịch vụ", "tên hàng hóa", "thiết bị"],
+          ["thiết bị", "tên thiết bị", "tên hàng hóa/dịch vụ", "tên hàng hóa"],
           "",
       )
       df_final["Mã hàng"] = get_col_val(input_df, ["mã hàng"], "")
       df_final["Mô tả chi tiết"] = get_col_val(input_df, ["mô tả"], "")
       df_final["Hình ảnh"] = ""
-      df_final["Hãng/Xuất xứ"] = get_col_val(
-          input_df, ["nhãn hiệu/xuất xứ", "xuất xứ", "hãng"], ""
+      df_final["Hãng / Xuất xứ"] = get_col_val(
+          input_df, ["hãng/xuất xứ", "nhãn hiệu/xuất xứ", "xuất xứ", "hãng"], ""
       )
       df_final["ĐVT"] = get_col_val(input_df, ["đvt"], "Cái")
 
@@ -139,22 +143,28 @@ if uploaded_file is not None:
       df_final["Thành tiền (VNĐ)"] = None
       df_final["Ghi chú"] = get_col_val(input_df, ["ghi chú"], "")
 
-      raw_margin = get_col_val(input_df, ["margin"], 0)
+      raw_margin = get_col_val(
+          input_df, ["margin thiết bị", "margin tb", "margin"], 0
+      )
       margin_clean = raw_margin.apply(clean_currency)
       df_final["Margin Thiết bị"] = margin_clean.apply(
           lambda x: x / 100.0 if x >= 1.0 else x
       )
 
-      raw_cost = get_col_val(input_df, ["giá cost", "cost thiết bị"], 0)
+      raw_cost = get_col_val(
+          input_df, ["đg cost thiết bị", "cost thiết bị", "giá cost"], 0
+      )
       df_final["ĐG COST Thiết bị"] = raw_cost.apply(clean_currency)
       df_final["TT COST Thiết bị"] = None
 
-      raw_lapdat = get_col_val(input_df, ["giá lắp đặt", "cost lắp đặt"], 0)
+      raw_lapdat = get_col_val(
+          input_df, ["đg cost lắp đặt", "cost lắp đặt", "giá lắp đặt"], 0
+      )
       df_final["ĐG COST Lắp đặt"] = raw_lapdat.apply(clean_currency)
       df_final["TT COST Lắp đặt"] = None
 
       df_final["NCC"] = get_col_val(input_df, ["ncc"], "")
-      df_final["NOTE"] = ""
+      df_final["NOTE"] = get_col_val(input_df, ["note"], "")
 
       form_columns = [
           "STT",
@@ -162,7 +172,7 @@ if uploaded_file is not None:
           "Mã hàng",
           "Mô tả chi tiết",
           "Hình ảnh",
-          "Hãng/Xuất xứ",
+          "Hãng / Xuất xứ",
           "ĐVT",
           "Số lượng",
           "Đơn giá (VNĐ)",
@@ -181,11 +191,11 @@ if uploaded_file is not None:
       output = io.BytesIO()
       with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df_final.to_excel(
-            writer, index=False, sheet_name="CHI TIẾT", startrow=3
+            writer, index=False, sheet_name="BANG_GIA_CHI_TIET", startrow=3
         )
 
         workbook = writer.book
-        worksheet = writer.sheets["CHI TIẾT"]
+        worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
 
         try:
           if not hasattr(worksheet, "sheet_views") or not worksheet.sheet_views:
@@ -198,7 +208,7 @@ if uploaded_file is not None:
         worksheet.merge_cells("B2:J2")
         title_cell = worksheet["B2"]
         title_cell.value = "BẢNG GIÁ CHI TIẾT"
-        title_cell.font = Font(name="Times New Roman", size=26, bold=True)
+        title_cell.font = Font(name="Times New Roman", size=18, bold=True)
         title_cell.alignment = Alignment(
             horizontal="center", vertical="center"
         )
@@ -217,7 +227,7 @@ if uploaded_file is not None:
           # I (Cột 9) = Đơn giá bán = ROUNDUP(Cost / (1 - Margin), -3)
           cell_don_gia = worksheet.cell(row=r, column=9)
           cell_don_gia.value = (
-              f"=ROUNDUP(M{r}/(1-L{r}), -3)"
+              f"=ROUNDUP(M{r}/(1-IF(L{r}>=1, L{r}/100, L{r})), -3)"
           )
           cell_don_gia.number_format = num_format_vnd
 
@@ -287,15 +297,14 @@ if uploaded_file is not None:
               bottom=cell_k.border.bottom,
           )
 
-      # Tách tên file và phần mở rộng để thêm hậu tố " - R1"
       name_without_ext, ext = os.path.splitext(uploaded_file.name)
       output_filename = f"{name_without_ext} - R1{ext}"
 
       st.success("🎉 Đã xử lý xong!")
       st.download_button(
-          label="TẢI FILE BẢNG GIÁ CHI TIẾT TẠI ĐÂY (.xlsx)",
+          label="📥 Tải File BẢNG GIÁ CHI TIẾT (.xlsx)",
           data=output.getvalue(),
-          file_name=output_filename,  # Đã thay đổi thành tên mới + " - R1"
+          file_name=output_filename,
           mime=(
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           ),
