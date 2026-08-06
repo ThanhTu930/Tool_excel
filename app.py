@@ -22,7 +22,7 @@ def generate_sample_template():
       "Hãng/Xuất xứ": [],
       "ĐVT": [],
       "Số lượng": [],
-      "Ghi chú": [],
+      "Thời gian bảo hành": [],
       "Margin Thiết bị": [],
       "ĐG COST Thiết bị": [],
       "ĐG COST Lắp đặt": [],
@@ -87,7 +87,7 @@ st.info("Tải file BG mẫu để nhập dữ liệu theo form của hệ thố
 
 sample_file_data = generate_sample_template()
 st.download_button(
-    label="📥 Tải Form BG Mẫu tại đây (.xlsx)",
+    label="Tải Form BG Mẫu tại đây (.xlsx)",
     data=sample_file_data,
     file_name="BG MẪU - DVC.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -129,9 +129,9 @@ if uploaded_file is not None:
           "",
       )
       df_final["Mã hàng"] = get_col_val(input_df, ["mã hàng"], "")
-      df_final["Mô tả chi tiết"] = get_col_val(input_df, ["mô tả"], "")
+      df_final["Mô tả"] = get_col_val(input_df, ["mô tả"], "")
       df_final["Hình ảnh"] = ""
-      df_final["Hãng / Xuất xứ"] = get_col_val(
+      df_final["Hãng/Xuất xứ"] = get_col_val(
           input_df, ["hãng/xuất xứ", "nhãn hiệu/xuất xứ", "xuất xứ", "hãng"], ""
       )
       df_final["ĐVT"] = get_col_val(input_df, ["đvt"], "Cái")
@@ -141,7 +141,7 @@ if uploaded_file is not None:
 
       df_final["Đơn giá (VNĐ)"] = None
       df_final["Thành tiền (VNĐ)"] = None
-      df_final["Ghi chú"] = get_col_val(input_df, ["ghi chú"], "")
+      df_final["Thời gian bảo hành"] = get_col_val(input_df, ["Thời gian bảo hành"], "")
 
       raw_margin = get_col_val(
           input_df, ["margin thiết bị", "margin tb", "margin"], 0
@@ -170,14 +170,13 @@ if uploaded_file is not None:
           "STT",
           "Thiết bị",
           "Mã hàng",
-          "Mô tả chi tiết",
-          "Hình ảnh",
-          "Hãng / Xuất xứ",
+          "Mô tả",
+          "Hãng/Xuất xứ",
           "ĐVT",
           "Số lượng",
           "Đơn giá (VNĐ)",
           "Thành tiền (VNĐ)",
-          "Ghi chú",
+          "Thời gian bảo hành",
           "Margin Thiết bị",
           "ĐG COST Thiết bị",
           "TT COST Thiết bị",
@@ -208,7 +207,7 @@ if uploaded_file is not None:
         worksheet.merge_cells("B2:J2")
         title_cell = worksheet["B2"]
         title_cell.value = "BẢNG GIÁ CHI TIẾT"
-        title_cell.font = Font(name="Times New Roman", size=18, bold=True)
+        title_cell.font = Font(name="Times New Roman", size=26, bold=True)
         title_cell.alignment = Alignment(
             horizontal="center", vertical="center"
         )
