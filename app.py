@@ -27,7 +27,7 @@ st.markdown(
     }
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
     div[data-testid="stFileUploader"] button {
-        background-color: #C6E2FF !important; /* Màu xanh lá đồng bộ */
+        background-color: blue !important; /* Màu xanh lá đồng bộ */
         color: #FFFFFF !important;             /* Chữ màu trắng */
         font-weight: bold !important;          /* Chữ in đậm */
         border-radius: 6px !important;         /* Bo góc nút */
