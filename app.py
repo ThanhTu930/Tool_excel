@@ -61,10 +61,10 @@ st.markdown(
         font-size: 18px !important;  /* Cỡ chữ nút bấm */
         font-weight: bold !important; /* Chữ đậm */
     }
-    div.stWrite p {
+    div[data-testid="stMarkdownContainer"] p {
     font-size: 36px !important;
     font-weight: bold !important;
-}
+    }
     </style>
 """,
     unsafe_allow_html=True,
