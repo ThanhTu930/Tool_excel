@@ -4,6 +4,10 @@ import re
 import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
+# --- SỬA LỖI 4: ĐƯA st.set_page_config() LÊN ĐẦU TIÊN (TRƯỚC ST.MARKDOWN) ---
+st.set_page_config(page_title="Tool nhập liệu DVCTECH", layout="wide")
+
 # --- 1. CSS CHỈNH CHỮ TO CHO NÚT BẤM VÀ KHUNG UPLOAD ---
 st.markdown(
     """
@@ -11,9 +15,9 @@ st.markdown(
     /* 1. Đổi màu nút Tải Form Mẫu ở trên */
     div.stDownloadButton > button {
         background-color: Green !important; /* Màu xanh lá chuẩn */
-        color: #FFFFFF !important;             /* Mặc định chữ màu trắng */
+        color: #FFFFFF !important;              /* Mặc định chữ màu trắng */
         font-weight: bold !important;          /* Chữ in đậm */
-        border-radius: 6px !important;         /* Bo góc nút */
+        border-radius: 6px !important;          /* Bo góc nút */
         border: none !important;
         padding: 0.5rem 1.2rem !important;
     }
@@ -28,9 +32,9 @@ st.markdown(
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
     div[data-testid="stFileUploader"] button {
         background-color: Blue !important; /* Màu xanh lá đồng bộ */
-        color: #FFFFFF !important;             /* Chữ màu trắng */
+        color: #FFFFFF !important;              /* Chữ màu trắng */
         font-weight: bold !important;          /* Chữ in đậm */
-        border-radius: 6px !important;         /* Bo góc nút */
+        border-radius: 6px !important;          /* Bo góc nút */
         border: none !important;
     }
     div[data-testid="stFileUploader"] button:hover {
@@ -44,9 +48,6 @@ st.markdown(
     </style>
 """,
     unsafe_allow_html=True,
-)
-st.set_page_config(
-    page_title="Tool nhập liệu DVCTECH", layout="wide"
 )
 
 st.title("TOOL NHẬP LIỆU BẢNG BÁO GIÁ")
@@ -121,6 +122,7 @@ def clean_currency(val):
   except ValueError:
     return 0.0
 
+
 # --- 2. PHẦN TẢI FORM MẪU (Ở TRÊN) ---
 st.write("**TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM CỦA HỆ THỐNG**")
 
@@ -181,7 +183,9 @@ if uploaded_file is not None:
 
       df_final["Đơn giá (VNĐ)"] = None
       df_final["Thành tiền (VNĐ)"] = None
-      df_final["Thời gian bảo hành"] = get_col_val(input_df, ["Thời gian bảo hành"], "")
+      df_final["Thời gian bảo hành"] = get_col_val(
+          input_df, ["Thời gian bảo hành"], ""
+      )
 
       raw_margin = get_col_val(
           input_df, ["margin thiết bị", "margin tb", "margin"], 0
@@ -257,35 +261,34 @@ if uploaded_file is not None:
         for i in range(len(df_final)):
           r = 5 + i
 
-          # L (Cột 12) = Margin
-          worksheet.cell(row=r, column=12).number_format = "0%"
+          # --- SỬA LỖI 1 & 2: ĐIỀU CHỈNH ĐÚNG CỘT & CÔNG THỨC EXCEL ---
+          # K (Cột 11) = Margin Thiết bị (Format %)
+          worksheet.cell(row=r, column=11).number_format = "0%"
 
-          # M (Cột 13) = ĐG COST Thiết bị
-          worksheet.cell(row=r, column=13).number_format = num_format_vnd
+          # L (Cột 12) = ĐG COST Thiết bị (Format VNĐ)
+          worksheet.cell(row=r, column=12).number_format = num_format_vnd
 
-          # I (Cột 9) = Đơn giá bán = ROUNDUP(Cost / (1 - Margin), -3)
-          cell_don_gia = worksheet.cell(row=r, column=9)
-          cell_don_gia.value = (
-              f"=ROUNDUP(M{r}/(1-L{r}),-3)"
-          )
+          # H (Cột 8) = Đơn giá bán = ROUNDUP(L / (1 - K), -3)
+          cell_don_gia = worksheet.cell(row=r, column=8)
+          cell_don_gia.value = f"=IF(L{r}>0, ROUNDUP(L{r}/(1-K{r}), -3), 0)"
           cell_don_gia.number_format = num_format_vnd
 
-          # J (Cột 10) = Thành tiền = Số lượng * Đơn giá
-          cell_thanh_tien = worksheet.cell(row=r, column=10)
-          cell_thanh_tien.value = f"=H{r}*I{r}"
+          # I (Cột 9) = Thành tiền = Số lượng (G) * Đơn giá (H)
+          cell_thanh_tien = worksheet.cell(row=r, column=9)
+          cell_thanh_tien.value = f"=G{r}*H{r}"
           cell_thanh_tien.number_format = num_format_vnd
 
-          # N (Cột 14) = TT COST Thiết bị = Số lượng * ĐG COST Thiết bị
-          cell_tt_cost_tb = worksheet.cell(row=r, column=14)
-          cell_tt_cost_tb.value = f"=H{r}*M{r}"
+          # M (Cột 13) = TT COST Thiết bị = Số lượng (G) * ĐG COST TB (L)
+          cell_tt_cost_tb = worksheet.cell(row=r, column=13)
+          cell_tt_cost_tb.value = f"=G{r}*L{r}"
           cell_tt_cost_tb.number_format = num_format_vnd
 
-          # O (Cột 15) = ĐG COST Lắp đặt
-          worksheet.cell(row=r, column=15).number_format = num_format_vnd
+          # N (Cột 14) = ĐG COST Lắp đặt (Format VNĐ)
+          worksheet.cell(row=r, column=14).number_format = num_format_vnd
 
-          # P (Cột 16) = TT COST Lắp đặt = Số lượng * ĐG COST Lắp đặt
-          cell_tt_cost_ld = worksheet.cell(row=r, column=16)
-          cell_tt_cost_ld.value = f"=H{r}*O{r}"
+          # O (Cột 15) = TT COST Lắp đặt = Số lượng (G) * ĐG COST Lắp đặt (N)
+          cell_tt_cost_ld = worksheet.cell(row=r, column=15)
+          cell_tt_cost_ld.value = f"=G{r}*N{r}"
           cell_tt_cost_ld.number_format = num_format_vnd
 
         # Format Header & Viền
@@ -300,7 +303,9 @@ if uploaded_file is not None:
         )
         blue_thick_side = Side(style="medium", color="0000FF")
 
-        for col in range(1, 12):
+        # --- SỬA LỖI 3: GIỚI HẠN VÒNG LẶP ĐÚNG 17 CỘT BẢNG GIÁ ---
+        # Cột 1 -> 10: Chữ đen (Cho khách hàng)
+        for col in range(1, 11):
           cell = worksheet.cell(row=4, column=col)
           cell.fill = gray_fill
           cell.font = Font(
@@ -311,7 +316,8 @@ if uploaded_file is not None:
           )
           cell.border = thin_border
 
-        for col in range(12, 19):
+        # Cột 11 -> 17: Chữ đỏ (Nội bộ / Cost)
+        for col in range(11, 18):
           cell = worksheet.cell(row=4, column=col)
           cell.fill = gray_fill
           cell.font = Font(
@@ -322,18 +328,20 @@ if uploaded_file is not None:
           )
           cell.border = thin_border
 
+        # Kẻ viền từ cột 1 đến 17
         for row in range(5, len(df_final) + 5):
-          for col in range(1, 19):
+          for col in range(1, 18):
             c = worksheet.cell(row=row, column=col)
             c.font = Font(name="Times New Roman", size=10)
             c.border = thin_border
 
-          cell_k = worksheet.cell(row=row, column=11)
-          cell_k.border = Border(
-              left=cell_k.border.left,
-              top=cell_k.border.top,
+          # Viền xanh đứng phân cách ở sau cột 10 (J - Thời gian bảo hành)
+          cell_j = worksheet.cell(row=row, column=10)
+          cell_j.border = Border(
+              left=cell_j.border.left,
+              top=cell_j.border.top,
               right=blue_thick_side,
-              bottom=cell_k.border.bottom,
+              bottom=cell_j.border.bottom,
           )
 
       name_without_ext, ext = os.path.splitext(uploaded_file.name)
@@ -352,3 +360,4 @@ if uploaded_file is not None:
 
   except Exception as e:
     st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
+      
