@@ -29,6 +29,22 @@ st.markdown(
         font-size: 18px !important;  /* Cỡ chữ nút bấm */
         font-weight: bold !important; /* Chữ đậm */
     }
+    div.stDownloadButton2 > button {
+        background-color: Red !important; /* Màu đỏ chuẩn */
+        color: #FFFFFF !important;              /* Mặc định chữ màu trắng */
+        font-weight: bold !important;          /* Chữ in đậm */
+        border-radius: 6px !important;          /* Bo góc nút */
+        border: none !important;
+        padding: 0.5rem 1.2rem !important;
+    }
+    div.stDownloadButton2 > button:hover {
+        background-color: DarkRed !important; /* Đỏ đậm khi rê chuột */
+        color: #FFFFFF !important;
+    }
+    div.stDownloadButton2 > button p {
+        font-size: 18px !important;  /* Cỡ chữ nút bấm */
+        font-weight: bold !important; /* Chữ đậm */
+    }
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
     div[data-testid="stFileUploader"] button {
         background-color: Blue !important; /* Màu xanh lá đồng bộ */
@@ -348,7 +364,7 @@ if uploaded_file is not None:
     output_filename = f"{name_without_ext} - R1{ext}"
 
     # --- NÚT XUẤT FILE DUY NHẤT: BẤM LÀ TẢI FILE TRỰC TIẾP VỀ MÁY ---
-    st.download_button(
+    st.download_button2(
         label="XUẤT FILE BẢNG GIÁ CHI TIẾT",
         data=output.getvalue(),
         file_name=output_filename,
