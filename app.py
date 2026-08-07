@@ -254,11 +254,11 @@ if uploaded_file is not None:
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
       df_final.to_excel(
-          writer, index=False, sheet_name="BANG_GIA_CHI_TIET", startrow=3
+          writer, index=False, sheet_name="CHI TIẾT", startrow=3
       )
 
       workbook = writer.book
-      worksheet = writer.sheets["BANG_GIA_CHI_TIET"]
+      worksheet = writer.sheets["CHI TIẾT"]
 
       try:
         if not hasattr(worksheet, "sheet_views") or not worksheet.sheet_views:
