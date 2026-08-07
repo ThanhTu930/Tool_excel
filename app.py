@@ -61,6 +61,10 @@ st.markdown(
         font-size: 18px !important;  /* Cỡ chữ nút bấm */
         font-weight: bold !important; /* Chữ đậm */
     }
+    div.stWrite > Write p {
+        font-size: 18px !important;  /* Cỡ chữ nút bấm */
+        font-weight: bold !important; /* Chữ đậm */
+    }
     </style>
 """,
     unsafe_allow_html=True,
