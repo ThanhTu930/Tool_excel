@@ -377,16 +377,15 @@ if uploaded_file is not None:
         )
 
       # =========================================================
-      # B. XỬ LÝ DỮ LIỆU & FORMAT SHEET BÁO GIÁ (MỚI ĐƯỢC CỦNG CỐ)
+      # B. XỬ LÝ DỮ LIỆU & FORMAT SHEET BÁO GIÁ
       # =========================================================
-      # Cấu hình trang in vừa trang A4 (dọc), không bị tràn lề
       ws_bg.page_setup.orientation = ws_bg.ORIENTATION_PORTRAIT
       ws_bg.page_setup.paperSize = ws_bg.PAPERSIZE_A4
       ws_bg.sheet_properties.pageSetUpPr.fitToPage = True
       ws_bg.page_setup.fitToWidth = 1
       ws_bg.page_setup.fitToHeight = 0
 
-      # 1. Header Công Ty (Căn giữa A1:H1)
+      # Header Công Ty
       ws_bg.merge_cells("A1:H1")
       ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
       ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
@@ -403,16 +402,18 @@ if uploaded_file is not None:
 
       ws_bg.merge_cells("A4:H4")
       ws_bg["A4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
-      ws_bg["A4"].font = Font(name="Times New Roman", size=10, underline="single")
+      ws_bg["A4"].font = Font(
+          name="Times New Roman", size=10, underline="single"
+      )
       ws_bg["A4"].alignment = Alignment(horizontal="center")
 
-      # 2. Tiêu đề
+      # Tiêu đề
       ws_bg.merge_cells("A6:H6")
       ws_bg["A6"] = "BẢNG BÁO GIÁ"
       ws_bg["A6"].font = Font(name="Times New Roman", size=20, bold=True)
       ws_bg["A6"].alignment = Alignment(horizontal="center")
 
-      # 3. Thông tin khách hàng & Người gửi (Siết chặt khoảng cách dòng)
+      # Thông tin khách hàng & Người gửi
       ws_bg["A8"] = "Kính gửi:"
       ws_bg["G8"] = "Người gửi:"
       ws_bg["A9"] = "Người nhận:"
@@ -422,6 +423,8 @@ if uploaded_file is not None:
       for cell_id in ["A8", "G8", "A9", "G9", "A10"]:
         ws_bg[cell_id].font = Font(name="Times New Roman", size=11, bold=True)
 
+      # MỤC NỘI DUNG (MERGE TOÀN BỘ CỘT A -> H)
+      ws_bg.merge_cells("A11:H11")
       ws_bg["A11"] = "Nội dung:"
       ws_bg["A11"].font = Font(name="Times New Roman", size=11, bold=True)
 
@@ -433,7 +436,7 @@ if uploaded_file is not None:
       )
       ws_bg["A12"].font = Font(name="Times New Roman", size=11, italic=True)
 
-      # 4. Header Bảng Giá (7 Cột - Hàng 13)
+      # Header Bảng Giá (7 Cột - Hàng 13)
       headers_bg = [
           ("A13", "Stt"),
           ("B13", "Nội dung báo giá"),
@@ -453,7 +456,7 @@ if uploaded_file is not None:
             horizontal="center", vertical="center", wrap_text=True
         )
 
-      # 5. Dòng dữ liệu hệ thống (Hàng 14)
+      # Dòng dữ liệu hệ thống (Hàng 14)
       ws_bg["A14"] = 1
       ws_bg["A14"].alignment = Alignment(horizontal="center")
 
@@ -469,65 +472,87 @@ if uploaded_file is not None:
       ws_bg["F14"].number_format = num_format_vnd
       ws_bg["F14"].alignment = Alignment(horizontal="right")
 
-      ws_bg["G14"] = ""  # Cột Thuế GTGT (Để trống)
-      ws_bg["G14"].alignment = Alignment(horizontal="center")
+      # Thuế GTGT = Đơn giá * 8%
+      ws_bg["G14"] = "=F14*8%"
+      ws_bg["G14"].number_format = num_format_vnd
+      ws_bg["G14"].alignment = Alignment(horizontal="right")
 
-      # Thành tiền = Số lượng * Đơn giá
-      ws_bg["H14"] = "=E14*F14"
+      # Thành tiền = Đơn giá + Thuế GTGT
+      ws_bg["H14"] = "=F14+G14"
       ws_bg["H14"].number_format = num_format_vnd
       ws_bg["H14"].alignment = Alignment(horizontal="right")
 
-      # Đóng khung bảng dữ liệu báo giá (Hàng 13 & 14, Cột 1 -> 8)
+      # Đóng khung bảng dữ liệu báo giá
       for r in range(13, 15):
         for col_idx in range(1, 9):
           ws_bg.cell(row=r, column=col_idx).border = thin_border
 
-      # 6. Ghi chú & Điều kiện thương mại
-      ws_bg["A15"] = "Ghi chú:"
-      ws_bg["A15"].font = Font(name="Times New Roman", size=11, bold=True)
-      ws_bg["B15"] = (
-          "Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời điểm xuất"
-          " hóa đơn."
+      # MỤC GHI CHÚ (MERGE TOÀN BỘ CỘT A -> H)
+      ws_bg.merge_cells("A15:H15")
+      ws_bg["A15"] = (
+          "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời"
+          " điểm xuất hóa đơn."
       )
-      ws_bg["B15"].font = Font(name="Times New Roman", size=11)
+      ws_bg["A15"].font = Font(name="Times New Roman", size=11)
 
+      # Điều kiện thương mại
+      ws_bg.merge_cells("A16:H16")
       ws_bg["A16"] = "Điều kiện thương mại:"
       ws_bg["A16"].font = Font(
           name="Times New Roman", size=11, bold=True, underline="single"
       )
 
       terms = [
-          ("A17", "1. Địa điểm thực hiện:"),
-          ("A18", "2. Giá đã bao gồm:"),
-          ("B19", "- Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu."),
-          ("A20", "3. Thanh toán:"),
+          ("A17:H17", "1. Địa điểm thực hiện:"),
+          ("A18:H18", "2. Giá đã bao gồm:"),
           (
-              "B21",
+              "A19:H19",
+              "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.",
+          ),
+          ("A20:H20", "3. Thanh toán:"),
+          (
+              "A21:H21",
               (
-                  "- Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm"
+                  "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm"
                   " việc sau khi hoàn thành lắp đặt, nghiệm thu."
               ),
           ),
-          ("A22", "4. Thời gian thực hiện hợp đồng:"),
-          ("B23", "- Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng."),
-          ("A24", "5. Thời gian bảo hành:"),
-          ("B25", "- BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao."),
+          ("A22:H22", "4. Thời gian thực hiện hợp đồng:"),
           (
-              "B26",
+              "A23:H23",
               (
-                  "- BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá"
-                  " chi tiết)."
+                  "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký"
+                  " hợp đồng."
               ),
           ),
-          ("A27", "6. Thời hạn chào giá: 30 ngày."),
-          ("A29", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"),
+          ("A24:H24", "5. Thời gian bảo hành:"),
+          (
+              "A25:H25",
+              (
+                  "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn"
+                  " giao."
+              ),
+          ),
+          (
+              "A26:H26",
+              (
+                  "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng"
+                  " giá chi tiết)."
+              ),
+          ),
+          ("A27:H27", "6. Thời hạn chào giá: 30 ngày."),
+          ("A29:H29", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"),
       ]
 
-      for cell_id, text in terms:
-        c = ws_bg[cell_id]
+      for cell_range, text in terms:
+        ws_bg.merge_cells(cell_range)
+        top_left_cell = cell_range.split(":")[0]
+        c = ws_bg[top_left_cell]
         c.value = text
-        is_bold = True if cell_id[0] == "A" and cell_id != "A29" else False
-        is_italic = True if cell_id == "A29" else False
+        is_bold = (
+            True if top_left_cell.startswith("A") and top_left_cell != "A29" else False
+        )
+        is_italic = True if top_left_cell == "A29" else False
         c.font = Font(
             name="Times New Roman", size=11, bold=is_bold, italic=is_italic
         )
@@ -537,7 +562,7 @@ if uploaded_file is not None:
       ws_bg["G31"].font = Font(name="Times New Roman", size=11, bold=True)
       ws_bg["G31"].alignment = Alignment(horizontal="center")
 
-      # Chỉnh độ rộng các cột A -> H vừa vặn
+      # Chỉnh độ rộng các cột A -> H
       col_widths_bg = {
           "A": 6,
           "B": 16,
@@ -545,7 +570,7 @@ if uploaded_file is not None:
           "D": 10,
           "E": 10,
           "F": 15,
-          "G": 12,
+          "G": 14,
           "H": 16,
       }
       for col_letter, width in col_widths_bg.items():
@@ -566,4 +591,5 @@ if uploaded_file is not None:
     )
 
   except Exception as e:
+    st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
     st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
