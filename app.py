@@ -5,10 +5,10 @@ import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-# --- SỬA LỖI 4: ĐƯA st.set_page_config() LÊN ĐẦU TIÊN (TRƯỚC ST.MARKDOWN) ---
+# --- 1. CẤU HÌNH STREAMLIT (ĐẶT LÊN ĐẦU TIÊN) ---
 st.set_page_config(page_title="Tool nhập liệu DVCTECH", layout="wide")
 
-# --- 1. CSS CHỈNH CHỮ TO CHO NÚT BẤM VÀ KHUNG UPLOAD ---
+# --- 2. CSS CHỈNH CHỮ TO CHO NÚT BẤM VÀ KHUNG UPLOAD ---
 st.markdown(
     """
     <style>
@@ -26,7 +26,7 @@ st.markdown(
         color: #FFFFFF !important;
     }
     div.stDownloadButton > button p {
-        font-size: 18px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-size: 18px !important;  /* Cỡ chữ nút bấm */
         font-weight: bold !important; /* Chữ đậm */
     }
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
@@ -42,7 +42,24 @@ st.markdown(
         color: #FFFFFF !important;
     }
     div[data-testid="stFileUploader"] p {
-        font-size: 18px !important;  /* Cỡ chữ nút bấm (tùy chỉnh 18px, 20px,...) */
+        font-size: 18px !important;  /* Cỡ chữ nút bấm */
+        font-weight: bold !important; /* Chữ đậm */
+    }
+    /* Đổi màu nút tải file chi tiết
+    div.stButton > button {
+        background-color: Red !important; /* Màu xanh lá chuẩn */
+        color: #FFFFFF !important;              /* Mặc định chữ màu trắng */
+        font-weight: bold !important;          /* Chữ in đậm */
+        border-radius: 6px !important;          /* Bo góc nút */
+        border: none !important;
+        padding: 0.5rem 1.2rem !important;
+    }
+    div.stButton > button:hover {
+        background-color: DarkRed !important; /* Xanh đậm khi rê chuột */
+        color: #FFFFFF !important;
+    }
+    div.stButton > button p {
+        font-size: 18px !important;  /* Cỡ chữ nút bấm */
         font-weight: bold !important; /* Chữ đậm */
     }
     </style>
@@ -53,14 +70,14 @@ st.markdown(
 st.title("TOOL NHẬP LIỆU BẢNG BÁO GIÁ")
 
 
-# --- 1. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ (ĐÃ CẬP NHẬT CHUẨN THEO ẢNH) ---
+# --- 3. HÀM TẠO FILE FORM MẪU ĐỂ TẢI VỀ ---
 def generate_sample_template():
   sample_df = pd.DataFrame({
       "Stt": [],
       "Thiết bị": [],
       "Mã hàng": [],
+      "Hãng/Xuất xứ": [],  # Đổi vị trí lên trước Mô tả
       "Mô tả": [],
-      "Hãng/Xuất xứ": [],
       "ĐVT": [],
       "Số lượng": [],
       "Thời gian bảo hành": [],
@@ -101,7 +118,7 @@ def generate_sample_template():
   return output.getvalue()
 
 
-# --- 2. HÀM LÀM SẠCH DỮ LIỆU SỐ ---
+# --- 4. HÀM LÀM SẠCH DỮ LIỆU SỐ ---
 def clean_currency(val):
   if pd.isna(val) or val == "" or val is None:
     return 0.0
@@ -123,7 +140,7 @@ def clean_currency(val):
     return 0.0
 
 
-# --- 2. PHẦN TẢI FORM MẪU (Ở TRÊN) ---
+# --- 5. PHẦN TẢI FORM MẪU (Ở TRÊN) ---
 st.write("**TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM CỦA HỆ THỐNG**")
 
 sample_file_data = generate_sample_template()
@@ -132,12 +149,12 @@ st.download_button(
     data=sample_file_data,
     file_name="BG Mẫu - DVC.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    use_container_width=False,  # Đặt False để nút gọn lại vừa với chữ giống như hình
+    use_container_width=False,
 )
 
 st.divider()
 
-# --- 3. PHẦN UPLOAD FILE (Ở DƯỚI) ---
+# --- 6. PHẦN UPLOAD FILE (Ở DƯỚI) ---
 st.write("**UPLOAD FILE EXCEL TẠI ĐÂY (.xlsx, .xls):**")
 
 uploaded_file = st.file_uploader(
@@ -171,11 +188,14 @@ if uploaded_file is not None:
           "",
       )
       df_final["Mã hàng"] = get_col_val(input_df, ["mã hàng"], "")
-      df_final["Mô tả"] = get_col_val(input_df, ["mô tả"], "")
-      df_final["Hình ảnh"] = ""
+
+      # ĐƯA HÃNG/XUẤT XỨ LÊN TRƯỚC MÔ TẢ
       df_final["Hãng/Xuất xứ"] = get_col_val(
           input_df, ["hãng/xuất xứ", "nhãn hiệu/xuất xứ", "xuất xứ", "hãng"], ""
       )
+      df_final["Mô tả"] = get_col_val(input_df, ["mô tả"], "")
+      df_final["Hình ảnh"] = ""
+
       df_final["ĐVT"] = get_col_val(input_df, ["đvt"], "Cái")
 
       raw_sl = get_col_val(input_df, ["số lượng"], 1)
@@ -210,24 +230,25 @@ if uploaded_file is not None:
       df_final["NCC"] = get_col_val(input_df, ["ncc"], "")
       df_final["NOTE"] = get_col_val(input_df, ["note"], "")
 
+      # THỨ TỰ CỘT TRONG FILE EXCEL XUẤT RA
       form_columns = [
-          "STT",
-          "Thiết bị",
-          "Mã hàng",
-          "Mô tả",
-          "Hãng/Xuất xứ",
-          "ĐVT",
-          "Số lượng",
-          "Đơn giá (VNĐ)",
-          "Thành tiền (VNĐ)",
-          "Thời gian bảo hành",
-          "Margin Thiết bị",
-          "ĐG COST Thiết bị",
-          "TT COST Thiết bị",
-          "ĐG COST Lắp đặt",
-          "TT COST Lắp đặt",
-          "NCC",
-          "NOTE",
+          "STT",  # Col 1 (A)
+          "Thiết bị",  # Col 2 (B)
+          "Mã hàng",  # Col 3 (C)
+          "Hãng/Xuất xứ",  # Col 4 (D) -> Đã chuyển lên trước Mô tả
+          "Mô tả",  # Col 5 (E)
+          "ĐVT",  # Col 6 (F)
+          "Số lượng",  # Col 7 (G)
+          "Đơn giá (VNĐ)",  # Col 8 (H)
+          "Thành tiền (VNĐ)",  # Col 9 (I)
+          "Thời gian bảo hành",  # Col 10 (J)
+          "Margin Thiết bị",  # Col 11 (K)
+          "ĐG COST Thiết bị",  # Col 12 (L)
+          "TT COST Thiết bị",  # Col 13 (M)
+          "ĐG COST Lắp đặt",  # Col 14 (N)
+          "TT COST Lắp đặt",  # Col 15 (O)
+          "NCC",  # Col 16 (P)
+          "NOTE",  # Col 17 (Q)
       ]
       df_final = df_final.reindex(columns=form_columns)
 
@@ -261,7 +282,6 @@ if uploaded_file is not None:
         for i in range(len(df_final)):
           r = 5 + i
 
-          # --- SỬA LỖI 1 & 2: ĐIỀU CHỈNH ĐÚNG CỘT & CÔNG THỨC EXCEL ---
           # K (Cột 11) = Margin Thiết bị (Format %)
           worksheet.cell(row=r, column=11).number_format = "0%"
 
@@ -270,7 +290,7 @@ if uploaded_file is not None:
 
           # H (Cột 8) = Đơn giá bán = ROUNDUP(L / (1 - K), -3)
           cell_don_gia = worksheet.cell(row=r, column=8)
-          cell_don_gia.value = f"=IF(L{r}>0, ROUNDUP(L{r}/(1-K{r}), -3), 0)"
+          cell_don_gia.value = f"=ROUNDUP(L{r}/(1-K{r}), -3)"
           cell_don_gia.number_format = num_format_vnd
 
           # I (Cột 9) = Thành tiền = Số lượng (G) * Đơn giá (H)
@@ -303,13 +323,12 @@ if uploaded_file is not None:
         )
         blue_thick_side = Side(style="medium", color="0000FF")
 
-        # --- SỬA LỖI 3: GIỚI HẠN VÒNG LẶP ĐÚNG 17 CỘT BẢNG GIÁ ---
         # Cột 1 -> 10: Chữ đen (Cho khách hàng)
         for col in range(1, 11):
           cell = worksheet.cell(row=4, column=col)
           cell.fill = gray_fill
           cell.font = Font(
-              name="Times New Roman", size=10, bold=True, color="000000"
+              name="Times New Roman", size=12, bold=True, color="000000"
           )
           cell.alignment = Alignment(
               horizontal="center", vertical="center", wrap_text=True
@@ -321,7 +340,7 @@ if uploaded_file is not None:
           cell = worksheet.cell(row=4, column=col)
           cell.fill = gray_fill
           cell.font = Font(
-              name="Times New Roman", size=10, bold=True, color="FF0000"
+              name="Times New Roman", size=12, bold=True, color="FF0000"
           )
           cell.alignment = Alignment(
               horizontal="center", vertical="center", wrap_text=True
@@ -360,4 +379,3 @@ if uploaded_file is not None:
 
   except Exception as e:
     st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
-      
