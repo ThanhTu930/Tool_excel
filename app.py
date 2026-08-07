@@ -302,12 +302,16 @@ if uploaded_file is not None:
 
       # Dòng Tổng Cộng ở Sheet Chi Tiết
       tot_row_ct = last_row_ct + 1
-      
+
       # Gộp ô từ cột STT (1) đến cột Đơn Giá (8)
-      ws_ct.merge_cells(start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8)
+      ws_ct.merge_cells(
+          start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8
+      )
       cell_total_label = ws_ct.cell(row=tot_row_ct, column=1, value="TỔNG CỘNG")
       cell_total_label.font = Font(name="Times New Roman", size=11, bold=True)
-      cell_total_label.alignment = Alignment(horizontal="center", vertical="center")
+      cell_total_label.alignment = Alignment(
+          horizontal="center", vertical="center"
+      )
 
       ws_ct.cell(
           row=tot_row_ct, column=9, value=f"=SUM(I5:I{last_row_ct})"
@@ -361,6 +365,10 @@ if uploaded_file is not None:
           )
           cell.border = thin_border
 
+          # Tô màu xám (gray_fill) cho toàn bộ dòng Tổng cộng
+          if r == tot_row_ct:
+            cell.fill = gray_fill
+
         cell_j = ws_ct.cell(row=r, column=10)
         cell_j.border = Border(
             left=cell_j.border.left,
@@ -378,7 +386,6 @@ if uploaded_file is not None:
       ws_bg.page_setup.fitToWidth = 1
       ws_bg.page_setup.fitToHeight = 0
 
-      # Xóa dòng trắng: Đẩy BẢNG BÁO GIÁ lên hàng 5, Kính gửi lên hàng 6
       ws_bg.merge_cells("A1:H1")
       ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
       ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
@@ -400,13 +407,11 @@ if uploaded_file is not None:
       )
       ws_bg["A4"].alignment = Alignment(horizontal="center")
 
-      # Tiêu đề (Đẩy lên Hàng 5)
       ws_bg.merge_cells("A5:H5")
       ws_bg["A5"] = "BẢNG BÁO GIÁ"
       ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
       ws_bg["A5"].alignment = Alignment(horizontal="center")
 
-      # Thông tin khách hàng & Người gửi (Bắt đầu từ Hàng 6)
       ws_bg["A6"] = "Kính gửi:"
       ws_bg["G6"] = "Người gửi:"
       ws_bg["A7"] = "Người nhận:"
@@ -416,7 +421,6 @@ if uploaded_file is not None:
       for cell_id in ["A6", "G6", "A7", "G7", "A8"]:
         ws_bg[cell_id].font = Font(name="Times New Roman", size=11, bold=True)
 
-      # MỤC NỘI DUNG (MERGE TOÀN BỘ CỘT A -> H, Bắt đầu từ Hàng 9)
       ws_bg.merge_cells("A9:H9")
       ws_bg["A9"] = "Nội dung:"
       ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
@@ -429,7 +433,6 @@ if uploaded_file is not None:
       )
       ws_bg["A10"].font = Font(name="Times New Roman", size=11, italic=True)
 
-      # Header Bảng Giá (Hàng 11)
       headers_bg = [
           ("A11", "Stt"),
           ("B11", "Nội dung báo giá"),
@@ -449,7 +452,6 @@ if uploaded_file is not None:
             horizontal="center", vertical="center", wrap_text=True
         )
 
-      # Dòng dữ liệu hệ thống (Hàng 12)
       ws_bg["A12"] = 1
       ws_bg["A12"].alignment = Alignment(horizontal="center")
 
@@ -460,27 +462,22 @@ if uploaded_file is not None:
       ws_bg["E12"] = 1
       ws_bg["E12"].alignment = Alignment(horizontal="center")
 
-      # Đơn giá lấy từ tổng tiền của Sheet Chi Tiết
       ws_bg["F12"] = f"='CHI TIẾT'!I{tot_row_ct}"
       ws_bg["F12"].number_format = num_format_vnd
       ws_bg["F12"].alignment = Alignment(horizontal="right")
 
-      # Thuế GTGT = Đơn giá * 8%
       ws_bg["G12"] = "=F12*8%"
       ws_bg["G12"].number_format = num_format_vnd
       ws_bg["G12"].alignment = Alignment(horizontal="right")
 
-      # Thành tiền = Đơn giá + Thuế GTGT
       ws_bg["H12"] = "=F12+G12"
       ws_bg["H12"].number_format = num_format_vnd
       ws_bg["H12"].alignment = Alignment(horizontal="right")
 
-      # Đóng khung bảng dữ liệu báo giá
       for r in range(11, 13):
         for col_idx in range(1, 9):
           ws_bg.cell(row=r, column=col_idx).border = thin_border
 
-      # MỤC GHI CHÚ (MERGE TOÀN BỘ CỘT A -> H)
       ws_bg.merge_cells("A13:H13")
       ws_bg["A13"] = (
           "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời"
@@ -488,7 +485,6 @@ if uploaded_file is not None:
       )
       ws_bg["A13"].font = Font(name="Times New Roman", size=11)
 
-      # Điều kiện thương mại
       ws_bg.merge_cells("A14:H14")
       ws_bg["A14"] = "Điều kiện thương mại:"
       ws_bg["A14"].font = Font(
@@ -550,12 +546,10 @@ if uploaded_file is not None:
             name="Times New Roman", size=11, bold=is_bold, italic=is_italic
         )
 
-      # Chữ ký đại diện công ty (Đẩy lên hàng 29)
       ws_bg["G29"] = "Công ty TNHH Công Nghệ DVC"
       ws_bg["G29"].font = Font(name="Times New Roman", size=11, bold=True)
       ws_bg["G29"].alignment = Alignment(horizontal="center")
 
-      # Chỉnh độ rộng các cột A -> H
       col_widths_bg = {
           "A": 6,
           "B": 16,
