@@ -62,7 +62,7 @@ st.markdown(
         font-weight: bold !important; /* Chữ đậm */
     }
     div[data-testid="stMarkdownContainer"] p {
-    font-size: 36px !important;
+    font-size: 18px !important;
     font-weight: bold !important;
     }
     </style>
