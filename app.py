@@ -253,14 +253,11 @@ if uploaded_file is not None:
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-      # 1. TẠO SHEET 1: BÁO GIÁ (Tổng thể)
       ws_bg = writer.book.create_sheet(title="BÁO GIÁ", index=0)
 
-      # 2. TẠO SHEET 2: CHI TIẾT
       df_final.to_excel(writer, index=False, sheet_name="CHI TIẾT", startrow=3)
       ws_ct = writer.sheets["CHI TIẾT"]
 
-      # --- CẤU HÌNH DISPLAY & PAGE BREAK PREVIEW ---
       for ws in [ws_bg, ws_ct]:
         try:
           ws.views.sheetView[0].sheetViewType = "pageBreakPreview"
@@ -282,40 +279,36 @@ if uploaded_file is not None:
 
       for i in range(len(df_final)):
         r = 5 + i
-        ws_ct.cell(row=r, column=11).number_format = "0%"  # Margin
-        ws_ct.cell(row=r, column=12).number_format = (
-            num_format_vnd  # ĐG COST TB
-        )
+        ws_ct.cell(row=r, column=11).number_format = "0%"
+        ws_ct.cell(row=r, column=12).number_format = num_format_vnd
 
-        # H = ROUNDUP(L / (1 - K), -3)
         cell_dg = ws_ct.cell(row=r, column=8)
         cell_dg.value = f"=ROUNDUP(L{r}/(1-K{r}), -3)"
         cell_dg.number_format = num_format_vnd
 
-        # I = G * H (Thành tiền)
         cell_tt = ws_ct.cell(row=r, column=9)
         cell_tt.value = f"=G{r}*H{r}"
         cell_tt.number_format = num_format_vnd
 
-        # M = G * L
         cell_tt_cost_tb = ws_ct.cell(row=r, column=13)
         cell_tt_cost_tb.value = f"=G{r}*L{r}"
         cell_tt_cost_tb.number_format = num_format_vnd
 
-        ws_ct.cell(row=r, column=14).number_format = (
-            num_format_vnd  # ĐG COST Lắp đặt
-        )
+        ws_ct.cell(row=r, column=14).number_format = num_format_vnd
 
-        # O = G * N
         cell_tt_cost_ld = ws_ct.cell(row=r, column=15)
         cell_tt_cost_ld.value = f"=G{r}*N{r}"
         cell_tt_cost_ld.number_format = num_format_vnd
 
       # Dòng Tổng Cộng ở Sheet Chi Tiết
       tot_row_ct = last_row_ct + 1
-      ws_ct.cell(row=tot_row_ct, column=2, value="TỔNG CỘNG").font = Font(
-          name="Times New Roman", size=11, bold=True
-      )
+      
+      # Gộp ô từ cột STT (1) đến cột Đơn Giá (8)
+      ws_ct.merge_cells(start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8)
+      cell_total_label = ws_ct.cell(row=tot_row_ct, column=1, value="TỔNG CỘNG")
+      cell_total_label.font = Font(name="Times New Roman", size=11, bold=True)
+      cell_total_label.alignment = Alignment(horizontal="center", vertical="center")
+
       ws_ct.cell(
           row=tot_row_ct, column=9, value=f"=SUM(I5:I{last_row_ct})"
       ).number_format = num_format_vnd
@@ -385,7 +378,7 @@ if uploaded_file is not None:
       ws_bg.page_setup.fitToWidth = 1
       ws_bg.page_setup.fitToHeight = 0
 
-      # Header Công Ty
+      # Xóa dòng trắng: Đẩy BẢNG BÁO GIÁ lên hàng 5, Kính gửi lên hàng 6
       ws_bg.merge_cells("A1:H1")
       ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
       ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
@@ -407,47 +400,47 @@ if uploaded_file is not None:
       )
       ws_bg["A4"].alignment = Alignment(horizontal="center")
 
-      # Tiêu đề
-      ws_bg.merge_cells("A6:H6")
-      ws_bg["A6"] = "BẢNG BÁO GIÁ"
-      ws_bg["A6"].font = Font(name="Times New Roman", size=20, bold=True)
-      ws_bg["A6"].alignment = Alignment(horizontal="center")
+      # Tiêu đề (Đẩy lên Hàng 5)
+      ws_bg.merge_cells("A5:H5")
+      ws_bg["A5"] = "BẢNG BÁO GIÁ"
+      ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
+      ws_bg["A5"].alignment = Alignment(horizontal="center")
 
-      # Thông tin khách hàng & Người gửi
-      ws_bg["A8"] = "Kính gửi:"
-      ws_bg["G8"] = "Người gửi:"
-      ws_bg["A9"] = "Người nhận:"
-      ws_bg["G9"] = "Điện thoại:"
-      ws_bg["A10"] = "Email/Sdt:"
+      # Thông tin khách hàng & Người gửi (Bắt đầu từ Hàng 6)
+      ws_bg["A6"] = "Kính gửi:"
+      ws_bg["G6"] = "Người gửi:"
+      ws_bg["A7"] = "Người nhận:"
+      ws_bg["G7"] = "Điện thoại:"
+      ws_bg["A8"] = "Email/Sdt:"
 
-      for cell_id in ["A8", "G8", "A9", "G9", "A10"]:
+      for cell_id in ["A6", "G6", "A7", "G7", "A8"]:
         ws_bg[cell_id].font = Font(name="Times New Roman", size=11, bold=True)
 
-      # MỤC NỘI DUNG (MERGE TOÀN BỘ CỘT A -> H)
-      ws_bg.merge_cells("A11:H11")
-      ws_bg["A11"] = "Nội dung:"
-      ws_bg["A11"].font = Font(name="Times New Roman", size=11, bold=True)
+      # MỤC NỘI DUNG (MERGE TOÀN BỘ CỘT A -> H, Bắt đầu từ Hàng 9)
+      ws_bg.merge_cells("A9:H9")
+      ws_bg["A9"] = "Nội dung:"
+      ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
 
-      ws_bg.merge_cells("A12:H12")
-      ws_bg["A12"] = (
+      ws_bg.merge_cells("A10:H10")
+      ws_bg["A10"] = (
           "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
           " của công ty chúng tôi. Chúng tôi hân hạnh gửi đến Quý khách hàng"
           " bảng chào giá như sau:"
       )
-      ws_bg["A12"].font = Font(name="Times New Roman", size=11, italic=True)
+      ws_bg["A10"].font = Font(name="Times New Roman", size=11, italic=True)
 
-      # Header Bảng Giá (7 Cột - Hàng 13)
+      # Header Bảng Giá (Hàng 11)
       headers_bg = [
-          ("A13", "Stt"),
-          ("B13", "Nội dung báo giá"),
-          ("D13", "ĐVT"),
-          ("E13", "Số lượng"),
-          ("F13", "Đơn giá\n(VNĐ)"),
-          ("G13", "Thuế GTGT"),
-          ("H13", "Thành tiền\n(VNĐ)"),
+          ("A11", "Stt"),
+          ("B11", "Nội dung báo giá"),
+          ("D11", "ĐVT"),
+          ("E11", "Số lượng"),
+          ("F11", "Đơn giá\n(VNĐ)"),
+          ("G11", "Thuế GTGT"),
+          ("H11", "Thành tiền\n(VNĐ)"),
       ]
 
-      ws_bg.merge_cells("B13:C13")
+      ws_bg.merge_cells("B11:C11")
       for cell_id, text in headers_bg:
         c = ws_bg[cell_id]
         c.value = text
@@ -456,92 +449,92 @@ if uploaded_file is not None:
             horizontal="center", vertical="center", wrap_text=True
         )
 
-      # Dòng dữ liệu hệ thống (Hàng 14)
-      ws_bg["A14"] = 1
-      ws_bg["A14"].alignment = Alignment(horizontal="center")
+      # Dòng dữ liệu hệ thống (Hàng 12)
+      ws_bg["A12"] = 1
+      ws_bg["A12"].alignment = Alignment(horizontal="center")
 
-      ws_bg.merge_cells("B14:C14")
-      ws_bg["B14"] = "Hệ thống"
-      ws_bg["D14"] = "Hệ thống"
-      ws_bg["D14"].alignment = Alignment(horizontal="center")
-      ws_bg["E14"] = 1
-      ws_bg["E14"].alignment = Alignment(horizontal="center")
+      ws_bg.merge_cells("B12:C12")
+      ws_bg["B12"] = "Hệ thống"
+      ws_bg["D12"] = "Hệ thống"
+      ws_bg["D12"].alignment = Alignment(horizontal="center")
+      ws_bg["E12"] = 1
+      ws_bg["E12"].alignment = Alignment(horizontal="center")
 
       # Đơn giá lấy từ tổng tiền của Sheet Chi Tiết
-      ws_bg["F14"] = f"='CHI TIẾT'!I{tot_row_ct}"
-      ws_bg["F14"].number_format = num_format_vnd
-      ws_bg["F14"].alignment = Alignment(horizontal="right")
+      ws_bg["F12"] = f"='CHI TIẾT'!I{tot_row_ct}"
+      ws_bg["F12"].number_format = num_format_vnd
+      ws_bg["F12"].alignment = Alignment(horizontal="right")
 
       # Thuế GTGT = Đơn giá * 8%
-      ws_bg["G14"] = "=F14*8%"
-      ws_bg["G14"].number_format = num_format_vnd
-      ws_bg["G14"].alignment = Alignment(horizontal="right")
+      ws_bg["G12"] = "=F12*8%"
+      ws_bg["G12"].number_format = num_format_vnd
+      ws_bg["G12"].alignment = Alignment(horizontal="right")
 
       # Thành tiền = Đơn giá + Thuế GTGT
-      ws_bg["H14"] = "=F14+G14"
-      ws_bg["H14"].number_format = num_format_vnd
-      ws_bg["H14"].alignment = Alignment(horizontal="right")
+      ws_bg["H12"] = "=F12+G12"
+      ws_bg["H12"].number_format = num_format_vnd
+      ws_bg["H12"].alignment = Alignment(horizontal="right")
 
       # Đóng khung bảng dữ liệu báo giá
-      for r in range(13, 15):
+      for r in range(11, 13):
         for col_idx in range(1, 9):
           ws_bg.cell(row=r, column=col_idx).border = thin_border
 
       # MỤC GHI CHÚ (MERGE TOÀN BỘ CỘT A -> H)
-      ws_bg.merge_cells("A15:H15")
-      ws_bg["A15"] = (
+      ws_bg.merge_cells("A13:H13")
+      ws_bg["A13"] = (
           "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời"
           " điểm xuất hóa đơn."
       )
-      ws_bg["A15"].font = Font(name="Times New Roman", size=11)
+      ws_bg["A13"].font = Font(name="Times New Roman", size=11)
 
       # Điều kiện thương mại
-      ws_bg.merge_cells("A16:H16")
-      ws_bg["A16"] = "Điều kiện thương mại:"
-      ws_bg["A16"].font = Font(
+      ws_bg.merge_cells("A14:H14")
+      ws_bg["A14"] = "Điều kiện thương mại:"
+      ws_bg["A14"].font = Font(
           name="Times New Roman", size=11, bold=True, underline="single"
       )
 
       terms = [
-          ("A17:H17", "1. Địa điểm thực hiện:"),
-          ("A18:H18", "2. Giá đã bao gồm:"),
+          ("A15:H15", "1. Địa điểm thực hiện:"),
+          ("A16:H16", "2. Giá đã bao gồm:"),
           (
-              "A19:H19",
+              "A17:H17",
               "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.",
           ),
-          ("A20:H20", "3. Thanh toán:"),
+          ("A18:H18", "3. Thanh toán:"),
           (
-              "A21:H21",
+              "A19:H19",
               (
                   "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm"
                   " việc sau khi hoàn thành lắp đặt, nghiệm thu."
               ),
           ),
-          ("A22:H22", "4. Thời gian thực hiện hợp đồng:"),
+          ("A20:H20", "4. Thời gian thực hiện hợp đồng:"),
           (
-              "A23:H23",
+              "A21:H21",
               (
                   "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký"
                   " hợp đồng."
               ),
           ),
-          ("A24:H24", "5. Thời gian bảo hành:"),
+          ("A22:H22", "5. Thời gian bảo hành:"),
           (
-              "A25:H25",
+              "A23:H23",
               (
                   "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn"
                   " giao."
               ),
           ),
           (
-              "A26:H26",
+              "A24:H24",
               (
                   "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng"
                   " giá chi tiết)."
               ),
           ),
-          ("A27:H27", "6. Thời hạn chào giá: 30 ngày."),
-          ("A29:H29", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"),
+          ("A25:H25", "6. Thời hạn chào giá: 30 ngày."),
+          ("A27:H27", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"),
       ]
 
       for cell_range, text in terms:
@@ -550,17 +543,17 @@ if uploaded_file is not None:
         c = ws_bg[top_left_cell]
         c.value = text
         is_bold = (
-            True if top_left_cell.startswith("A") and top_left_cell != "A29" else False
+            True if top_left_cell.startswith("A") and top_left_cell != "A27" else False
         )
-        is_italic = True if top_left_cell == "A29" else False
+        is_italic = True if top_left_cell == "A27" else False
         c.font = Font(
             name="Times New Roman", size=11, bold=is_bold, italic=is_italic
         )
 
-      # Chữ ký đại diện công ty
-      ws_bg["G31"] = "Công ty TNHH Công Nghệ DVC"
-      ws_bg["G31"].font = Font(name="Times New Roman", size=11, bold=True)
-      ws_bg["G31"].alignment = Alignment(horizontal="center")
+      # Chữ ký đại diện công ty (Đẩy lên hàng 29)
+      ws_bg["G29"] = "Công ty TNHH Công Nghệ DVC"
+      ws_bg["G29"].font = Font(name="Times New Roman", size=11, bold=True)
+      ws_bg["G29"].alignment = Alignment(horizontal="center")
 
       # Chỉnh độ rộng các cột A -> H
       col_widths_bg = {
@@ -591,5 +584,4 @@ if uploaded_file is not None:
     )
 
   except Exception as e:
-    st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
     st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
