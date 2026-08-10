@@ -548,7 +548,7 @@ if uploaded_file is not None:
       ws_bg["A25"].font = Font(name="Times New Roman", size=11, bold=False)
       
       ws_bg.merge_cells("A26:H26")
-      ws_bg["A26"] = "6. Thời hạn chào giá: 30 ngày."
+      ws_bg["A26"] = "6. Thời hạn chào giá:"
       ws_bg["A26"].font = Font(name="Times New Roman", size=11, bold=True)
         
       ws_bg["A27"] = (
