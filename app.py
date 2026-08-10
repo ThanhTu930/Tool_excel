@@ -492,65 +492,73 @@ if uploaded_file is not None:
           name="Times New Roman", size=11, bold=True, underline="single"
       )
 
-      terms = [
-          ("A15:H15", "1. Địa điểm thực hiện:"),
-          ("A16:H16", "2. Giá đã bao gồm:"),
-          (
-              "A17:H17",
-              "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.",
-          ),
-          ("A18:H18", "3. Thanh toán:"),
-          (
-              "A19:H19",
-              (
-                  "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm"
-                  " việc sau khi hoàn thành lắp đặt, nghiệm thu."
-              ),
-          ),
-          ("A20:H20", "4. Thời gian thực hiện hợp đồng:"),
-          (
-              "A21:H21",
-              (
-                  "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký"
-                  " hợp đồng."
-              ),
-          ),
-          ("A22:H22", "5. Thời gian bảo hành:"),
-          (
-              "A23:H23",
-              (
-                  "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn"
-                  " giao."
-              ),
-          ),
-          (
-              "A24:H24",
-              (
-                  "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng"
-                  " giá chi tiết)."
-              ),
-          ),
-          ("A25:H25", "6. Thời hạn chào giá: 30 ngày."),
-          ("A27:H27", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"),
-      ]
-
-      for cell_range, text in terms:
-        ws_bg.merge_cells(cell_range)
-        top_left_cell = cell_range.split(":")[0]
-        c = ws_bg[top_left_cell]
-        c.value = text
-        is_bold = (
-            True if top_left_cell.startswith("A") and top_left_cell != "A27" else False
-        )
-        is_italic = True if top_left_cell == "A27" else False
-        c.font = Font(
-            name="Times New Roman", size=11, bold=is_bold, italic=is_italic
-        )
-
-      ws_bg["G29"] = "Công ty TNHH Công Nghệ DVC"
-      ws_bg["G29"].font = Font(name="Times New Roman", size=11, bold=True)
-      ws_bg["G29"].alignment = Alignment(horizontal="center")
-
+      ws_bg.merge_cells("A15:H15")
+      ws_bg["A15"] = "1. Địa điểm thực hiện:"
+      ws_bg["A15"].font = Font(name="Times New Roman", size=11, bold=True)
+      
+      # --- Chừa 1 dòng trống bên dưới cho mục 1 để điền địa điểm ---
+      ws_bg.merge_cells("A16:H16")
+      ws_bg["A16"] = "   - "  # Hoặc để trống "" để nhập liệu sau
+      ws_bg["A16"].font = Font(name="Times New Roman", size=11, bold=False)
+      
+      ws_bg.merge_cells("A17:H17")
+      ws_bg["A17"] = "2. Giá đã bao gồm:"
+      ws_bg["A17"].font = Font(name="Times New Roman", size=11, bold=True)
+      
+      ws_bg.merge_cells("A18:H18")
+      ws_bg["A18"] = "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu."
+      ws_bg["A18"].font = Font(name="Times New Roman", size=11, bold=False)
+      
+      ws_bg.merge_cells("A19:H19")
+      ws_bg["A19"] = "3. Thanh toán:"
+      ws_bg["A19"].font = Font(name="Times New Roman", size=11, bold=True)
+      
+      ws_bg.merge_cells("A20:H20")
+      ws_bg["A20"] = (
+          "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi"
+          " hoàn thành lắp đặt, nghiệm thu."
+      )
+      ws_bg["A20"].font = Font(name="Times New Roman", size=11, bold=False)
+      
+      ws_bg.merge_cells("A21:H21")
+      ws_bg["A21"] = "4. Thời gian thực hiện hợp đồng:"
+      ws_bg["A21"].font = Font(name="Times New Roman", size=11, bold=True)
+      
+      ws_bg.merge_cells("A22:H22")
+      ws_bg["A22"] = (
+          "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng."
+      )
+      ws_bg["A22"].font = Font(name="Times New Roman", size=11, bold=False)
+      
+      ws_bg.merge_cells("A23:H23")
+      ws_bg["A23"] = "5. Thời gian bảo hành:"
+      ws_bg["A23"].font = Font(name="Times New Roman", size=11, bold=True)
+      
+      ws_bg.merge_cells("A24:H24")
+      ws_bg["A24"] = (
+          "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao."
+      )
+      ws_bg["A24"].font = Font(name="Times New Roman", size=11, bold=False)
+      
+      ws_bg.merge_cells("A25:H25")
+      ws_bg["A25"] = (
+          "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi"
+          " tiết)."
+      )
+      ws_bg["A25"].font = Font(name="Times New Roman", size=11, bold=False)
+      
+      ws_bg.merge_cells("A26:H26")
+      ws_bg["A26"] = "6. Thời hạn chào giá: 30 ngày."
+      ws_bg["A26"].font = Font(name="Times New Roman", size=11, bold=True)
+      
+      ws_bg.merge_cells("A28:H28")
+      ws_bg["A28"] = "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"
+      ws_bg["A28"].font = Font(name="Times New Roman", size=11, italic=True)
+      
+      # Dòng tên công ty đẩy từ G29 xuống G30 do chèn thêm 1 dòng ở trên
+      ws_bg["G30"] = "Công ty TNHH Công Nghệ DVC"
+      ws_bg["G30"].font = Font(name="Times New Roman", size=11, bold=True)
+      ws_bg["G30"].alignment = Alignment(horizontal="center")
       col_widths_bg = {
           "A": 6,
           "B": 16,
