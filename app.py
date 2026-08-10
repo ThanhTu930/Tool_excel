@@ -4,6 +4,7 @@ import re
 import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils import get_column_letter
 
 # --- 1. CẤU HÌNH STREAMLIT (ĐẶT LÊN ĐẦU TIÊN) ---
 st.set_page_config(page_title="Tool nhập liệu DVCTECH", layout="wide")
@@ -376,6 +377,24 @@ if uploaded_file is not None:
             right=blue_thick_side,
             bottom=cell_j.border.bottom,
         )
+          for col in ws_ct.columns:
+              max_len = 0
+              col_letter = get_column_letter(col[0].column)
+
+              for cell in col:
+    # Bỏ qua dòng B2 (Tiêu đề "BẢNG GIÁ CHI TIẾT") vì gộp ô sẽ làm lệch độ rộng
+                if cell.row == 2:
+                  continue
+
+                if cell.value is not None:
+      # Xử lý trường hợp chữ có xuống dòng (\n)
+                  lines = str(cell.value).split("\n")
+                  for line in lines:
+                    if len(line) > max_len:
+                      max_len = len(line)
+
+  # Cộng thêm 4 ký tự padding để chữ không dính sát viền, độ rộng tối thiểu là 10
+          ws_ct.column_dimensions[col_letter].width = max(max_len + 4, 10)
 
       # =========================================================
       # B. XỬ LÝ DỮ LIỆU & FORMAT SHEET BÁO GIÁ
