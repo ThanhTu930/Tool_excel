@@ -348,10 +348,10 @@ if uploaded_file is not None:
                 row=row_II,
                 column=2,
                 value=(
-                    "Vật tư thi công\n(Bao gồm các vật tư phụ..."
+                    "Vật tư thi công\n(Bao gồm các vật tư phụ...)"
                 ),
             )
-            cell_ii_tb.font = Font(name="Times New Roman", size=18, bold=True)
+            cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
             cell_ii_tb.alignment = Alignment(
                 horizontal="left", vertical="center", wrap_text=True
             )
@@ -446,12 +446,14 @@ if uploaded_file is not None:
                 )
 
             for r in range(5, tot_row_ct + 1):
+                # Kiểm tra nếu là dòng tiêu đề mục I, II, III hoặc dòng TỔNG CỘNG thì in đậm toàn bộ
+                is_section_or_total = (r in (5, row_II, row_III, tot_row_ct))
                 for c in range(1, 19):  # Tổng số 18 cột
                     cell = ws_ct.cell(row=r, column=c)
                     cell.font = Font(
                         name="Times New Roman",
                         size=10,
-                        bold=(True if r == tot_row_ct else False),
+                        bold=is_section_or_total,
                     )
                     cell.border = thin_border
 
