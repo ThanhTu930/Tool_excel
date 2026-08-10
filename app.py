@@ -114,6 +114,24 @@ def generate_sample_template():
       cell.font = Font(bold=True)
       cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
       cell.border = thin_border
+    col_widths_sample = {
+        1: 6,  # Stt
+        2: 25,  # Thiết bị
+        3: 15,  # Mã hàng
+        4: 15,  # Hãng/Xuất xứ
+        5: 25,  # Mô tả
+        6: 8,  # ĐVT
+        7: 10,  # Số lượng
+        8: 12,  # Thời gian bảo hành
+        9: 12,  # Margin Thiết bị
+        10: 14,  # ĐG COST Thiết bị
+        11: 14,  # ĐG COST Lắp đặt
+        12: 12,  # NCC
+        13: 15,  # NOTE
+    }
+    for col_idx, width in col_widths_sample.items():
+      col_letter = get_column_letter(col_idx)
+      worksheet.column_dimensions[col_letter].width = width
 
     for row in range(2, 4):
       for col in range(1, 14):
