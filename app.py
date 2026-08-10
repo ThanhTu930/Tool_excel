@@ -261,6 +261,15 @@ if uploaded_file is not None:
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
       ws_bg = writer.book.create_sheet(title="BÁO GIÁ", index=0)
+      # Ghi dữ liệu thiết bị từ dòng 6 (startrow=5) để chừa dòng 4 cho Header và dòng 5 cho Mục I
+      df_final.to_excel(
+          writer, index=False, header=False, sheet_name="CHI TIẾT", startrow=5
+      )
+      ws_ct = writer.sheets["CHI TIẾT"]
+
+      # Ghi tiêu đề các cột ở dòng 4
+      for col_idx, col_name in enumerate(form_columns, 1):
+        ws_ct.cell(row=4, column=col_idx, value=col_name)
 
       df_final.to_excel(writer, index=False, sheet_name="CHI TIẾT", startrow=3)
       ws_ct = writer.sheets["CHI TIẾT"]
@@ -275,6 +284,9 @@ if uploaded_file is not None:
       # =========================================================
       # A. XỬ LÝ FORMAT VÀ CÔNG THỨC SHEET CHI TIẾT
       # =========================================================
+      # =========================================================
+      # A. XỬ LÝ FORMAT VÀ CÔNG THỨC SHEET CHI TIẾT
+      # =========================================================
       ws_ct.merge_cells("B2:J2")
       title_ct = ws_ct["B2"]
       title_ct.value = "BẢNG GIÁ CHI TIẾT"
@@ -282,41 +294,114 @@ if uploaded_file is not None:
       title_ct.alignment = Alignment(horizontal="center", vertical="center")
 
       num_format_vnd = "#,##0"
-      last_row_ct = 4 + len(df_final)
+      num_items = len(df_final)
+      last_item_row = 5 + num_items if num_items > 0 else 6
 
-      for i in range(len(df_final)):
-        r = 5 + i
-        ws_ct.cell(row=r, column=12).number_format = (
-            "0%"  # Cột Margin Thiết bị chuyển thành cột 12
+      # --- 1. MỤC I: THIẾT BỊ CHÍNH (DÒNG 5) ---
+      ws_ct.cell(row=5, column=1, value="I").alignment = Alignment(
+          horizontal="center", vertical="center"
+      )
+      cell_i_tb = ws_ct.cell(row=5, column=2, value="Thiết bị chính")
+      cell_i_tb.font = Font(name="Times New Roman", size=11, bold=True)
+
+      # Công thức SUM thành tiền từ dòng 6 đến hết danh sách thiết bị
+      cell_i_tt = ws_ct.cell(
+          row=5, column=9, value=f"=SUM(I6:I{last_item_row})"
+      )
+      cell_i_tt.font = Font(name="Times New Roman", size=11, bold=True)
+      cell_i_tt.number_format = num_format_vnd
+      cell_i_tt.alignment = Alignment(horizontal="right", vertical="center")
+
+      # --- 2. VÒNG LẶP GÁN CÔNG THỨC CHO CÁC DÒNG THIẾT BỊ (DÒNG 6 TRỞ ĐI) ---
+      for i in range(num_items):
+        r = 6 + i
+        ws_ct.cell(row=r, column=1).alignment = Alignment(
+            horizontal="center", vertical="center"
         )
-        ws_ct.cell(row=r, column=13).number_format = (
-            num_format_vnd  # Cột ĐG COST Thiết bị chuyển thành cột 13
+        ws_ct.cell(row=r, column=6).alignment = Alignment(
+            horizontal="center", vertical="center"
         )
+        ws_ct.cell(row=r, column=7).alignment = Alignment(
+            horizontal="center", vertical="center"
+        )
+
+        ws_ct.cell(row=r, column=12).number_format = "0%"
+        ws_ct.cell(row=r, column=13).number_format = num_format_vnd
 
         cell_dg = ws_ct.cell(row=r, column=8)
-        cell_dg.value = f"=ROUNDUP(M{r}/(1-L{r}), -3)"  # Điều chỉnh tham chiếu K->L, L->M
+        cell_dg.value = f"=ROUNDUP(M{r}/(1-L{r}), -3)"
         cell_dg.number_format = num_format_vnd
 
         cell_tt = ws_ct.cell(row=r, column=9)
         cell_tt.value = f"=G{r}*H{r}"
         cell_tt.number_format = num_format_vnd
 
-        cell_tt_cost_tb = ws_ct.cell(row=r, column=14)  # Chuyển thành cột 14
+        cell_tt_cost_tb = ws_ct.cell(row=r, column=14)
         cell_tt_cost_tb.value = f"=G{r}*M{r}"
         cell_tt_cost_tb.number_format = num_format_vnd
 
-        ws_ct.cell(row=r, column=15).number_format = (
-            num_format_vnd  # Cột ĐG COST Lắp đặt chuyển thành cột 15
-        )
+        ws_ct.cell(row=r, column=15).number_format = num_format_vnd
 
-        cell_tt_cost_ld = ws_ct.cell(row=r, column=16)  # Chuyển thành cột 16
+        cell_tt_cost_ld = ws_ct.cell(row=r, column=16)
         cell_tt_cost_ld.value = f"=G{r}*O{r}"
         cell_tt_cost_ld.number_format = num_format_vnd
 
-      # Dòng Tổng Cộng ở Sheet Chi Tiết
-      tot_row_ct = last_row_ct + 1
+      # --- 3. MỤC II: VẬT TƯ THI CÔNG ---
+      row_II = last_item_row + 1
+      ws_ct.cell(row=row_II, column=1, value="II").alignment = Alignment(
+          horizontal="center", vertical="center"
+      )
 
-      # Gộp ô từ cột STT (1) đến cột Đơn Giá (8)
+      cell_ii_tb = ws_ct.cell(
+          row=row_II,
+          column=2,
+          value=(
+              "Vật tư thi công\n(Bao gồm cáp mạng CAT6 UTP, nẹp, ổ cắm, băng"
+              " keo, dây HDMI)"
+          ),
+      )
+      cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
+      cell_ii_tb.alignment = Alignment(
+          horizontal="left", vertical="center", wrap_text=True
+      )
+
+      cell_ii_dvt = ws_ct.cell(row=row_II, column=6, value="Gói")
+      cell_ii_dvt.alignment = Alignment(horizontal="center", vertical="center")
+      cell_ii_sl = ws_ct.cell(row=row_II, column=7, value=1)
+      cell_ii_sl.alignment = Alignment(horizontal="center", vertical="center")
+
+      ws_ct.cell(row=row_II, column=8).number_format = num_format_vnd
+      ws_ct.cell(row=row_II, column=9).number_format = num_format_vnd
+
+      # --- 4. MỤC III: NHÂN CÔNG LẮP ĐẶT ---
+      row_III = last_item_row + 2
+      ws_ct.cell(row=row_III, column=1, value="III").alignment = Alignment(
+          horizontal="center", vertical="center"
+      )
+
+      cell_iii_tb = ws_ct.cell(
+          row=row_III,
+          column=2,
+          value="Nhân công lắp đặt, cấu hình, bàn giao, hướng dẫn sử dụng",
+      )
+      cell_iii_tb.font = Font(name="Times New Roman", size=11, bold=True)
+      cell_iii_tb.alignment = Alignment(
+          horizontal="left", vertical="center", wrap_text=True
+      )
+
+      cell_iii_dvt = ws_ct.cell(row=row_III, column=6, value="Gói")
+      cell_iii_dvt.alignment = Alignment(
+          horizontal="center", vertical="center"
+      )
+      cell_iii_sl = ws_ct.cell(row=row_III, column=7, value=1)
+      cell_iii_sl.alignment = Alignment(horizontal="center", vertical="center")
+
+      ws_ct.cell(row=row_III, column=8).number_format = num_format_vnd
+      ws_ct.cell(row=row_III, column=9).number_format = num_format_vnd
+
+      # --- 5. DÒNG TỔNG CỘNG ---
+      tot_row_ct = row_III + 1
+
       ws_ct.merge_cells(
           start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8
       )
@@ -326,16 +411,16 @@ if uploaded_file is not None:
           horizontal="center", vertical="center"
       )
 
+      # Tổng cộng = Dòng I + Dòng II + Dòng III
       ws_ct.cell(
-          row=tot_row_ct, column=9, value=f"=SUM(I5:I{last_row_ct})"
+          row=tot_row_ct, column=9, value=f"=I5+I{row_II}+I{row_III}"
       ).number_format = num_format_vnd
       ws_ct.cell(
-          row=tot_row_ct, column=14, value=f"=SUM(N5:N{last_row_ct})"
-      ).number_format = num_format_vnd  # Cột TT COST TB chuyển thành N
+          row=tot_row_ct, column=14, value=f"=SUM(N6:N{last_item_row})"
+      ).number_format = num_format_vnd
       ws_ct.cell(
-          row=tot_row_ct, column=16, value=f"=SUM(P5:P{last_row_ct})"
-      ).number_format = num_format_vnd  # Cột TT COST LD chuyển thành P
-
+          row=tot_row_ct, column=16, value=f"=SUM(P6:P{last_item_row})"
+      ).number_format = num_format_vnd
       # Style Header & Viền cho Sheet Chi Tiết
       gray_fill = PatternFill(
           start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
