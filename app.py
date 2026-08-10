@@ -112,7 +112,7 @@ def generate_sample_template():
       cell = worksheet.cell(row=1, column=col)
       cell.fill = gray_fill
       cell.font = Font(bold=True)
-      cell.alignment = Alignment(horizontal="center", vertical="center")
+      cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
       cell.border = thin_border
 
     for row in range(2, 4):
