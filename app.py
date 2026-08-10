@@ -532,8 +532,9 @@ if uploaded_file is not None:
             ws_bg["A7"] = "Người nhận:"
             ws_bg["G7"] = "Điện thoại:"
             ws_bg["A8"] = "Email/Sdt:"
+            ws_bg["G8'] = "TPHCM, ngày tháng năm 2026"
 
-            for cell_id in ["A6", "G6", "A7", "G7", "A8"]:
+            for cell_id in ["A6", "G6", "A7", "G7", "A8", "G8"]:
                 ws_bg[cell_id].font = Font(name="Times New Roman", size=11, bold=True)
 
             ws_bg.merge_cells("A9:H9")
