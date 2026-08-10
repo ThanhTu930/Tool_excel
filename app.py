@@ -377,8 +377,7 @@ if uploaded_file is not None:
             right=blue_thick_side,
             bottom=cell_j.border.bottom,
         )
-      from openpyxl.utils import get_column_letter
-
+    
       for col in ws_ct.columns:
         max_len = 0
         col_letter = get_column_letter(col[0].column)
