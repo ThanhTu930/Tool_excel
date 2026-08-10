@@ -339,6 +339,7 @@ if uploaded_file is not None:
                 cell_tt_cost_ld.number_format = num_format_vnd
 
             # --- 3. MỤC II: VẬT TƯ THI CÔNG ---
+            # --- 3. MỤC II: VẬT TƯ THI CÔNG ---
             row_II = last_item_row + 1
             ws_ct.cell(row=row_II, column=1, value="II").alignment = Alignment(
                 horizontal="center", vertical="center"
@@ -348,7 +349,8 @@ if uploaded_file is not None:
                 row=row_II,
                 column=2,
                 value=(
-                    "Vật tư thi công\n(Bao gồm các vật tư phụ...)"
+                    "Vật tư thi công\n(Bao gồm các vật tư phụ, dây cáp, gen,"
+                    " phụ kiện...)"
                 ),
             )
             cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
@@ -361,8 +363,17 @@ if uploaded_file is not None:
             cell_ii_sl = ws_ct.cell(row=row_II, column=7, value=1)
             cell_ii_sl.alignment = Alignment(horizontal="center", vertical="center")
 
+            # Đơn giá & Thành tiền BÁN
             ws_ct.cell(row=row_II, column=8).number_format = num_format_vnd
-            ws_ct.cell(row=row_II, column=9).number_format = num_format_vnd
+            ws_ct.cell(
+                row=row_II, column=9, value=f"=G{row_II}*H{row_II}"
+            ).number_format = num_format_vnd
+
+            # Đơn giá & Thành tiền COST Thiết bị
+            ws_ct.cell(row=row_II, column=13).number_format = num_format_vnd
+            ws_ct.cell(
+                row=row_II, column=14, value=f"=G{row_II}*M{row_II}"
+            ).number_format = num_format_vnd
 
             # --- 4. MỤC III: NHÂN CÔNG LẮP ĐẶT ---
             row_III = last_item_row + 2
@@ -387,8 +398,17 @@ if uploaded_file is not None:
             cell_iii_sl = ws_ct.cell(row=row_III, column=7, value=1)
             cell_iii_sl.alignment = Alignment(horizontal="center", vertical="center")
 
+            # Đơn giá & Thành tiền BÁN
             ws_ct.cell(row=row_III, column=8).number_format = num_format_vnd
-            ws_ct.cell(row=row_III, column=9).number_format = num_format_vnd
+            ws_ct.cell(
+                row=row_III, column=9, value=f"=G{row_III}*H{row_III}"
+            ).number_format = num_format_vnd
+
+            # Đơn giá & Thành tiền COST Thiết bị
+            ws_ct.cell(row=row_III, column=13).number_format = num_format_vnd
+            ws_ct.cell(
+                row=row_III, column=14, value=f"=G{row_III}*M{row_III}"
+            ).number_format = num_format_vnd
 
             # --- 5. DÒNG TỔNG CỘNG ---
             tot_row_ct = row_III + 1
@@ -406,13 +426,16 @@ if uploaded_file is not None:
             ws_ct.cell(
                 row=tot_row_ct, column=9, value=f"=I5+I{row_II}+I{row_III}"
             ).number_format = num_format_vnd
+
+            # Tổng Thành tiền COST Thiết bị (quét từ N6 đến mục II)
             ws_ct.cell(
-                row=tot_row_ct, column=14, value=f"=SUM(N6:N{last_item_row})"
+                row=tot_row_ct, column=14, value=f"=SUM(N6:N{row_II})"
             ).number_format = num_format_vnd
+
+            # Tổng Thành tiền COST Lắp đặt
             ws_ct.cell(
                 row=tot_row_ct, column=16, value=f"=SUM(P6:P{last_item_row})"
             ).number_format = num_format_vnd
-
             # Style Header & Viền cho Sheet Chi Tiết
             gray_fill = PatternFill(
                 start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
