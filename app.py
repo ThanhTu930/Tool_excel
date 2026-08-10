@@ -348,11 +348,10 @@ if uploaded_file is not None:
                 row=row_II,
                 column=2,
                 value=(
-                    "Vật tư thi công\n(Bao gồm cáp mạng CAT6 UTP, nẹp, ổ cắm, băng"
-                    " keo, dây HDMI)"
+                    "Vật tư thi công\n(Bao gồm các vật tư phụ..."
                 ),
             )
-            cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
+            cell_ii_tb.font = Font(name="Times New Roman", size=18, bold=True)
             cell_ii_tb.alignment = Alignment(
                 horizontal="left", vertical="center", wrap_text=True
             )
