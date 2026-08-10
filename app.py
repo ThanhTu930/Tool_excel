@@ -112,27 +112,9 @@ def generate_sample_template():
       cell = worksheet.cell(row=1, column=col)
       cell.fill = gray_fill
       cell.font = Font(bold=True)
-      cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+      cell.alignment = Alignment(horizontal="center", vertical="center")
       cell.border = thin_border
-    col_widths_sample = {
-        1: 6,  # Stt
-        2: 25,  # Thiết bị
-        3: 15,  # Mã hàng
-        4: 15,  # Hãng/Xuất xứ
-        5: 25,  # Mô tả
-        6: 8,  # ĐVT
-        7: 10,  # Số lượng
-        8: 12,  # Thời gian bảo hành
-        9: 12,  # Margin Thiết bị
-        10: 14,  # ĐG COST Thiết bị
-        11: 14,  # ĐG COST Lắp đặt
-        12: 12,  # NCC
-        13: 15,  # NOTE
-    }
-    for col_idx, width in col_widths_sample.items():
-      col_letter = get_column_letter(col_idx)
-      worksheet.column_dimensions[col_letter].width = width
-
+    
     for row in range(2, 4):
       for col in range(1, 14):
         worksheet.cell(row=row, column=col).border = thin_border
@@ -396,23 +378,6 @@ if uploaded_file is not None:
             bottom=cell_j.border.bottom,
         )
     
-      for col in ws_ct.columns:
-        max_len = 0
-        col_letter = get_column_letter(col[0].column)
-
-        for cell in col:
-          if cell.row == 2:  # Bỏ qua dòng tiêu đề gộp ô "BẢNG GIÁ CHI TIẾT"
-            continue
-
-          if cell.value is not None:
-            lines = str(cell.value).split("\n")
-            for line in lines:
-              if len(line) > max_len:
-                max_len = len(line)
-
-        ws_ct.column_dimensions[col_letter].width = max(max_len + 4, 10)
-    
-
       # =========================================================
       # B. XỬ LÝ DỮ LIỆU & FORMAT SHEET BÁO GIÁ
       # =========================================================
