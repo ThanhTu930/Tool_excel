@@ -539,11 +539,24 @@ if uploaded_file is not None:
             ws_bg.merge_cells("A9:H9")
             ws_bg["A9"] = "Nội dung:"
             ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
-
-            # --- TẠO VIỀN NGOÀI (OUTLINE) CHO KHỐI A6:H9 ---
+            # Định nghĩa nét vẽ cho viền dưới (dùng 'thin' cho nét mảnh hoặc 'medium' cho nét dày)
+            thin_bottom = Side(style="thin")
+            
+            # Áp dụng cho dòng 9 (thay max_col bằng số cột cuối cùng trong bảng của bạn, ví dụ: 8 cho cột H)
+            max_col = 8
+            
+            for col in range(1, max_col + 1):
+                cell = ws.cell(row=9, column=col)
+                cell.border = Border(
+                    left=cell.border.left,
+                    right=cell.border.right,
+                    top=cell.border.top,
+                    bottom=thin_bottom,
+                )
+            # --- TẠO VIỀN NGOÀI (OUTLINE) CHO KHỐI A6:H8 ---
             thin_side = Side(style="thin", color="000000")
 
-            for r in range(6, 9):  # Dòng từ 6 đến 9
+            for r in range(6, 9):  # Dòng từ 6 đến 8
                 for c in range(1, 9):  # Cột từ A (1) đến H (8)
                     cell = ws_bg.cell(row=r, column=c)
 
