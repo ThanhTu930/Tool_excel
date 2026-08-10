@@ -436,6 +436,175 @@ if uploaded_file is not None:
             ws_ct.cell(
                 row=tot_row_ct, column=16, value=f"=SUM(P6:P{last_item_row})"
             ).number_format = num_format_vnd
+            from openpyxl.styles import Alignment, Font
+            from openpyxl.utils import get_column_letter
+            
+            # --- TÍNH TOÁN VỊ TRÍ ĐẶT BẢNG ---
+            # Giả định note_col là vị trí cột NOTE (ví dụ: cột 17 - Q)
+            # Cách phải cột NOTE 2 cột -> start_col = note_col + 3
+            # Cách dưới dòng TỔNG CỘNG 2 dòng -> r0 = tot_row_ct + 3
+            
+            note_col = 17  # Thay bằng chỉ số cột NOTE thực tế của bạn nếu khác
+            start_col = note_col + 3
+            r0 = tot_row_ct + 3
+            
+            # Tự động lấy tên ký hiệu cột trong Excel (VD: T, U, V, W, X, Y)
+            c1 = get_column_letter(start_col)  # Cột 1: Danh mục Chi phí triển khai
+            c2 = get_column_letter(start_col + 1)  # Cột 2: Số tiền Chi phí triển khai
+            c3 = get_column_letter(start_col + 2)  # Cột 3: COST
+            c4 = get_column_letter(start_col + 3)  # Cột 4: GIÁ BÁN
+            c5 = get_column_letter(start_col + 4)  # Cột 5: MARGIN
+            c6 = get_column_letter(start_col + 5)  # Cột 6: Phân loại / Hạng mục
+            
+            # Font chữ & định dạng
+            font_bold = Font(name="Times New Roman", size=11, bold=True)
+            font_regular = Font(name="Times New Roman", size=11, bold=False)
+            align_left = Alignment(horizontal="left", vertical="center")
+            align_right = Alignment(horizontal="right", vertical="center")
+            
+            num_format_vnd = '#,##0 "VNĐ"'  # Hoặc dùng '#,##0' tùy định dạng file của bạn
+            num_format_percent = "0%"
+            
+            # --- 1. DÒNG 1: HEADER & DÒNG TỔNG (Dòng r0) ---
+            # Cột 1: Chi phí triển khai
+            ws_ct.cell(row=r0, column=start_col, value="Chi phí triển khai").font = font_bold
+            ws_ct.cell(row=r0, column=start_col).alignment = align_left
+            
+            # Cột 2: Tổng chi phí triển khai (SUM từ dòng 2 đến dòng 9 bên dưới)
+            cell_sum_cp = ws_ct.cell(
+                row=r0, column=start_col + 1, value=f"=SUM({c2}{r0+1}:{c2}{r0+8})"
+            )
+            cell_sum_cp.font = font_bold
+            cell_sum_cp.alignment = align_right
+            cell_sum_cp.number_format = num_format_vnd
+            
+            # Cột 3: COST tổng (= Thiết bị + Chi phí triển khai)
+            cell_cost_tot = ws_ct.cell(
+                row=r0, column=start_col + 2, value=f"=SUM({c3}{r0+1}:{c3}{r0+2})"
+            )
+            cell_cost_tot.font = font_bold
+            cell_cost_tot.alignment = align_right
+            cell_cost_tot.number_format = num_format_vnd
+            
+            # Cột 4: GIÁ BÁN tổng
+            cell_sale_tot = ws_ct.cell(
+                row=r0, column=start_col + 3, value=f"=SUM({c4}{r0+1}:{c4}{r0+2})"
+            )
+            cell_sale_tot.font = font_bold
+            cell_sale_tot.alignment = align_right
+            cell_sale_tot.number_format = num_format_vnd
+            
+            # Cột 5: MARGIN tổng = (GIÁ BÁN - COST) / GIÁ BÁN
+            cell_margin_tot = ws_ct.cell(
+                row=r0,
+                column=start_col + 4,
+                value=f"=IF({c4}{r0}=0, 0, ({c4}{r0}-{c3}{r0})/{c4}{r0})",
+            )
+            cell_margin_tot.font = font_bold
+            cell_margin_tot.alignment = align_right
+            cell_margin_tot.number_format = num_format_percent
+            
+            # Cột 6: TỔNG TRƯỚC THUẾ
+            ws_ct.cell(row=r0, column=start_col + 5, value="TỔNG TRƯỚC THUẾ").font = (
+                font_bold
+            )
+            ws_ct.cell(row=r0, column=start_col + 5).alignment = align_left
+            
+            
+            # --- 2. CÁC DÒNG CHI TIẾT DƯỚI BẢNG ---
+            # Danh sách 8 hạng mục chi phí triển khai
+            items_cp = [
+                "Nhân công lắp đặt",
+                "Vận chuyển",
+                "Di chuyển (vé xe, xe cty, xăng ...)",
+                "Thuê chỗ ở",
+                "Nghiệm thu, hướng dẫn sử dụng",
+                "Mua, thuê dụng cụ thi công",
+                "Chi phí khác (ATLĐ, Bảo hiểm, ...)",
+                "Chi phí nhân sự quản lý dự án",
+            ]
+            
+            for idx, label in enumerate(items_cp, start=1):
+                curr_row = r0 + idx
+            
+                # Cột 1: Tên hạng mục
+                cell_lbl = ws_ct.cell(row=curr_row, column=start_col, value=label)
+                cell_lbl.font = font_regular
+                cell_lbl.alignment = align_left
+            
+                # Cột 2: Ô nhập số tiền (Mặc định format VND)
+                cell_val = ws_ct.cell(row=curr_row, column=start_col + 1)
+                cell_val.font = font_regular
+                cell_val.alignment = align_right
+                cell_val.number_format = num_format_vnd
+            
+            
+            # --- 3. DÒNG THIẾT BỊ (Dòng r0 + 1) ---
+            row_thiet_bi = r0 + 1
+            
+            # COST Thiết bị (Link từ dòng TỔNG CỘNG cột Thành tiền COST Thiết bị - Cột N/14)
+            cell_cost_tb = ws_ct.cell(
+                row=row_thiet_bi, column=start_col + 2, value=f"=N{tot_row_ct}"
+            )
+            cell_cost_tb.font = font_regular
+            cell_cost_tb.alignment = align_right
+            cell_cost_tb.number_format = num_format_vnd
+            
+            # GIÁ BÁN Thiết bị (Link từ dòng I - Tổng Giá bán Thiết bị)
+            cell_sale_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 3, value="=I5")
+            cell_sale_tb.font = font_regular
+            cell_sale_tb.alignment = align_right
+            cell_sale_tb.number_format = num_format_vnd
+            
+            # MARGIN Thiết bị
+            cell_mg_tb = ws_ct.cell(
+                row=row_thiet_bi,
+                column=start_col + 4,
+                value=f"=IF({c4}{row_thiet_bi}=0, 0, ({c4}{row_thiet_bi}-{c3}{row_thiet_bi})/{c4}{row_thiet_bi})",
+            )
+            cell_mg_tb.font = font_regular
+            cell_mg_tb.alignment = align_right
+            cell_mg_tb.number_format = num_format_percent
+            
+            # Nhãn cột 6
+            ws_ct.cell(row=row_thiet_bi, column=start_col + 5, value="Thiết bị").font = (
+                font_regular
+            )
+            
+            
+            # --- 4. DÒNG CHI PHÍ TRIỂN KHAI BÊN PHẢI (Dòng r0 + 2) ---
+            row_cptk = r0 + 2
+            
+            # COST Chi phí triển khai (Lấy bằng tổng Cột 2 dòng r0)
+            cell_cost_cptk = ws_ct.cell(
+                row=row_cptk, column=start_col + 2, value=f"={c2}{r0}"
+            )
+            cell_cost_cptk.font = font_regular
+            cell_cost_cptk.alignment = align_right
+            cell_cost_cptk.number_format = num_format_vnd
+            
+            # GIÁ BÁN Chi phí triển khai (Link từ Tổng tiền bán Mục II + Mục III)
+            cell_sale_cptk = ws_ct.cell(
+                row=row_cptk, column=start_col + 3, value=f"=I{row_II}+I{row_III}"
+            )
+            cell_sale_cptk.font = font_regular
+            cell_sale_cptk.alignment = align_right
+            cell_sale_cptk.number_format = num_format_vnd
+            
+            # MARGIN Chi phí triển khai
+            cell_mg_cptk = ws_ct.cell(
+                row=row_cptk,
+                column=start_col + 4,
+                value=f"=IF({c4}{row_cptk}=0, 0, ({c4}{row_cptk}-{c3}{row_cptk})/{c4}{row_cptk})",
+            )
+            cell_mg_cptk.font = font_regular
+            cell_mg_cptk.alignment = align_right
+            cell_mg_cptk.number_format = num_format_percent
+            
+            # Nhãn cột 6
+            ws_ct.cell(
+                row=row_cptk, column=start_col + 5, value="Chi phí triển khai"
+            ).font = font_regular
             # Style Header & Viền cho Sheet Chi Tiết
             gray_fill = PatternFill(
                 start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
