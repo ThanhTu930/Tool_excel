@@ -553,8 +553,8 @@ if uploaded_file is not None:
                         left=thin_side if c == 1 else cell.border.left,
                         right=thin_side if c == 8 else cell.border.right,
                     )
-              for c in range(1, 9):
-                  ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
+            for c in range(1, 9):
+                ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
             ws_bg.merge_cells("A10:H10")
             ws_bg["A10"] = (
                 "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
