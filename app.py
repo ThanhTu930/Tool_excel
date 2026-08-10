@@ -1,6 +1,7 @@
 import io
 import os
 import re
+import openpyxl
 import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -85,6 +86,7 @@ def generate_sample_template():
       "ĐVT": [],
       "Số lượng": [],
       "Thời gian bảo hành": [],
+      "Ghi chú": [],  # Bổ sung cột Ghi chú sau Thời gian bảo hành
       "Margin Thiết bị": [],
       "ĐG COST Thiết bị": [],
       "ĐG COST Lắp đặt": [],
@@ -107,16 +109,16 @@ def generate_sample_template():
         bottom=Side(style="thin"),
     )
 
-    # Format 13 cột của form mẫu
-    for col in range(1, 14):
+    # Format 14 cột của form mẫu
+    for col in range(1, 15):
       cell = worksheet.cell(row=1, column=col)
       cell.fill = gray_fill
       cell.font = Font(bold=True)
       cell.alignment = Alignment(horizontal="center", vertical="center")
       cell.border = thin_border
-    
+
     for row in range(2, 4):
-      for col in range(1, 14):
+      for col in range(1, 15):
         worksheet.cell(row=row, column=col).border = thin_border
 
   return output.getvalue()
@@ -207,6 +209,9 @@ if uploaded_file is not None:
     df_final["Thời gian bảo hành"] = get_col_val(
         input_df, ["Thời gian bảo hành"], ""
     )
+    df_final["Ghi chú"] = get_col_val(
+        input_df, ["ghi chú"], ""
+    )  # Lấy giá trị cột Ghi chú
 
     raw_margin = get_col_val(
         input_df, ["margin thiết bị", "margin tb", "margin"], 0
@@ -242,6 +247,7 @@ if uploaded_file is not None:
         "Đơn giá (VNĐ)",
         "Thành tiền (VNĐ)",
         "Thời gian bảo hành",
+        "Ghi chú",  # Xếp cột Ghi chú sau Thời gian bảo hành
         "Margin Thiết bị",
         "ĐG COST Thiết bị",
         "TT COST Thiết bị",
@@ -280,25 +286,31 @@ if uploaded_file is not None:
 
       for i in range(len(df_final)):
         r = 5 + i
-        ws_ct.cell(row=r, column=11).number_format = "0%"
-        ws_ct.cell(row=r, column=12).number_format = num_format_vnd
+        ws_ct.cell(row=r, column=12).number_format = (
+            "0%"  # Cột Margin Thiết bị chuyển thành cột 12
+        )
+        ws_ct.cell(row=r, column=13).number_format = (
+            num_format_vnd  # Cột ĐG COST Thiết bị chuyển thành cột 13
+        )
 
         cell_dg = ws_ct.cell(row=r, column=8)
-        cell_dg.value = f"=ROUNDUP(L{r}/(1-K{r}), -3)"
+        cell_dg.value = f"=ROUNDUP(M{r}/(1-L{r}), -3)"  # Điều chỉnh tham chiếu K->L, L->M
         cell_dg.number_format = num_format_vnd
 
         cell_tt = ws_ct.cell(row=r, column=9)
         cell_tt.value = f"=G{r}*H{r}"
         cell_tt.number_format = num_format_vnd
 
-        cell_tt_cost_tb = ws_ct.cell(row=r, column=13)
-        cell_tt_cost_tb.value = f"=G{r}*L{r}"
+        cell_tt_cost_tb = ws_ct.cell(row=r, column=14)  # Chuyển thành cột 14
+        cell_tt_cost_tb.value = f"=G{r}*M{r}"
         cell_tt_cost_tb.number_format = num_format_vnd
 
-        ws_ct.cell(row=r, column=14).number_format = num_format_vnd
+        ws_ct.cell(row=r, column=15).number_format = (
+            num_format_vnd  # Cột ĐG COST Lắp đặt chuyển thành cột 15
+        )
 
-        cell_tt_cost_ld = ws_ct.cell(row=r, column=15)
-        cell_tt_cost_ld.value = f"=G{r}*N{r}"
+        cell_tt_cost_ld = ws_ct.cell(row=r, column=16)  # Chuyển thành cột 16
+        cell_tt_cost_ld.value = f"=G{r}*O{r}"
         cell_tt_cost_ld.number_format = num_format_vnd
 
       # Dòng Tổng Cộng ở Sheet Chi Tiết
@@ -318,11 +330,11 @@ if uploaded_file is not None:
           row=tot_row_ct, column=9, value=f"=SUM(I5:I{last_row_ct})"
       ).number_format = num_format_vnd
       ws_ct.cell(
-          row=tot_row_ct, column=13, value=f"=SUM(M5:M{last_row_ct})"
-      ).number_format = num_format_vnd
+          row=tot_row_ct, column=14, value=f"=SUM(N5:N{last_row_ct})"
+      ).number_format = num_format_vnd  # Cột TT COST TB chuyển thành N
       ws_ct.cell(
-          row=tot_row_ct, column=15, value=f"=SUM(O5:O{last_row_ct})"
-      ).number_format = num_format_vnd
+          row=tot_row_ct, column=16, value=f"=SUM(P5:P{last_row_ct})"
+      ).number_format = num_format_vnd  # Cột TT COST LD chuyển thành P
 
       # Style Header & Viền cho Sheet Chi Tiết
       gray_fill = PatternFill(
@@ -336,7 +348,7 @@ if uploaded_file is not None:
       )
       blue_thick_side = Side(style="medium", color="0000FF")
 
-      for col in range(1, 11):
+      for col in range(1, 12):  # Nhóm cột chính từ STT tới Ghi chú (1 đến 11)
         cell = ws_ct.cell(row=4, column=col)
         cell.fill, cell.border = gray_fill, thin_border
         cell.font = Font(
@@ -346,7 +358,7 @@ if uploaded_file is not None:
             horizontal="center", vertical="center", wrap_text=True
         )
 
-      for col in range(11, 18):
+      for col in range(12, 19):  # Nhóm cột nội bộ/cost (12 đến 18)
         cell = ws_ct.cell(row=4, column=col)
         cell.fill, cell.border = gray_fill, thin_border
         cell.font = Font(
@@ -357,7 +369,7 @@ if uploaded_file is not None:
         )
 
       for r in range(5, tot_row_ct + 1):
-        for c in range(1, 18):
+        for c in range(1, 19):  # Tổng số cột tăng lên 18
           cell = ws_ct.cell(row=r, column=c)
           cell.font = Font(
               name="Times New Roman",
@@ -370,14 +382,14 @@ if uploaded_file is not None:
           if r == tot_row_ct:
             cell.fill = gray_fill
 
-        cell_j = ws_ct.cell(row=r, column=10)
+        cell_j = ws_ct.cell(row=r, column=11)  # Đổi viền ngăn cách sang cột 11 (Ghi chú)
         cell_j.border = Border(
             left=cell_j.border.left,
             top=cell_j.border.top,
             right=blue_thick_side,
             bottom=cell_j.border.bottom,
         )
-    
+
       # =========================================================
       # B. XỬ LÝ DỮ LIỆU & FORMAT SHEET BÁO GIÁ
       # =========================================================
@@ -427,11 +439,11 @@ if uploaded_file is not None:
       ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
       # --- TẠO VIỀN NGOÀI (OUTLINE) CHO KHỐI A6:H9 ---
       thin_side = Side(style="thin", color="000000")
-      
+
       for r in range(6, 10):  # Dòng từ 6 đến 9
         for c in range(1, 9):  # Cột từ A (1) đến H (8)
           cell = ws_bg.cell(row=r, column=c)
-      
+
           # Chỉ gán viền ở 4 mép ngoài cùng của vùng A6:H9
           cell.border = Border(
               top=thin_side if r == 6 else cell.border.top,
@@ -508,71 +520,69 @@ if uploaded_file is not None:
       ws_bg.merge_cells("A15:H15")
       ws_bg["A15"] = "1. Địa điểm thực hiện:"
       ws_bg["A15"].font = Font(name="Times New Roman", size=11, bold=True)
-      
+
       # --- Chừa 1 dòng trống bên dưới cho mục 1 để điền địa điểm ---
       ws_bg.merge_cells("A16:H16")
       ws_bg["A16"] = "   - "  # Hoặc để trống "" để nhập liệu sau
       ws_bg["A16"].font = Font(name="Times New Roman", size=11, bold=False)
-      
+
       ws_bg.merge_cells("A17:H17")
       ws_bg["A17"] = "2. Giá đã bao gồm:"
       ws_bg["A17"].font = Font(name="Times New Roman", size=11, bold=True)
-      
+
       ws_bg.merge_cells("A18:H18")
       ws_bg["A18"] = "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu."
       ws_bg["A18"].font = Font(name="Times New Roman", size=11, bold=False)
-      
+
       ws_bg.merge_cells("A19:H19")
       ws_bg["A19"] = "3. Thanh toán:"
       ws_bg["A19"].font = Font(name="Times New Roman", size=11, bold=True)
-      
+
       ws_bg.merge_cells("A20:H20")
       ws_bg["A20"] = (
           "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi"
           " hoàn thành lắp đặt, nghiệm thu."
       )
       ws_bg["A20"].font = Font(name="Times New Roman", size=11, bold=False)
-      
+
       ws_bg.merge_cells("A21:H21")
       ws_bg["A21"] = "4. Thời gian thực hiện hợp đồng:"
       ws_bg["A21"].font = Font(name="Times New Roman", size=11, bold=True)
-      
+
       ws_bg.merge_cells("A22:H22")
       ws_bg["A22"] = (
           "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng."
       )
       ws_bg["A22"].font = Font(name="Times New Roman", size=11, bold=False)
-      
+
       ws_bg.merge_cells("A23:H23")
       ws_bg["A23"] = "5. Thời gian bảo hành:"
       ws_bg["A23"].font = Font(name="Times New Roman", size=11, bold=True)
-      
+
       ws_bg.merge_cells("A24:H24")
       ws_bg["A24"] = (
           "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao."
       )
       ws_bg["A24"].font = Font(name="Times New Roman", size=11, bold=False)
-      
+
       ws_bg.merge_cells("A25:H25")
       ws_bg["A25"] = (
           "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi"
           " tiết)."
       )
       ws_bg["A25"].font = Font(name="Times New Roman", size=11, bold=False)
-      
+
       ws_bg.merge_cells("A26:H26")
       ws_bg["A26"] = "6. Thời hạn chào giá:"
       ws_bg["A26"].font = Font(name="Times New Roman", size=11, bold=True)
-        
-      ws_bg["A27"] = (
-          "   - 30 ngày"
-      )
+
+      ws_bg["A27"] = "   - 30 ngày"
       ws_bg["A27"].font = Font(name="Times New Roman", size=11, bold=False)
-        
+
       ws_bg.merge_cells("A28:H28")
       ws_bg["A28"] = "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"
       ws_bg["A28"].font = Font(name="Times New Roman", size=11, italic=True)
-      
+
       # Dòng tên công ty đẩy từ G29 xuống G30 do chèn thêm 1 dòng ở trên
       ws_bg["G30"] = "Công ty TNHH Công Nghệ DVC"
       ws_bg["G30"].font = Font(name="Times New Roman", size=11, bold=True)
