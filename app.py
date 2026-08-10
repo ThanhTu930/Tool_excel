@@ -539,20 +539,6 @@ if uploaded_file is not None:
             ws_bg.merge_cells("A9:H9")
             ws_bg["A9"] = "Nội dung:"
             ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
-            # Định nghĩa nét vẽ cho viền dưới (dùng 'thin' cho nét mảnh hoặc 'medium' cho nét dày)
-            thin_bottom = Side(style="thin")
-            
-            # Áp dụng cho dòng 9 (thay max_col bằng số cột cuối cùng trong bảng của bạn, ví dụ: 8 cho cột H)
-            max_col = 8
-            
-            for col in range(1, max_col + 1):
-                cell = ws.cell(row=9, column=col)
-                cell.border = Border(
-                    left=cell.border.left,
-                    right=cell.border.right,
-                    top=cell.border.top,
-                    bottom=thin_bottom,
-                )
             # --- TẠO VIỀN NGOÀI (OUTLINE) CHO KHỐI A6:H8 ---
             thin_side = Side(style="thin", color="000000")
 
@@ -567,6 +553,8 @@ if uploaded_file is not None:
                         left=thin_side if c == 1 else cell.border.left,
                         right=thin_side if c == 8 else cell.border.right,
                     )
+              for c in range(1, 9):
+                  ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
             ws_bg.merge_cells("A10:H10")
             ws_bg["A10"] = (
                 "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
