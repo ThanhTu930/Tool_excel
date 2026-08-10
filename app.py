@@ -425,7 +425,20 @@ if uploaded_file is not None:
       ws_bg.merge_cells("A9:H9")
       ws_bg["A9"] = "Nội dung:"
       ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
-
+      # --- TẠO VIỀN NGOÀI (OUTLINE) CHO KHỐI A6:H9 ---
+      thin_side = Side(style="thin", color="000000")
+      
+      for r in range(6, 10):  # Dòng từ 6 đến 9
+        for c in range(1, 9):  # Cột từ A (1) đến H (8)
+          cell = ws_bg.cell(row=r, column=c)
+      
+          # Chỉ gán viền ở 4 mép ngoài cùng của vùng A6:H9
+          cell.border = Border(
+              top=thin_side if r == 6 else cell.border.top,
+              bottom=thin_side if r == 9 else cell.border.bottom,
+              left=thin_side if c == 1 else cell.border.left,
+              right=thin_side if c == 8 else cell.border.right,
+          )
       ws_bg.merge_cells("A10:H10")
       ws_bg["A10"] = (
           "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
