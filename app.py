@@ -377,24 +377,24 @@ if uploaded_file is not None:
             right=blue_thick_side,
             bottom=cell_j.border.bottom,
         )
-          for col in ws_ct.columns:
-              max_len = 0
-              col_letter = get_column_letter(col[0].column)
+    from openpyxl.utils import get_column_letter
 
-              for cell in col:
-    # Bỏ qua dòng B2 (Tiêu đề "BẢNG GIÁ CHI TIẾT") vì gộp ô sẽ làm lệch độ rộng
-                if cell.row == 2:
-                  continue
+      for col in ws_ct.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
 
-                if cell.value is not None:
-      # Xử lý trường hợp chữ có xuống dòng (\n)
-                  lines = str(cell.value).split("\n")
-                  for line in lines:
-                    if len(line) > max_len:
-                      max_len = len(line)
+        for cell in col:
+          if cell.row == 2:  # Bỏ qua dòng tiêu đề gộp ô "BẢNG GIÁ CHI TIẾT"
+            continue
 
-  # Cộng thêm 4 ký tự padding để chữ không dính sát viền, độ rộng tối thiểu là 10
-          ws_ct.column_dimensions[col_letter].width = max(max_len + 4, 10)
+          if cell.value is not None:
+            lines = str(cell.value).split("\n")
+            for line in lines:
+              if len(line) > max_len:
+                max_len = len(line)
+
+        ws_ct.column_dimensions[col_letter].width = max(max_len + 4, 10)
+    
 
       # =========================================================
       # B. XỬ LÝ DỮ LIỆU & FORMAT SHEET BÁO GIÁ
