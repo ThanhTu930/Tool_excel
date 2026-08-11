@@ -816,7 +816,7 @@ if st.session_state.show_manual_input:
                 st.download_button(
                     label="XUẤT FILE BẢNG GIÁ CHI TIẾT (TỪ DỮ LIỆU NHẬP TAY)",
                     data=excel_bytes,
-                    file_name="BaoGia_NhapTay - R1.xlsx",
+                    file_name="BG - DVC - R1.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     type="primary",
                 )
