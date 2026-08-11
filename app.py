@@ -724,7 +724,7 @@ if uploaded_file is not None:
             img.height = 100
             
             # Gán vị trí đặt logo tại ô A1
-            ws_bg.add_image(img, "A2")
+            ws_bg.add_image(img, "A1")
             
             # Thông tin công ty được lùi sang dải cột C1:H1 để không bị đè bởi Logo
             ws_bg.merge_cells("A1:H1")
