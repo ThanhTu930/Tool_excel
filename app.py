@@ -663,8 +663,8 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["A12"].alignment = Alignment(horizontal="center", vertical="center")
 
         ws_bg.merge_cells("B12:C12")
-        ws_bg["B12"] = "Hệ thống \n(Xem bảng giá chi tiết đính kèm)"
-        ws_bg["B12"].alignment = Alignment(horizontal="left", vertical="center")
+        ws_bg["B12"] = "Hệ thống\n(Xem bảng giá chi tiết đính kèm)"
+        ws_bg["B12"].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
         ws_bg["D12"] = "Hệ thống"
         ws_bg["D12"].alignment = Alignment(horizontal="center", vertical="center")
