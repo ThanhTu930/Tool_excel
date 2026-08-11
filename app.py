@@ -463,7 +463,7 @@ if uploaded_file is not None:
             ).number_format = num_format_vnd
 
             ws_ct.cell(
-                row=tot_row_ct, column=17, value=f"=SUM(Q6:Q{row_III})"
+                row=tot_row_ct, column=17, value=f"=SUM(Q6:Q{last_item_row})"
             ).number_format = num_format_vnd
 
             # --- 6. TÍNH TOÁN BẢNG PHÂN TÍCH MARGIN / COST (BÊN PHẢI) ---
@@ -552,6 +552,9 @@ if uploaded_file is not None:
                 cell_val_item.font = font_regular
                 cell_val_item.alignment = align_right
                 cell_val_item.number_format = num_format_number
+            # Dòng đầu tiên (Nhân công lắp đặt) lấy bằng Tổng cộng TT COST Lắp đặt
+            if idx == 1:
+                cell_val_item.value = f"=Q{tot_row_ct}"
 
             # Dòng Thiết bị (Dòng r0 + 1)
             row_thiet_bi = r0 + 1
@@ -588,7 +591,7 @@ if uploaded_file is not None:
             cell_cost_cptk.number_format = num_format_number
 
             cell_sale_cptk = ws_ct.cell(
-                row=row_cptk, column=start_col + 4, value=f"=I{row_II}+I{row_III}"
+                row=row_cptk, column=start_col + 4, value=f"=I{row_III}"
             )
             cell_sale_cptk.font = font_regular
             cell_sale_cptk.alignment = align_right
