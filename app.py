@@ -553,8 +553,8 @@ if uploaded_file is not None:
                 cell_val_item.alignment = align_right
                 cell_val_item.number_format = num_format_number
             # Dòng đầu tiên (Nhân công lắp đặt) lấy bằng Tổng cộng TT COST Lắp đặt
-            if idx == 1:
-                cell_val_item.value = f"=Q{tot_row_ct}"
+                if idx == 1:
+                    cell_val_item.value = f"=Q{tot_row_ct}"
 
             # Dòng Thiết bị (Dòng r0 + 1)
             row_thiet_bi = r0 + 1
