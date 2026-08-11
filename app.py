@@ -583,30 +583,32 @@ def process_dataframe_and_generate_excel(input_df):
         except Exception:
             pass
 
-        ws_bg.merge_cells("A1:H1")
+        # HEADER CÔNG TY (Bảng rộng từ A -> G)
+        ws_bg.merge_cells("A1:G1")
         ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
         ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
         ws_bg["A1"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg.merge_cells("A2:H2")
+        ws_bg.merge_cells("A2:G2")
         ws_bg["A2"] = "**********"
         ws_bg["A2"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg.merge_cells("A3:H3")
+        ws_bg.merge_cells("A3:G3")
         ws_bg["A3"] = "Hotline: 0909 661 579"
         ws_bg["A3"].font = Font(name="Times New Roman", size=10)
         ws_bg["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg.merge_cells("A4:H4")
+        ws_bg.merge_cells("A4:G4")
         ws_bg["A4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
         ws_bg["A4"].font = Font(name="Times New Roman", size=10, underline="single")
         ws_bg["A4"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg.merge_cells("A5:H5")
+        ws_bg.merge_cells("A5:G5")
         ws_bg["A5"] = "BẢNG BÁO GIÁ"
         ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
         ws_bg["A5"].alignment = Alignment(horizontal="center", vertical="center")
 
+        # THÔNG TIN KHÁCH HÀNG & NGUỜI GỬI
         ws_bg["A6"] = "Kính gửi:"
         ws_bg["A7"] = "Người nhận:"
         ws_bg["A8"] = "Email/Sdt:"
@@ -614,31 +616,32 @@ def process_dataframe_and_generate_excel(input_df):
             ws_bg[cell_id].font = Font(name="Times New Roman", size=10, bold=True)
             ws_bg[cell_id].alignment = Alignment(horizontal="left", vertical="center")
 
-        ws_bg["H6"] = "Người gửi:"
-        ws_bg["H7"] = "Điện thoại:"
-        ws_bg["H8"] = "TPHCM, ngày tháng năm 2026"
-        for cell_id2 in ["H6", "H7", "H8"]:
+        ws_bg["G6"] = "Người gửi:"
+        ws_bg["G7"] = "Điện thoại:"
+        ws_bg["G8"] = "TPHCM, ngày tháng năm 2026"
+        for cell_id2 in ["G6", "G7", "G8"]:
             ws_bg[cell_id2].font = Font(name="Times New Roman", size=10, bold=True)
             ws_bg[cell_id2].alignment = Alignment(horizontal="right", vertical="center")
 
-        ws_bg.merge_cells("A9:H9")
+        ws_bg.merge_cells("A9:G9")
         ws_bg["A9"] = "Nội dung:"
         ws_bg["A9"].font = Font(name="Times New Roman", size=10, bold=True)
 
+        # KHUNG VIỀN THÔNG TIN KHÁCH HÀNG (Cột 1 đến 7: A->G)
         thin_side = Side(style="thin", color="000000")
         for r in range(6, 9):
-            for c in range(1, 9):
+            for c in range(1, 8):
                 cell = ws_bg.cell(row=r, column=c)
                 cell.border = Border(
                     top=thin_side if r == 6 else cell.border.top,
                     bottom=thin_side if r == 8 else cell.border.bottom,
                     left=thin_side if c == 1 else cell.border.left,
-                    right=thin_side if c == 8 else cell.border.right,
+                    right=thin_side if c == 7 else cell.border.right,
                 )
-        for c in range(1, 9):
+        for c in range(1, 8):
             ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
 
-        ws_bg.merge_cells("A10:H10")
+        ws_bg.merge_cells("A10:G10")
         ws_bg["A10"] = (
             "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
             " của công ty chúng tôi. Chúng tôi hân hạnh gửi đến Quý khách hàng"
@@ -646,46 +649,54 @@ def process_dataframe_and_generate_excel(input_df):
         )
         ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
 
+        # TIÊU ĐỀ BẢNG (Không còn gộp B11:C11)
         headers_bg = [
-            ("A11", "Stt"), ("B11", "Nội dung báo giá"), ("D11", "ĐVT"),
-            ("E11", "Số lượng"), ("F11", "Đơn giá\n(VNĐ)"), ("G11", "Thuế GTGT"),
-            ("H11", "Thành tiền\n(VNĐ)"),
+            ("A11", "Stt"),
+            ("B11", "Nội dung báo giá"),
+            ("C11", "ĐVT"),
+            ("D11", "Số lượng"),
+            ("E11", "Đơn giá\n(VNĐ)"),
+            ("F11", "Thuế GTGT"),
+            ("G11", "Thành tiền\n(VNĐ)"),
         ]
 
-        ws_bg.merge_cells("B11:C11")
         for cell_id, text in headers_bg:
             c = ws_bg[cell_id]
             c.value = text
             c.font = Font(name="Times New Roman", size=10, bold=True)
             c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
+        # DÒNG DỮ LIỆU BẢNG (Dòng 12)
         ws_bg["A12"] = 1
         ws_bg["A12"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg.merge_cells("B12:C12")
         ws_bg["B12"] = "Hệ thống\n(Xem bảng giá chi tiết đính kèm)"
         ws_bg["B12"].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
-        ws_bg["D12"] = "Hệ thống"
+        ws_bg["C12"] = "Hệ thống"
+        ws_bg["C12"].alignment = Alignment(horizontal="center", vertical="center")
+
+        ws_bg["D12"] = 1
         ws_bg["D12"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg["E12"] = 1
-        ws_bg["E12"].alignment = Alignment(horizontal="center", vertical="center")
+        ws_bg["E12"] = f"='CHI TIẾT'!I{tot_row_ct}"
+        ws_bg["E12"].number_format = num_format_vnd
+        ws_bg["E12"].alignment = Alignment(horizontal="right", vertical="center")
 
-        ws_bg["F12"] = f"='CHI TIẾT'!I{tot_row_ct}"
+        ws_bg["F12"] = "=E12*8%"
         ws_bg["F12"].number_format = num_format_vnd
         ws_bg["F12"].alignment = Alignment(horizontal="right", vertical="center")
 
-        ws_bg["G12"] = "=F12*8%"
+        ws_bg["G12"] = "=E12+F12"
         ws_bg["G12"].number_format = num_format_vnd
         ws_bg["G12"].alignment = Alignment(horizontal="right", vertical="center")
 
-        ws_bg["H12"] = "=F12+G12"
-        ws_bg["H12"].number_format = num_format_vnd
-        ws_bg["H12"].alignment = Alignment(horizontal="right", vertical="center")
+        # Độ cao dòng 12 để hiển thị đủ 2 dòng chữ
+        ws_bg.row_dimensions[12].height = 35
 
+        # VIỀN BẢNG BÁO GIÁ
         for r in range(11, 13):
-            for col_idx in range(1, 9):
+            for col_idx in range(1, 8):
                 cell = ws_bg.cell(row=r, column=col_idx)
                 cell.border = thin_border
                 if cell.font:
@@ -696,22 +707,23 @@ def process_dataframe_and_generate_excel(input_df):
                         italic=cell.font.italic
                     )
 
+        # ĐIỀU KIỆN THƯƠNG MẠI & GHI CHÚ (Căn gộp từ A -> G)
         terms_bg = [
-            ("A13:H13", "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời điểm xuất hóa đơn.", False, True),
-            ("A14:H14", "Điều kiện thương mại:", True, False),
-            ("A15:H15", "1. Địa điểm thực hiện:", True, False),
-            ("A16:H16", "   - ", False, False),
-            ("A17:H17", "2. Giá đã bao gồm:", True, False),
-            ("A18:H18", "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.", False, False),
-            ("A19:H19", "3. Thanh toán:", True, False),
-            ("A20:H20", "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi hoàn thành lắp đặt, nghiệm thu.", False, False),
-            ("A21:H21", "4. Thời gian thực hiện hợp đồng:", True, False),
-            ("A22:H22", "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng.", False, False),
-            ("A23:H23", "5. Thời gian bảo hành:", True, False),
-            ("A24:H24", "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao.", False, False),
-            ("A25:H25", "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi tiết).", False, False),
-            ("A26:H26", "6. Thời hạn chào giá:", True, False),
-            ("A28:H28", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!", False, True),
+            ("A13:G13", "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời điểm xuất hóa đơn.", False, True),
+            ("A14:G14", "Điều kiện thương mại:", True, False),
+            ("A15:G15", "1. Địa điểm thực hiện:", True, False),
+            ("A16:G16", "   - ", False, False),
+            ("A17:G17", "2. Giá đã bao gồm:", True, False),
+            ("A18:G18", "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.", False, False),
+            ("A19:G19", "3. Thanh toán:", True, False),
+            ("A20:G20", "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi hoàn thành lắp đặt, nghiệm thu.", False, False),
+            ("A21:G21", "4. Thời gian thực hiện hợp đồng:", True, False),
+            ("A22:G22", "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng.", False, False),
+            ("A23:G23", "5. Thời gian bảo hành:", True, False),
+            ("A24:G24", "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao.", False, False),
+            ("A25:G25", "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi tiết).", False, False),
+            ("A26:G26", "6. Thời hạn chào giá:", True, False),
+            ("A28:G28", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!", False, True),
         ]
 
         for range_str, text, is_bold, is_italic in terms_bg:
@@ -732,7 +744,8 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["G30"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_bg["G30"].alignment = Alignment(horizontal="center", vertical="center")
 
-        col_widths_bg = {"A": 6, "B": 16, "C": 16, "D": 10, "E": 10, "F": 15, "G": 14, "H": 16}
+        # CẤU HÌNH ĐỘ RỘNG CỘT (Đã tăng cột B lên 32 để chứa đủ thông tin)
+        col_widths_bg = {"A": 6, "B": 32, "C": 10, "D": 10, "E": 15, "F": 14, "G": 16}
         for col_letter, width in col_widths_bg.items():
             ws_bg.column_dimensions[col_letter].width = width
 
