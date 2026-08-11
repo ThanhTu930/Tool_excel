@@ -16,7 +16,7 @@ st.markdown(
     """
     <style>
     div.stDownloadButton > button {
-        background-color: Green !important;
+        background-color: DarkGreen !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 6px !important;
@@ -24,7 +24,7 @@ st.markdown(
         padding: 0.5rem 1.2rem !important;
     }
     div.stDownloadButton > button:hover {
-        background-color: DarkGreen !important;
+        background-color: Green !important;
         color: #FFFFFF !important;
     }
     div.stDownloadButton > button p {
@@ -32,7 +32,7 @@ st.markdown(
         font-weight: bold !important;
     }
     div.stDownloadButton > button[kind="primary"] {
-        background-color: Red !important;
+        background-color: DarkRed !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 6px !important;
@@ -40,7 +40,7 @@ st.markdown(
         padding: 0.5rem 1.2rem !important;
     }
     div.stDownloadButton > button[kind="primary"]:hover {
-        background-color: DarkRed !important;
+        background-color: Red !important;
         color: #FFFFFF !important;
     }
     div.stDownloadButton > button[kind="primary"] p {
@@ -48,14 +48,14 @@ st.markdown(
         font-weight: bold !important;
     }
     div[data-testid="stFileUploader"] button {
-        background-color: #0066CC !important;
+        background-color: darkblue !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 6px !important;
         border: none !important;
     }
     div[data-testid="stFileUploader"] button:hover {
-        background-color: darkblue !important;
+        background-color: #0066CC !important;
         color: #FFFFFF !important;
     }
     div[data-testid="stFileUploader"] p {
@@ -67,7 +67,7 @@ st.markdown(
         font-weight: bold !important;
     }
     div.stButton > button[kind="primary"] {
-        background-color: #0066CC !important;
+        background-color: DarkBlue  !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 6px !important;
@@ -75,7 +75,7 @@ st.markdown(
         padding: 0.5rem 1.2rem !important;
     }
     div.stButton > button[kind="primary"]:hover {
-        background-color: DarkBlue !important;
+        background-color: #0066CC !important;
         color: #FFFFFF !important;
     }
     div.stButton > button[kind="primary"] p {
