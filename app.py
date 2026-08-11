@@ -711,6 +711,34 @@ if uploaded_file is not None:
             # =========================================================
             # B. XỬ LÝ SHEET BÁO GIÁ
             # =========================================================
+
+            align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+            align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
+            align_right = Alignment(horizontal="right", vertical="center")
+
+            cols_bg_center = [1, 3, 4]
+            cols_bg_left = [2, 7]
+            for r in range(5, tot_row_bg + 1):
+                for c in range(1, 8):  # Duyệt từ Cột 1 (A) đến Cột 7 (G)
+                    cell = ws_bg.cell(row=r, column=c)
+            
+                    # Gán Căn lề chuẩn theo cột
+                    if c in cols_bg_center:
+                        cell.alignment = align_center
+                    elif c in cols_bg_left:
+                        cell.alignment = align_left
+                    else:
+                        cell.alignment = align_right
+            
+                    # Đưa cỡ chữ về 10 (trừ các tiêu đề lớn nếu có)
+                    if cell.font and cell.row > 3:
+                        cell.font = Font(
+                            name=cell.font.name or "Times New Roman",
+                            size=10,
+                            bold=cell.font.bold,
+                            italic=cell.font.italic,
+                            color=cell.font.color,
+                        )
             ws_bg.page_setup.orientation = ws_bg.ORIENTATION_PORTRAIT
             ws_bg.page_setup.paperSize = ws_bg.PAPERSIZE_A4
             ws_bg.sheet_properties.pageSetUpPr.fitToPage = True
