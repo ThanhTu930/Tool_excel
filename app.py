@@ -113,7 +113,7 @@ def generate_sample_template():
         "Stt": [],
         "Thiết bị": [],
         "Mã hàng": [],
-        "Hãng/Xuất xứ": [],
+        "Hãng/\nXuất xứ": [],
         "Mô tả": [],
         "ĐVT": [],
         "Số lượng": [],
@@ -245,7 +245,7 @@ def process_dataframe_and_generate_excel(input_df):
     df_final["NOTE"] = get_col_val(input_df, ["note"], "")
 
     form_columns = [
-        "STT", "Thiết bị", "Mã hàng", "Hãng/Xuất xứ", "Mô tả", "ĐVT",
+        "STT", "Thiết bị", "Mã hàng", "Hãng/\nXuất xứ", "Mô tả", "ĐVT",
         "Số lượng", "Đơn giá (VNĐ)", "Thành tiền (VNĐ)", "Thời gian bảo hành",
         "Ghi chú", "Margin Thiết bị", "ĐG COST Thiết bị", "TT COST Thiết bị",
         "Margin Lắp đặt", "ĐG COST Lắp đặt", "TT COST Lắp đặt", "NCC", "NOTE"
