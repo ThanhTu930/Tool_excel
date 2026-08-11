@@ -720,11 +720,11 @@ if uploaded_file is not None:
             img = Image("logo_dvc.png")
             
             # Chỉnh kích thước logo (chiều rộng x chiều cao tính theo pixel)
-            img.width = 70
-            img.height = 70
+            img.width = 90
+            img.height = 90
             
             # Gán vị trí đặt logo tại ô A1
-            ws_bg.add_image(img, "A1")
+            ws_bg.add_image(img, "A2")
             
             # Thông tin công ty được lùi sang dải cột C1:H1 để không bị đè bởi Logo
             ws_bg.merge_cells("A1:H1")
