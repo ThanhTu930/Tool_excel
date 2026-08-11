@@ -834,8 +834,19 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
     try:
-        input_df = pd.read_excel(uploaded_file)
-
+        # Tự động chọn engine đọc file chuẩn xác theo định dạng
+        file_name = uploaded_file.name.lower()
+        if file_name.endswith(".xlsx"):
+            input_df = pd.read_excel(uploaded_file, engine="openpyxl")
+        elif file_name.endswith(".xls"):
+            try:
+                input_df = pd.read_excel(uploaded_file, engine="xlrd")
+            except Exception:
+                uploaded_file.seek(0)
+                input_df = pd.read_excel(uploaded_file, engine="openpyxl")
+        else:
+            input_df = pd.read_excel(uploaded_file)
+            
         st.subheader("Xem trước dữ liệu vừa tải lên:")
         st.dataframe(input_df, use_container_width=True, hide_index=True)
 
