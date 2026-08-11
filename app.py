@@ -16,7 +16,7 @@ st.markdown(
     """
     <style>
     div.stDownloadButton > button {
-        background-color: LightGreen !important;
+        background-color: Green !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 6px !important;
