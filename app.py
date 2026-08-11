@@ -740,14 +740,18 @@ if uploaded_file is not None:
             
             # --- 2. THÔNG TIN KHÁCH HÀNG & LIÊN HỆ (DÒNG 6-9) ---
             ws_bg["A6"] = "Kính gửi:"
-            ws_bg["G6"] = "Người gửi:"
             ws_bg["A7"] = "Người nhận:"
-            ws_bg["G7"] = "Điện thoại:"
             ws_bg["A8"] = "Email/Sdt:"
-            ws_bg["G8"] = "TPHCM, ngày tháng năm 2026"
-            
-            for cell_id in ["A6", "G6", "A7", "G7", "A8", "G8"]:
+            for cell_id in ["A6","A7","A8"]:
                 ws_bg[cell_id].font = Font(name="Times New Roman", size=10, bold=True)
+                ws_bg[cell_id].alignment = Alignment(horizontal="left", vertical="center")
+            
+            ws_bg["H6"] = "Người gửi:"
+            ws_bg["H7"] = "Điện thoại:"
+            ws_bg["H8"] = "TPHCM, ngày tháng năm 2026"
+            for cell_id in ["A6","A7","A8"]:
+                ws_bg[cell_id].font = Font(name="Times New Roman", size=10, bold=True)
+                ws_bg[cell_id].alignment = Alignment(horizontal="right", vertical="center")
             
             ws_bg.merge_cells("A9:H9")
             ws_bg["A9"] = "Nội dung:"
