@@ -436,7 +436,7 @@ def process_dataframe_and_generate_excel(input_df):
         cell_cost_tb.alignment = align_right
         cell_cost_tb.number_format = num_format_number
 
-        cell_sale_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 4, value="=I5")
+        cell_sale_tb = ws_ct.cell(row=row_thiet_bi,column=start_col + 4, value=f"=I{tot_row_ct}-I{row_III}")
         cell_sale_tb.font = font_regular
         cell_sale_tb.alignment = align_right
         cell_sale_tb.number_format = num_format_number
