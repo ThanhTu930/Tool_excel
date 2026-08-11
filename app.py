@@ -649,7 +649,7 @@ def process_dataframe_and_generate_excel(input_df):
         )
         ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
         ws_bg["A10"].alignment = Alignment(horizontal="left", vertical="center",wrap_text=True)
-
+        ws_bg.row_dimensions[10].height = 35
         # TIÊU ĐỀ BẢNG (Không còn gộp B11:C11)
         headers_bg = [
             ("A11", "Stt"),
