@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.drawing.image import Image
 
 # --- 1. CẤU HÌNH STREAMLIT ---
 st.set_page_config(page_title="Tool nhập liệu DVCTECH", layout="wide")
