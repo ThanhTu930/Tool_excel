@@ -785,23 +785,6 @@ if st.session_state.show_manual_input:
             "ĐG COST Lắp đặt": 0,
             "NCC": "",
             "NOTE": ""
-        },
-        {
-            "Stt": 2,
-            "Thiết bị": "",
-            "Mã hàng": "",
-            "Hãng/Xuất xứ": "",
-            "Mô tả": "",
-            "ĐVT": "",
-            "Số lượng":"" ,
-            "Thời gian bảo hành": "",
-            "Ghi chú": "",
-            "Margin Thiết bị": "",
-            "ĐG COST Thiết bị": 0,
-            "Margin Lắp đặt": "",
-            "ĐG COST Lắp đặt": 0,
-            "NCC": "",
-            "NOTE": ""
         }
     ])
 
