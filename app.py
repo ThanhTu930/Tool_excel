@@ -48,7 +48,7 @@ st.markdown(
         font-weight: bold !important;
     }
     div[data-testid="stFileUploader"] button {
-        background-color: Blue !important;
+        background-color: #0066CC !important;
         color: #FFFFFF !important;
         font-weight: bold !important;
         border-radius: 6px !important;
@@ -75,7 +75,7 @@ st.markdown(
         padding: 0.5rem 1.2rem !important;
     }
     div.stButton > button[kind="primary"]:hover {
-        background-color: #004C99 !important;
+        background-color: DarkBlue !important;
         color: #FFFFFF !important;
     }
     div.stButton > button[kind="primary"] p {
