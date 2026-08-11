@@ -546,7 +546,7 @@ if uploaded_file is not None:
                 curr_row = r0 + idx
                 cell_lbl = ws_ct.cell(row=curr_row, column=start_col, value=label)
                 cell_lbl.font = font_regular
-                cell_lbl.alignment = align_left
+                cell_lbl.alignment = align_right
 
                 cell_val_item = ws_ct.cell(row=curr_row, column=start_col + 1)
                 cell_val_item.font = font_regular
