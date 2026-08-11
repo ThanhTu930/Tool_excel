@@ -829,7 +829,7 @@ st.divider()
 st.write("HOẶC UPLOAD FILE EXCEL CÓ SẴN TẠI ĐÂY (.xlsx, .xls):")
 
 uploaded_file = st.file_uploader(
-    "Upload File", type=["xlsx", "xls"]
+    "Upload", type=["xlsx", "xls"], label_visibility="collapsed"
 )
 
 if uploaded_file is not None:
