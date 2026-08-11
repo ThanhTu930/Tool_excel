@@ -294,6 +294,10 @@ if uploaded_file is not None:
             title_ct.font = Font(name="Times New Roman", size=26, bold=True)
             title_ct.alignment = Alignment(horizontal="center", vertical="center")
 
+            # Tự động tính độ rộng theo chuỗi dài nhất trong cột B
+            max_len = max([len(str(cell.value or '')) for cell in ws_ct['B']])
+            ws_ct.column_dimensions['B'].width = max(max_len + 3, 25) # Đảm bảo độ rộng tối thiểu là 25
+
             num_format_vnd = "#,##0"
             num_items = len(df_final)
             last_item_row = 5 + num_items if num_items > 0 else 6
