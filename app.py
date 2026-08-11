@@ -740,9 +740,9 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["A27"].font = Font(name="Times New Roman", size=10, bold=False)
         ws_bg["A27"].alignment = Alignment(horizontal="left", vertical="center")
 
-        ws_bg["G30"] = "Công ty TNHH Công Nghệ DVC"
-        ws_bg["G30"].font = Font(name="Times New Roman", size=10, bold=True)
-        ws_bg["G30"].alignment = Alignment(horizontal="center", vertical="center")
+        ws_bg["F30"] = "Công ty TNHH Công Nghệ DVC"
+        ws_bg["F30"].font = Font(name="Times New Roman", size=10, bold=True)
+        ws_bg["F30"].alignment = Alignment(horizontal="center", vertical="center")
 
         # CẤU HÌNH ĐỘ RỘNG CỘT (Đã tăng cột B lên 32 để chứa đủ thông tin)
         col_widths_bg = {"A": 6, "B": 32, "C": 10, "D": 10, "E": 15, "F": 14, "G": 16}
