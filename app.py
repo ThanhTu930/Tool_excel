@@ -716,7 +716,7 @@ with col_template:
     st.write("TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM HỆ THỐNG:")
     sample_file_data = generate_sample_template()
     st.download_button(
-        label="📥 FORM BÁO GIÁ MẪU (.xlsx)",
+        label="FORM BÁO GIÁ MẪU (.xlsx)",
         data=sample_file_data,
         file_name="BG Mẫu - DVC.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -725,13 +725,13 @@ with col_template:
 
 with col_manual_btn:
     st.write("HOẶC NHẬP DỮ LIỆU BÁO GIÁ TRỰC TIẾP TRÊN WEB:")
-    if st.button("📝 Nhập Báo Giá Trực Tiếp", use_container_width=True):
+    if st.button("Nhập Báo Giá Trực Tiếp", use_container_width=True):
         st.session_state.show_manual_input = not st.session_state.show_manual_input
 
 # --- 7. KHUNG NHẬP DỮ LIỆU BÁO GIÁ TRỰC TIẾP (15 CỘT CHUẨN FORM MẪU) ---
 if st.session_state.show_manual_input:
     st.markdown("---")
-    st.subheader("📋 Bảng nhập thông tin báo giá trực tiếp")
+    st.subheader("Bảng nhập thông tin báo giá trực tiếp")
     st.caption("Gõ thông tin trực tiếp vào bảng dưới đây. Bấm nút (+) ở dưới cùng bảng để thêm dòng mới:")
 
     # Khởi tạo bảng mẫu với 15 cột khớp chính xác với ảnh
@@ -742,13 +742,13 @@ if st.session_state.show_manual_input:
             "Mã hàng": "",
             "Hãng/Xuất xứ": "",
             "Mô tả": "",
-            "ĐVT": "Cái",
-            "Số lượng": 1,
-            "Thời gian bảo hành": "12 tháng",
+            "ĐVT": "",
+            "Số lượng": "",
+            "Thời gian bảo hành": "",
             "Ghi chú": "",
-            "Margin Thiết bị": "20%",
+            "Margin Thiết bị": "",
             "ĐG COST Thiết bị": 0,
-            "Margin Lắp đặt": "20%",
+            "Margin Lắp đặt": "",
             "ĐG COST Lắp đặt": 0,
             "NCC": "",
             "NOTE": ""
@@ -759,13 +759,13 @@ if st.session_state.show_manual_input:
             "Mã hàng": "",
             "Hãng/Xuất xứ": "",
             "Mô tả": "",
-            "ĐVT": "Bộ",
-            "Số lượng": 1,
-            "Thời gian bảo hành": "12 tháng",
+            "ĐVT": "",
+            "Số lượng":"" ,
+            "Thời gian bảo hành": "",
             "Ghi chú": "",
-            "Margin Thiết bị": "20%",
+            "Margin Thiết bị": "",
             "ĐG COST Thiết bị": 0,
-            "Margin Lắp đặt": "20%",
+            "Margin Lắp đặt": "",
             "ĐG COST Lắp đặt": 0,
             "NCC": "",
             "NOTE": ""
@@ -799,16 +799,16 @@ if st.session_state.show_manual_input:
         key="manual_entry_editor"
     )
 
-    if st.button("🚀 UPLOAD DỮ LIỆU NHẬP TAY", type="primary"):
+    if st.button("UPLOAD DỮ LIỆU NHẬP TAY", type="primary"):
         # Lọc các dòng đã có nhập Tên thiết bị
         df_valid = edited_manual_df[edited_manual_df["Thiết bị"].astype(str).str.strip() != ""].copy()
 
         if df_valid.empty:
-            st.error("⚠️ Vui lòng điền thông tin tên 'Thiết bị' ít nhất 1 dòng trước khi Upload!")
+            st.error("Vui lòng điền thông tin tên 'Thiết bị' ít nhất 1 dòng trước khi Upload!")
         else:
             try:
                 excel_bytes = process_dataframe_and_generate_excel(df_valid)
-                st.success("✅ Đã xử lý dữ liệu nhập tay thành công!")
+                st.success("Đã xử lý dữ liệu nhập tay thành công!")
 
                 st.subheader("Xem trước dữ liệu vừa nhập:")
                 st.dataframe(df_valid, use_container_width=True, hide_index=True)
@@ -821,7 +821,7 @@ if st.session_state.show_manual_input:
                     type="primary",
                 )
             except Exception as e:
-                st.error(f"⚠️ Có lỗi khi xử lý dữ liệu nhập tay: {e}")
+                st.error(f"Có lỗi khi xử lý dữ liệu nhập tay: {e}")
 
 st.divider()
 
@@ -864,4 +864,4 @@ if uploaded_file is not None:
         )
 
     except Exception as e:
-        st.error(f"⚠️ Có lỗi khi xử lý file: {e}")
+        st.error(f"Có lỗi khi xử lý file: {e}")
