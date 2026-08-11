@@ -727,24 +727,24 @@ if uploaded_file is not None:
             ws_bg.add_image(img, "A1")
             
             # Thông tin công ty được lùi sang dải cột C1:H1 để không bị đè bởi Logo
-            ws_bg.merge_cells("C1:H1")
-            ws_bg["C1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
-            ws_bg["C1"].font = Font(name="Times New Roman", size=12, bold=True)
-            ws_bg["C1"].alignment = Alignment(horizontal="center", vertical="center")
+            ws_bg.merge_cells("A1:H1")
+            ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
+            ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
+            ws_bg["A1"].alignment = Alignment(horizontal="center", vertical="center")
             
-            ws_bg.merge_cells("C2:H2")
-            ws_bg["C2"] = "**********"
-            ws_bg["C2"].alignment = Alignment(horizontal="center", vertical="center")
+            ws_bg.merge_cells("A2:H2")
+            ws_bg["A2"] = "**********"
+            ws_bg["A2"].alignment = Alignment(horizontal="center", vertical="center")
             
-            ws_bg.merge_cells("C3:H3")
-            ws_bg["C3"] = "Hotline: 0909 661 579"
-            ws_bg["C3"].font = Font(name="Times New Roman", size=10)
-            ws_bg["C3"].alignment = Alignment(horizontal="center", vertical="center")
+            ws_bg.merge_cells("A3:H3")
+            ws_bg["A3"] = "Hotline: 0909 661 579"
+            ws_bg["A3"].font = Font(name="Times New Roman", size=10)
+            ws_bg["A3"].alignment = Alignment(horizontal="center", vertical="center")
             
-            ws_bg.merge_cells("C4:H4")
-            ws_bg["C4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
-            ws_bg["C4"].font = Font(name="Times New Roman", size=10, underline="single")
-            ws_bg["C4"].alignment = Alignment(horizontal="center", vertical="center")
+            ws_bg.merge_cells("A4:H4")
+            ws_bg["A4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
+            ws_bg["A4"].font = Font(name="Times New Roman", size=10, underline="single")
+            ws_bg["A4"].alignment = Alignment(horizontal="center", vertical="center")
             
             ws_bg.merge_cells("A5:H5")
             ws_bg["A5"] = "BẢNG BÁO GIÁ"
