@@ -716,7 +716,7 @@ with col_template:
     st.write("TẢI FILE BÁO GIÁ MẪU ĐỂ NHẬP THEO FORM HỆ THỐNG:")
     sample_file_data = generate_sample_template()
     st.download_button(
-        label="FORM BÁO GIÁ MẪU (.xlsx)",
+        label="Form Báo Giá Mẫu (.xlsx)",
         data=sample_file_data,
         file_name="BG Mẫu - DVC.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -799,7 +799,7 @@ if st.session_state.show_manual_input:
         key="manual_entry_editor"
     )
 
-    if st.button("UPLOAD DỮ LIỆU NHẬP TAY", type="primary"):
+    if st.button("Upload Dữ Liệu", type="primary"):
         # Lọc các dòng đã có nhập Tên thiết bị
         df_valid = edited_manual_df[edited_manual_df["Thiết bị"].astype(str).str.strip() != ""].copy()
 
@@ -814,7 +814,7 @@ if st.session_state.show_manual_input:
                 st.dataframe(df_valid, use_container_width=True, hide_index=True)
 
                 st.download_button(
-                    label="XUẤT FILE BẢNG GIÁ CHI TIẾT (TỪ DỮ LIỆU NHẬP TAY)",
+                    label="Xuất FILE Bảng Giá Chi Tiết",
                     data=excel_bytes,
                     file_name="BG - DVC - R1.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -856,7 +856,7 @@ if uploaded_file is not None:
         output_filename = f"{name_without_ext} - R1{ext}"
 
         st.download_button(
-            label="XUẤT FILE BẢNG GIÁ CHI TIẾT",
+            label="Xuất FILE Bảng Giá Chi Tiết",
             data=excel_bytes,
             file_name=output_filename,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
