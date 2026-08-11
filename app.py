@@ -16,52 +16,52 @@ st.markdown(
     <style>
     /* 1. Đổi màu nút Tải Form Mẫu ở trên */
     div.stDownloadButton > button {
-        background-color: Green !important; /* Màu xanh lá chuẩn */
-        color: #FFFFFF !important;              /* Mặc định chữ màu trắng */
-        font-weight: bold !important;          /* Chữ in đậm */
-        border-radius: 6px !important;          /* Bo góc nút */
+        background-color: Green !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
         border: none !important;
         padding: 0.5rem 1.2rem !important;
     }
     div.stDownloadButton > button:hover {
-        background-color: DarkGreen !important; /* Xanh đậm khi rê chuột */
+        background-color: DarkGreen !important;
         color: #FFFFFF !important;
     }
     div.stDownloadButton > button p {
-        font-size: 18px !important;  /* Cỡ chữ nút bấm */
-        font-weight: bold !important; /* Chữ đậm */
+        font-size: 18px !important;
+        font-weight: bold !important;
     }
     div.stDownloadButton > button[kind="primary"] {
-        background-color: Red !important; /* Màu đỏ chuẩn */
-        color: #FFFFFF !important;              /* Mặc định chữ màu trắng */
-        font-weight: bold !important;          /* Chữ in đậm */
-        border-radius: 6px !important;          /* Bo góc nút */
+        background-color: Red !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
         border: none !important;
         padding: 0.5rem 1.2rem !important;
     }
     div.stDownloadButton > button[kind="primary"]:hover {
-        background-color: DarkRed !important; /* Đỏ đậm khi rê chuột */
+        background-color: DarkRed !important;
         color: #FFFFFF !important;
     }
     div.stDownloadButton > button[kind="primary"] p {
-        font-size: 18px !important;  /* Cỡ chữ nút bấm */
-        font-weight: bold !important; /* Chữ đậm */
+        font-size: 18px !important;
+        font-weight: bold !important;
     }
     /* 2. Đổi màu nút Upload bên trong khung Tải File ở dưới */
     div[data-testid="stFileUploader"] button {
-        background-color: Blue !important; /* Màu xanh lá đồng bộ */
-        color: #FFFFFF !important;              /* Chữ màu trắng */
-        font-weight: bold !important;          /* Chữ in đậm */
-        border-radius: 6px !important;          /* Bo góc nút */
+        background-color: Blue !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
         border: none !important;
     }
     div[data-testid="stFileUploader"] button:hover {
-        background-color: darkblue !important; /* Xanh đậm khi rê chuột */
+        background-color: darkblue !important;
         color: #FFFFFF !important;
     }
     div[data-testid="stFileUploader"] p {
-        font-size: 18px !important;  /* Cỡ chữ nút bấm */
-        font-weight: bold !important; /* Chữ đậm */
+        font-size: 18px !important;
+        font-weight: bold !important;
     }
     div[data-testid="stMarkdownContainer"] p {
         font-size: 18px !important;
@@ -89,6 +89,7 @@ def generate_sample_template():
         "Ghi chú": [],
         "Margin Thiết bị": [],
         "ĐG COST Thiết bị": [],
+        "Margin Lắp đặt": [],  # <--- BỔ SUNG TRƯỚC CỘT ĐG COST LẮP ĐẶT
         "ĐG COST Lắp đặt": [],
         "NCC": [],
         "NOTE": [],
@@ -109,7 +110,7 @@ def generate_sample_template():
             bottom=Side(style="thin"),
         )
 
-        for col in range(1, 15):
+        for col in range(1, 16):  # Cập nhật thành 15 cột mẫu
             cell = worksheet.cell(row=1, column=col)
             cell.fill = gray_fill
             cell.font = Font(bold=True)
@@ -117,7 +118,7 @@ def generate_sample_template():
             cell.border = thin_border
 
         for row in range(2, 4):
-            for col in range(1, 15):
+            for col in range(1, 16):
                 worksheet.cell(row=row, column=col).border = thin_border
 
     return output.getvalue()
@@ -210,8 +211,9 @@ if uploaded_file is not None:
         )
         df_final["Ghi chú"] = get_col_val(input_df, ["ghi chú"], "")
 
+        # Margin & Cost Thiết bị
         raw_margin = get_col_val(
-            input_df, ["margin thiết bị", "margin tb", "margin"], 0
+            input_df, ["margin thiết bị", "margin tb"], 0
         )
         margin_clean = raw_margin.apply(clean_currency)
         df_final["Margin Thiết bị"] = margin_clean.apply(
@@ -224,6 +226,15 @@ if uploaded_file is not None:
         df_final["ĐG COST Thiết bị"] = raw_cost.apply(clean_currency)
         df_final["TT COST Thiết bị"] = None
 
+        # Margin & Cost Lắp đặt (CẬP NHẬT CỘT MARGIN LẮP ĐẶT)
+        raw_margin_ld = get_col_val(
+            input_df, ["margin lắp đặt", "margin ld"], 0
+        )
+        margin_ld_clean = raw_margin_ld.apply(clean_currency)
+        df_final["Margin Lắp đặt"] = margin_ld_clean.apply(
+            lambda x: x / 100.0 if x >= 1.0 else x
+        )
+
         raw_lapdat = get_col_val(
             input_df, ["đg cost lắp đặt", "cost lắp đặt", "giá lắp đặt"], 0
         )
@@ -233,6 +244,7 @@ if uploaded_file is not None:
         df_final["NCC"] = get_col_val(input_df, ["ncc"], "")
         df_final["NOTE"] = get_col_val(input_df, ["note"], "")
 
+        # Cấu trúc 19 cột cho Sheet CHI TIẾT
         form_columns = [
             "STT",
             "Thiết bị",
@@ -248,10 +260,11 @@ if uploaded_file is not None:
             "Margin Thiết bị",
             "ĐG COST Thiết bị",
             "TT COST Thiết bị",
-            "ĐG COST Lắp đặt",
-            "TT COST Lắp đặt",
-            "NCC",
-            "NOTE",
+            "Margin Lắp đặt",    # Col 15 (O)
+            "ĐG COST Lắp đặt",   # Col 16 (P)
+            "TT COST Lắp đặt",   # Col 17 (Q)
+            "NCC",              # Col 18 (R)
+            "NOTE",             # Col 19 (S)
         ]
         df_final = df_final.reindex(columns=form_columns)
 
@@ -259,7 +272,7 @@ if uploaded_file is not None:
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
             ws_bg = writer.book.create_sheet(title="BÁO GIÁ", index=0)
 
-            # Ghi dữ liệu thiết bị từ dòng 6 (startrow=5) để chừa dòng 4 cho Header và dòng 5 cho Mục I
+            # Ghi dữ liệu từ dòng 6 (startrow=5)
             df_final.to_excel(
                 writer, index=False, header=False, sheet_name="CHI TIẾT", startrow=5
             )
@@ -296,7 +309,6 @@ if uploaded_file is not None:
             cell_i_tb = ws_ct.cell(row=5, column=2, value="Thiết bị chính")
             cell_i_tb.font = Font(name="Times New Roman", size=11, bold=True)
 
-            # Công thức SUM thành tiền từ dòng 6 đến hết danh sách thiết bị
             cell_i_tt = ws_ct.cell(
                 row=5, column=9, value=f"=SUM(I6:I{last_item_row})"
             )
@@ -317,6 +329,7 @@ if uploaded_file is not None:
                     horizontal="center", vertical="center"
                 )
 
+                # Cost & Margin Thiết bị (Col 12: L, Col 13: M, Col 14: N)
                 ws_ct.cell(row=r, column=12).number_format = "0%"
                 ws_ct.cell(row=r, column=13).number_format = num_format_vnd
 
@@ -332,13 +345,14 @@ if uploaded_file is not None:
                 cell_tt_cost_tb.value = f"=G{r}*M{r}"
                 cell_tt_cost_tb.number_format = num_format_vnd
 
-                ws_ct.cell(row=r, column=15).number_format = num_format_vnd
+                # Cost & Margin Lắp đặt (Col 15: O, Col 16: P, Col 17: Q)
+                ws_ct.cell(row=r, column=15).number_format = "0%"      # Margin Lắp đặt
+                ws_ct.cell(row=r, column=16).number_format = num_format_vnd  # ĐG COST Lắp đặt
 
-                cell_tt_cost_ld = ws_ct.cell(row=r, column=16)
-                cell_tt_cost_ld.value = f"=G{r}*O{r}"
+                cell_tt_cost_ld = ws_ct.cell(row=r, column=17)
+                cell_tt_cost_ld.value = f"=G{r}*P{r}"  # SL * ĐG COST Lắp đặt
                 cell_tt_cost_ld.number_format = num_format_vnd
 
-            # --- 3. MỤC II: VẬT TƯ THI CÔNG ---
             # --- 3. MỤC II: VẬT TƯ THI CÔNG ---
             row_II = last_item_row + 1
             ws_ct.cell(row=row_II, column=1, value="II").alignment = Alignment(
@@ -363,13 +377,11 @@ if uploaded_file is not None:
             cell_ii_sl = ws_ct.cell(row=row_II, column=7, value=1)
             cell_ii_sl.alignment = Alignment(horizontal="center", vertical="center")
 
-            # Đơn giá & Thành tiền BÁN
             ws_ct.cell(row=row_II, column=8).number_format = num_format_vnd
             ws_ct.cell(
                 row=row_II, column=9, value=f"=G{row_II}*H{row_II}"
             ).number_format = num_format_vnd
 
-            # Đơn giá & Thành tiền COST Thiết bị
             ws_ct.cell(row=row_II, column=13).number_format = num_format_vnd
             ws_ct.cell(
                 row=row_II, column=14, value=f"=G{row_II}*M{row_II}"
@@ -398,13 +410,11 @@ if uploaded_file is not None:
             cell_iii_sl = ws_ct.cell(row=row_III, column=7, value=1)
             cell_iii_sl.alignment = Alignment(horizontal="center", vertical="center")
 
-            # Đơn giá & Thành tiền BÁN
             ws_ct.cell(row=row_III, column=8).number_format = num_format_vnd
             ws_ct.cell(
                 row=row_III, column=9, value=f"=G{row_III}*H{row_III}"
             ).number_format = num_format_vnd
 
-            # Đơn giá & Thành tiền COST Thiết bị
             ws_ct.cell(row=row_III, column=13).number_format = num_format_vnd
             ws_ct.cell(
                 row=row_III, column=14, value=f"=G{row_III}*M{row_III}"
@@ -422,80 +432,62 @@ if uploaded_file is not None:
                 horizontal="center", vertical="center"
             )
 
-            # Công thức Tổng cộng = Dòng I + Dòng II + Dòng III
             ws_ct.cell(
                 row=tot_row_ct, column=9, value=f"=I5+I{row_II}+I{row_III}"
             ).number_format = num_format_vnd
 
-            # Tổng Thành tiền COST Thiết bị (quét từ N6 đến mục II)
             ws_ct.cell(
                 row=tot_row_ct, column=14, value=f"=SUM(N6:N{row_II})"
             ).number_format = num_format_vnd
 
-            # Tổng Thành tiền COST Lắp đặt
+            # Tổng Thành tiền COST Lắp đặt (Cột 17 / Q)
             ws_ct.cell(
-                row=tot_row_ct, column=16, value=f"=SUM(P6:P{last_item_row})"
+                row=tot_row_ct, column=17, value=f"=SUM(Q6:Q{last_item_row})"
             ).number_format = num_format_vnd
-            from openpyxl.styles import Alignment, Font
-            from openpyxl.utils import get_column_letter
-            
-            # --- TÍNH TOÁN VỊ TRÍ ĐẶT BẢNG ---
-            note_col = 17  # Giả định cột NOTE là cột 17 (Q). Điều chỉnh nếu khác
-            start_col = note_col + 3
+
+            # --- 6. TÍNH TOÁN VỊ TRÍ BẢNG PHÂN TÍCH MARGIN / COST (BÊN PHẢI) ---
+            note_col = 19  # Cột S (NOTE)
+            start_col = note_col + 3  # Cột V
             r0 = tot_row_ct + 3  # Dòng dữ liệu TỔNG TRƯỚC THUẾ
-            
-            # Ký hiệu các cột (VD: T, U, V, W, X, Y, Z)
-            c_item = get_column_letter(start_col)  # Cột 1: Danh mục CPTK
-            c_val = get_column_letter(start_col + 1)  # Cột 2: Số tiền CPTK
-            c_blank = get_column_letter(start_col + 2)  # Cột 3: CỘT TRỐNG (TẠO KHOẢNG CÁCH)
-            c_cost = get_column_letter(start_col + 3)  # Cột 4: COST
-            c_sale = get_column_letter(start_col + 4)  # Cột 5: GIÁ BÁN
-            c_mg = get_column_letter(start_col + 5)  # Cột 6: MARGIN
-            c_type = get_column_letter(start_col + 6)  # Cột 7: Phân loại
-            
-            # Style & Format
+
+            c_item = get_column_letter(start_col)
+            c_val = get_column_letter(start_col + 1)
+            c_blank = get_column_letter(start_col + 2)
+            c_cost = get_column_letter(start_col + 3)
+            c_sale = get_column_letter(start_col + 4)
+            c_mg = get_column_letter(start_col + 5)
+            c_type = get_column_letter(start_col + 6)
+
             font_bold = Font(name="Times New Roman", size=11, bold=True)
             font_regular = Font(name="Times New Roman", size=11, bold=False)
             align_left = Alignment(horizontal="left", vertical="center")
             align_right = Alignment(horizontal="right", vertical="center")
-            
-            num_format_number = "#,##0"  # Format số không bao gồm VNĐ
+
+            num_format_number = "#,##0"
             num_format_percent = "0%"
-            
-            # --- 1. HÀNG TIÊU ĐỀ: COST - GIÁ BÁN - MARGIN (Dòng r0 - 1) ---
+
+            # Header Bảng phân tích
             row_header = r0 - 1
-            
-            cell_h_cost = ws_ct.cell(row=row_header, column=start_col + 3, value="COST")
-            cell_h_cost.font = font_bold
-            cell_h_cost.alignment = align_right
-            
-            cell_h_sale = ws_ct.cell(row=row_header, column=start_col + 4, value="GIÁ BÁN")
-            cell_h_sale.font = font_bold
-            cell_h_sale.alignment = align_right
-            
-            cell_h_margin = ws_ct.cell(
-                row=row_header, column=start_col + 5, value="MARGIN"
-            )
-            cell_h_margin.font = font_bold
-            cell_h_margin.alignment = align_right
-            
-            
-            # --- 2. DÒNG TỔNG TRƯỚC THUẾ (Dòng r0) ---
-            # Cột 1: Chi phí triển khai
+            ws_ct.cell(row=row_header, column=start_col + 3, value="COST").font = font_bold
+            ws_ct.cell(row=row_header, column=start_col + 3).alignment = align_right
+
+            ws_ct.cell(row=row_header, column=start_col + 4, value="GIÁ BÁN").font = font_bold
+            ws_ct.cell(row=row_header, column=start_col + 4).alignment = align_right
+
+            ws_ct.cell(row=row_header, column=start_col + 5, value="MARGIN").font = font_bold
+            ws_ct.cell(row=row_header, column=start_col + 5).alignment = align_right
+
+            # Dòng TỔNG TRƯỚC THUẾ
             ws_ct.cell(row=r0, column=start_col, value="Chi phí triển khai").font = font_bold
             ws_ct.cell(row=r0, column=start_col).alignment = align_left
-            
-            # Cột 2: Tổng các dòng chi phí bên dưới
+
             cell_sum_cp = ws_ct.cell(
                 row=r0, column=start_col + 1, value=f"=SUM({c_val}{r0+1}:{c_val}{r0+8})"
             )
             cell_sum_cp.font = font_bold
             cell_sum_cp.alignment = align_right
             cell_sum_cp.number_format = num_format_number
-            
-            # Cột 3: Cột trống (Chỉ định độ rộng nếu cần, ví dụ: ws_ct.column_dimensions[c_blank].width = 3)
-            
-            # Cột 4: COST Tổng = Dòng Thiết bị + Dòng Chi phí triển khai
+
             cell_cost_tot = ws_ct.cell(
                 row=r0,
                 column=start_col + 3,
@@ -504,8 +496,7 @@ if uploaded_file is not None:
             cell_cost_tot.font = font_bold
             cell_cost_tot.alignment = align_right
             cell_cost_tot.number_format = num_format_number
-            
-            # Cột 5: GIÁ BÁN Tổng
+
             cell_sale_tot = ws_ct.cell(
                 row=r0,
                 column=start_col + 4,
@@ -514,8 +505,7 @@ if uploaded_file is not None:
             cell_sale_tot.font = font_bold
             cell_sale_tot.alignment = align_right
             cell_sale_tot.number_format = num_format_number
-            
-            # Cột 6: MARGIN Tổng = (GIÁ BÁN - COST) / GIÁ BÁN
+
             cell_margin_tot = ws_ct.cell(
                 row=r0,
                 column=start_col + 5,
@@ -524,15 +514,11 @@ if uploaded_file is not None:
             cell_margin_tot.font = font_bold
             cell_margin_tot.alignment = align_right
             cell_margin_tot.number_format = num_format_percent
-            
-            # Cột 7: Nhãn TỔNG TRƯỚC THUẾ
-            ws_ct.cell(row=r0, column=start_col + 6, value="TỔNG TRƯỚC THUẾ").font = (
-                font_bold
-            )
+
+            ws_ct.cell(row=r0, column=start_col + 6, value="TỔNG TRƯỚC THUẾ").font = font_bold
             ws_ct.cell(row=r0, column=start_col + 6).alignment = align_left
-            
-            
-            # --- 3. TẠO CÁC DÒNG CHI TIẾT BÊN DƯỚI (8 DÒNG) ---
+
+            # Dòng Chi tiết Chi phí
             items_cp = [
                 "Nhân công lắp đặt",
                 "Vận chuyển",
@@ -543,44 +529,36 @@ if uploaded_file is not None:
                 "Chi phí khác (ATLĐ, Bảo hiểm, ...)",
                 "Chi phí nhân sự quản lý dự án",
             ]
-            
+
             for idx, label in enumerate(items_cp, start=1):
                 curr_row = r0 + idx
-            
-                # Cột 1: Tên hạng mục
                 cell_lbl = ws_ct.cell(row=curr_row, column=start_col, value=label)
                 cell_lbl.font = font_regular
                 cell_lbl.alignment = align_left
-            
-                # Cột 2: Số tiền
+
                 cell_val = ws_ct.cell(row=curr_row, column=start_col + 1)
                 cell_val.font = font_regular
                 cell_val.alignment = align_right
                 cell_val.number_format = num_format_number
-            
-                # Mục Nhân công lắp đặt (Dòng 1): Gán bằng Tổng Thành tiền COST Lắp đặt (=P{tot_row_ct})
+
+                # Gán bằng Tổng COST Lắp đặt (Cột Q / 17)
                 if idx == 1:
-                    cell_val.value = f"=P{tot_row_ct}"
-            
-            
-            # --- 4. DÒNG THIẾT BỊ (Dòng r0 + 1) ---
+                    cell_val.value = f"=Q{tot_row_ct}"
+
+            # Dòng Thiết bị (Dòng r0 + 1)
             row_thiet_bi = r0 + 1
-            
-            # COST Thiết bị = Tổng COST Thiết bị ở bảng chính (Cột N - Column 14)
             cell_cost_tb = ws_ct.cell(
                 row=row_thiet_bi, column=start_col + 3, value=f"=N{tot_row_ct}"
             )
             cell_cost_tb.font = font_regular
             cell_cost_tb.alignment = align_right
             cell_cost_tb.number_format = num_format_number
-            
-            # GIÁ BÁN Thiết bị = Tổng tiền Bán Thiết bị ở bảng chính (=I5)
+
             cell_sale_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 4, value="=I5")
             cell_sale_tb.font = font_regular
             cell_sale_tb.alignment = align_right
             cell_sale_tb.number_format = num_format_number
-            
-            # MARGIN Thiết bị
+
             cell_mg_tb = ws_ct.cell(
                 row=row_thiet_bi,
                 column=start_col + 5,
@@ -589,33 +567,25 @@ if uploaded_file is not None:
             cell_mg_tb.font = font_regular
             cell_mg_tb.alignment = align_right
             cell_mg_tb.number_format = num_format_percent
-            
-            # Nhãn Cột 7
-            ws_ct.cell(row=row_thiet_bi, column=start_col + 6, value="Thiết bị").font = (
-                font_regular
-            )
-            
-            
-            # --- 5. DÒNG CHI PHÍ TRIỂN KHAI BÊN PHẢI (Dòng r0 + 2) ---
+
+            ws_ct.cell(row=row_thiet_bi, column=start_col + 6, value="Thiết bị").font = font_regular
+
+            # Dòng Chi phí triển khai (Dòng r0 + 2)
             row_cptk = r0 + 2
-            
-            # COST Chi phí triển khai = Tổng ô Chi phí triển khai ở cột 2
             cell_cost_cptk = ws_ct.cell(
                 row=row_cptk, column=start_col + 3, value=f"={c_val}{r0}"
             )
             cell_cost_cptk.font = font_regular
             cell_cost_cptk.alignment = align_right
             cell_cost_cptk.number_format = num_format_number
-            
-            # GIÁ BÁN Chi phí triển khai = Tổng tiền bán Mục II + Mục III ở bảng chính
+
             cell_sale_cptk = ws_ct.cell(
                 row=row_cptk, column=start_col + 4, value=f"=I{row_II}+I{row_III}"
             )
             cell_sale_cptk.font = font_regular
             cell_sale_cptk.alignment = align_right
             cell_sale_cptk.number_format = num_format_number
-            
-            # MARGIN Chi phí triển khai
+
             cell_mg_cptk = ws_ct.cell(
                 row=row_cptk,
                 column=start_col + 5,
@@ -624,11 +594,11 @@ if uploaded_file is not None:
             cell_mg_cptk.font = font_regular
             cell_mg_cptk.alignment = align_right
             cell_mg_cptk.number_format = num_format_percent
-            
-            # Nhãn Cột 7
+
             ws_ct.cell(
                 row=row_cptk, column=start_col + 6, value="Chi phí triển khai"
             ).font = font_regular
+
             # Style Header & Viền cho Sheet Chi Tiết
             gray_fill = PatternFill(
                 start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
@@ -651,7 +621,7 @@ if uploaded_file is not None:
                     horizontal="center", vertical="center", wrap_text=True
                 )
 
-            for col in range(12, 19):  # Nhóm cột nội bộ/cost (12 đến 18)
+            for col in range(12, 20):  # Nhóm cột nội bộ/cost/margin (12 đến 19)
                 cell = ws_ct.cell(row=4, column=col)
                 cell.fill, cell.border = gray_fill, thin_border
                 cell.font = Font(
@@ -662,9 +632,8 @@ if uploaded_file is not None:
                 )
 
             for r in range(5, tot_row_ct + 1):
-                # Kiểm tra nếu là dòng tiêu đề mục I, II, III hoặc dòng TỔNG CỘNG thì in đậm toàn bộ
                 is_section_or_total = (r in (5, row_II, row_III, tot_row_ct))
-                for c in range(1, 19):  # Tổng số 18 cột
+                for c in range(1, 20):  # 19 cột
                     cell = ws_ct.cell(row=r, column=c)
                     cell.font = Font(
                         name="Times New Roman",
@@ -673,11 +642,10 @@ if uploaded_file is not None:
                     )
                     cell.border = thin_border
 
-                    # Tô màu xám (gray_fill) cho toàn bộ dòng Tổng cộng
                     if r == tot_row_ct:
                         cell.fill = gray_fill
 
-                cell_j = ws_ct.cell(row=r, column=11)  # Đổi viền ngăn cách sang cột 11 (Ghi chú)
+                cell_j = ws_ct.cell(row=r, column=11)  # Đường kẻ ngăn cách tại cột Ghi chú (Col 11)
                 cell_j.border = Border(
                     left=cell_j.border.left,
                     top=cell_j.border.top,
@@ -725,23 +693,19 @@ if uploaded_file is not None:
             ws_bg["A7"] = "Người nhận:"
             ws_bg["G7"] = "Điện thoại:"
             ws_bg["A8"] = "Email/Sdt:"
-            ws_bg["G8"] = (
-            "TPHCM, ngày tháng năm 2026"
-            )
+            ws_bg["G8"] = "TPHCM, ngày tháng năm 2026"
+
             for cell_id in ["A6", "G6", "A7", "G7", "A8", "G8"]:
                 ws_bg[cell_id].font = Font(name="Times New Roman", size=11, bold=True)
 
             ws_bg.merge_cells("A9:H9")
             ws_bg["A9"] = "Nội dung:"
             ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
-            # --- TẠO VIỀN NGOÀI (OUTLINE) CHO KHỐI A6:H8 ---
+
             thin_side = Side(style="thin", color="000000")
-
-            for r in range(6, 9):  # Dòng từ 6 đến 8
-                for c in range(1, 9):  # Cột từ A (1) đến H (8)
+            for r in range(6, 9):
+                for c in range(1, 9):
                     cell = ws_bg.cell(row=r, column=c)
-
-                    # Chỉ gán viền ở 4 mép ngoài cùng của vùng A6:H9
                     cell.border = Border(
                         top=thin_side if r == 6 else cell.border.top,
                         bottom=thin_side if r == 8 else cell.border.bottom,
@@ -750,6 +714,7 @@ if uploaded_file is not None:
                     )
             for c in range(1, 9):
                 ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
+
             ws_bg.merge_cells("A10:H10")
             ws_bg["A10"] = (
                 "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
