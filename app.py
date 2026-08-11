@@ -82,6 +82,23 @@ st.markdown(
         font-size: 18px !important;
         font-weight: bold !important;
     }
+    /* Đổi màu nút Nhập Báo Giá Trực Tiếp (ví dụ: Màu Cam) */
+    div.stButton > button[kind="secondary"] {
+        background-color: Gray !important; /* Màu cam chính */
+        color: #FFFFFF !important;            /* Màu chữ trắng */
+        font-weight: bold !important;
+        border-radius: 6px !important;
+        border: none !important;
+        padding: 0.5rem 1.2rem !important;
+    }
+    div.stButton > button[kind="secondary"]:hover {
+        background-color: DarkGray !important; /* Màu cam đậm khi di chuột vào */
+        color: #FFFFFF !important;
+    }
+    div.stButton > button[kind="secondary"] p {
+        font-size: 18px !important;
+        font-weight: bold !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -741,7 +758,7 @@ with col_template:
 
 with col_manual_btn:
     st.write("HOẶC NHẬP DỮ LIỆU BÁO GIÁ TRỰC TIẾP TRÊN WEB:")
-    if st.button("Nhập Báo Giá Trực Tiếp", use_container_width=True):
+    if st.button("Nhập Báo Giá Trực Tiếp", use_container_width=True,type="secondary"):
         st.session_state.show_manual_input = not st.session_state.show_manual_input
 
 # --- 7. KHUNG NHẬP DỮ LIỆU BÁO GIÁ TRỰC TIẾP (15 CỘT CHUẨN FORM MẪU) ---
