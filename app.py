@@ -66,6 +66,22 @@ st.markdown(
         font-size: 18px !important;
         font-weight: bold !important;
     }
+    div.stButton > button[kind="primary"] {
+        background-color: #0066CC !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
+        border: none !important;
+        padding: 0.5rem 1.2rem !important;
+    }
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #004C99 !important;
+        color: #FFFFFF !important;
+    }
+    div.stButton > button[kind="primary"] p {
+        font-size: 18px !important;
+        font-weight: bold !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
