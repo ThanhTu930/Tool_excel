@@ -491,7 +491,7 @@ if uploaded_file is not None:
 
             # Dòng TỔNG TRƯỚC THUẾ
             ws_ct.cell(row=r0, column=start_col, value="Chi phí triển khai").font = font_bold
-            ws_ct.cell(row=r0, column=start_col).alignment = align_left
+            ws_ct.cell(row=r0, column=start_col).alignment = align_right
 
             cell_sum_cp = ws_ct.cell(
                 row=r0, column=start_col + 1, value=f"=SUM({c_val}{r0+1}:{c_val}{r0+8})"
