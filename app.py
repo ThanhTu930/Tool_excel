@@ -580,7 +580,7 @@ if uploaded_file is not None:
             cell_cost_cptk.number_format = num_format_number
 
             cell_sale_cptk = ws_ct.cell(
-                row=row_cptk, column=start_col + 4, value=f"=I{row_II}+I{row_III}"
+                row=row_cptk, column=start_col + 4, value=f"=I{row_III}"
             )
             cell_sale_cptk.font = font_regular
             cell_sale_cptk.alignment = align_right
