@@ -685,6 +685,24 @@ if uploaded_file is not None:
                     right=blue_thick_side,
                     bottom=cell_j.border.bottom
                 )
+            # --- ÉP SIZE CHỮ TOÀN BỘ SHEET CHI TIẾT VỀ 10 (TRỪ DÒNG TIÊU ĐỀ B2) ---
+            for row in ws_ct.iter_rows():
+                for cell in row:
+                    # Bỏ qua dòng 2 (Chứa tiêu đề BẢNG GIÁ CHI TIẾT size 26)
+                    if cell.row == 2:
+                        continue
+            
+                    # Giữ nguyên Font name, Bold, Italic... chỉ đổi size về 10
+                    if cell.font:
+                        cell.font = Font(
+                            name=cell.font.name or "Times New Roman",
+                            size=10,
+                            bold=cell.font.bold,
+                            italic=cell.font.italic,
+                            color=cell.font.color,
+                        )
+                    else:
+                        cell.font = Font(name="Times New Roman", size=10)
             
             # =========================================================
             # B. XỬ LÝ SHEET BÁO GIÁ  <-- Dán ngay phía trên dòng này
