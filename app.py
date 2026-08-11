@@ -642,27 +642,49 @@ if uploaded_file is not None:
                     horizontal="center", vertical="center", wrap_text=True
                 )
 
+            # --- ĐOẠN CODE MỚI DÁN VÀO ĐÂY ---
+            align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+            align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
+            align_right = Alignment(horizontal="right", vertical="center")
+            
+            cols_center = [1, 3, 4, 6, 7, 10, 12, 15]  # STT, Mã hàng, Hãng, ĐVT, SL, Bảo hành, Margin...
+            cols_left = [2, 5, 11, 18, 19]             # Tên thiết bị, Mô tả, Ghi chú, NCC, NOTE
+            
             for r in range(5, tot_row_ct + 1):
                 is_section_or_total = (r in (5, row_II, row_III, tot_row_ct))
                 for c in range(1, 20):
                     cell = ws_ct.cell(row=r, column=c)
+                    
+                    # Gán Font & Border
                     cell.font = Font(
                         name="Times New Roman",
                         size=10,
-                        bold=is_section_or_total,
+                        bold=is_section_or_total
                     )
                     cell.border = thin_border
-
+                    
+                    # Gán Căn lề (Alignment) chuẩn theo loại cột
+                    if c in cols_center:
+                        cell.alignment = align_center
+                    elif c in cols_left:
+                        cell.alignment = align_left
+                    else:
+                        cell.alignment = align_right
+            
                     if r == tot_row_ct:
                         cell.fill = gray_fill
-
+            
                 cell_j = ws_ct.cell(row=r, column=11)
                 cell_j.border = Border(
                     left=cell_j.border.left,
                     top=cell_j.border.top,
                     right=blue_thick_side,
-                    bottom=cell_j.border.bottom,
+                    bottom=cell_j.border.bottom
                 )
+            
+            # =========================================================
+            # B. XỬ LÝ SHEET BÁO GIÁ  <-- Dán ngay phía trên dòng này
+            # =========================================================
 
             # =========================================================
             # B. XỬ LÝ SHEET BÁO GIÁ
