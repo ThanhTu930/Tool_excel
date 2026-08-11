@@ -841,7 +841,6 @@ if st.session_state.show_manual_input:
         else:
             try:
                 excel_bytes = process_dataframe_and_generate_excel(df_valid)
-                st.success("Đã xử lý dữ liệu thành công!")
 
                 st.subheader("Xem trước dữ liệu vừa nhập:")
                 st.dataframe(df_valid, use_container_width=True, hide_index=True)
