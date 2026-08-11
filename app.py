@@ -705,86 +705,54 @@ if uploaded_file is not None:
                         cell.font = Font(name="Times New Roman", size=10)
             
             # =========================================================
-            # B. XỬ LÝ SHEET BÁO GIÁ  <-- Dán ngay phía trên dòng này
-            # =========================================================
-
-            # =========================================================
             # B. XỬ LÝ SHEET BÁO GIÁ
             # =========================================================
-
-            align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
-            align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
-            align_right = Alignment(horizontal="right", vertical="center")
-
-            cols_bg_center = [1, 3, 4]
-            cols_bg_left = [2, 7]
-            for r in range(5, tot_row_bg + 1):
-                for c in range(1, 8):  # Duyệt từ Cột 1 (A) đến Cột 7 (G)
-                    cell = ws_bg.cell(row=r, column=c)
-            
-                    # Gán Căn lề chuẩn theo cột
-                    if c in cols_bg_center:
-                        cell.alignment = align_center
-                    elif c in cols_bg_left:
-                        cell.alignment = align_left
-                    else:
-                        cell.alignment = align_right
-            
-                    # Đưa cỡ chữ về 10 (trừ các tiêu đề lớn nếu có)
-                    if cell.font and cell.row > 3:
-                        cell.font = Font(
-                            name=cell.font.name or "Times New Roman",
-                            size=10,
-                            bold=cell.font.bold,
-                            italic=cell.font.italic,
-                            color=cell.font.color,
-                        )
             ws_bg.page_setup.orientation = ws_bg.ORIENTATION_PORTRAIT
             ws_bg.page_setup.paperSize = ws_bg.PAPERSIZE_A4
             ws_bg.sheet_properties.pageSetUpPr.fitToPage = True
             ws_bg.page_setup.fitToWidth = 1
             ws_bg.page_setup.fitToHeight = 0
-
+            
+            # --- 1. TIÊU ĐỀ ĐẦU TRANG ---
             ws_bg.merge_cells("A1:H1")
             ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
             ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
-            ws_bg["A1"].alignment = Alignment(horizontal="center")
-
+            ws_bg["A1"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg.merge_cells("A2:H2")
             ws_bg["A2"] = "**********"
-            ws_bg["A2"].alignment = Alignment(horizontal="center")
-
+            ws_bg["A2"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg.merge_cells("A3:H3")
             ws_bg["A3"] = "Hotline: 0909 661 579"
             ws_bg["A3"].font = Font(name="Times New Roman", size=10)
-            ws_bg["A3"].alignment = Alignment(horizontal="center")
-
+            ws_bg["A3"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg.merge_cells("A4:H4")
             ws_bg["A4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
-            ws_bg["A4"].font = Font(
-                name="Times New Roman", size=10, underline="single"
-            )
-            ws_bg["A4"].alignment = Alignment(horizontal="center")
-
+            ws_bg["A4"].font = Font(name="Times New Roman", size=10, underline="single")
+            ws_bg["A4"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg.merge_cells("A5:H5")
             ws_bg["A5"] = "BẢNG BÁO GIÁ"
             ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
-            ws_bg["A5"].alignment = Alignment(horizontal="center")
-
+            ws_bg["A5"].alignment = Alignment(horizontal="center", vertical="center")
+            
+            # --- 2. THÔNG TIN KHÁCH HÀNG & LIÊN HỆ (DÒNG 6-9) ---
             ws_bg["A6"] = "Kính gửi:"
             ws_bg["G6"] = "Người gửi:"
             ws_bg["A7"] = "Người nhận:"
             ws_bg["G7"] = "Điện thoại:"
             ws_bg["A8"] = "Email/Sdt:"
             ws_bg["G8"] = "TPHCM, ngày tháng năm 2026"
-
+            
             for cell_id in ["A6", "G6", "A7", "G7", "A8", "G8"]:
-                ws_bg[cell_id].font = Font(name="Times New Roman", size=11, bold=True)
-
+                ws_bg[cell_id].font = Font(name="Times New Roman", size=10, bold=True)
+            
             ws_bg.merge_cells("A9:H9")
             ws_bg["A9"] = "Nội dung:"
-            ws_bg["A9"].font = Font(name="Times New Roman", size=11, bold=True)
-
+            ws_bg["A9"].font = Font(name="Times New Roman", size=10, bold=True)
+            
             thin_side = Side(style="thin", color="000000")
             for r in range(6, 9):
                 for c in range(1, 9):
@@ -797,15 +765,16 @@ if uploaded_file is not None:
                     )
             for c in range(1, 9):
                 ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
-
+            
             ws_bg.merge_cells("A10:H10")
             ws_bg["A10"] = (
                 "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
                 " của công ty chúng tôi. Chúng tôi hân hạnh gửi đến Quý khách hàng"
                 " bảng chào giá như sau:"
             )
-            ws_bg["A10"].font = Font(name="Times New Roman", size=11, italic=True)
-
+            ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
+            
+            # --- 3. BẢNG DỮ LIỆU BÁO GIÁ (DÒNG 11 - 12) ---
             headers_bg = [
                 ("A11", "Stt"),
                 ("B11", "Nội dung báo giá"),
@@ -815,124 +784,96 @@ if uploaded_file is not None:
                 ("G11", "Thuế GTGT"),
                 ("H11", "Thành tiền\n(VNĐ)"),
             ]
-
+            
             ws_bg.merge_cells("B11:C11")
             for cell_id, text in headers_bg:
                 c = ws_bg[cell_id]
                 c.value = text
-                c.font = Font(name="Times New Roman", size=11, bold=True)
+                c.font = Font(name="Times New Roman", size=10, bold=True)
                 c.alignment = Alignment(
                     horizontal="center", vertical="center", wrap_text=True
                 )
-
+            
             ws_bg["A12"] = 1
-            ws_bg["A12"].alignment = Alignment(horizontal="center")
-
+            ws_bg["A12"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg.merge_cells("B12:C12")
             ws_bg["B12"] = "Hệ thống"
+            ws_bg["B12"].alignment = Alignment(horizontal="left", vertical="center")
+            
             ws_bg["D12"] = "Hệ thống"
-            ws_bg["D12"].alignment = Alignment(horizontal="center")
+            ws_bg["D12"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg["E12"] = 1
-            ws_bg["E12"].alignment = Alignment(horizontal="center")
-
+            ws_bg["E12"].alignment = Alignment(horizontal="center", vertical="center")
+            
             ws_bg["F12"] = f"='CHI TIẾT'!I{tot_row_ct}"
             ws_bg["F12"].number_format = num_format_vnd
-            ws_bg["F12"].alignment = Alignment(horizontal="right")
-
+            ws_bg["F12"].alignment = Alignment(horizontal="right", vertical="center")
+            
             ws_bg["G12"] = "=F12*8%"
             ws_bg["G12"].number_format = num_format_vnd
-            ws_bg["G12"].alignment = Alignment(horizontal="right")
-
+            ws_bg["G12"].alignment = Alignment(horizontal="right", vertical="center")
+            
             ws_bg["H12"] = "=F12+G12"
             ws_bg["H12"].number_format = num_format_vnd
-            ws_bg["H12"].alignment = Alignment(horizontal="right")
-
+            ws_bg["H12"].alignment = Alignment(horizontal="right", vertical="center")
+            
+            # Gán cỡ chữ 10 và Border cho các ô bảng báo giá
             for r in range(11, 13):
                 for col_idx in range(1, 9):
-                    ws_bg.cell(row=r, column=col_idx).border = thin_border
-
-            ws_bg.merge_cells("A13:H13")
-            ws_bg["A13"] = (
-                "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời"
-                " điểm xuất hóa đơn."
-            )
-            ws_bg["A13"].font = Font(name="Times New Roman", size=11)
-
-            ws_bg.merge_cells("A14:H14")
-            ws_bg["A14"] = "Điều kiện thương mại:"
-            ws_bg["A14"].font = Font(
-                name="Times New Roman", size=11, bold=True, underline="single"
-            )
-
-            ws_bg.merge_cells("A15:H15")
-            ws_bg["A15"] = "1. Địa điểm thực hiện:"
-            ws_bg["A15"].font = Font(name="Times New Roman", size=11, bold=True)
-
-            ws_bg.merge_cells("A16:H16")
-            ws_bg["A16"] = "   - "
-            ws_bg["A16"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A17:H17")
-            ws_bg["A17"] = "2. Giá đã bao gồm:"
-            ws_bg["A17"].font = Font(name="Times New Roman", size=11, bold=True)
-
-            ws_bg.merge_cells("A18:H18")
-            ws_bg["A18"] = "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu."
-            ws_bg["A18"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A19:H19")
-            ws_bg["A19"] = "3. Thanh toán:"
-            ws_bg["A19"].font = Font(name="Times New Roman", size=11, bold=True)
-
-            ws_bg.merge_cells("A20:H20")
-            ws_bg["A20"] = (
-                "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi"
-                " hoàn thành lắp đặt, nghiệm thu."
-            )
-            ws_bg["A20"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A21:H21")
-            ws_bg["A21"] = "4. Thời gian thực hiện hợp đồng:"
-            ws_bg["A21"].font = Font(name="Times New Roman", size=11, bold=True)
-
-            ws_bg.merge_cells("A22:H22")
-            ws_bg["A22"] = (
-                "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng."
-            )
-            ws_bg["A22"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A23:H23")
-            ws_bg["A23"] = "5. Thời gian bảo hành:"
-            ws_bg["A23"].font = Font(name="Times New Roman", size=11, bold=True)
-
-            ws_bg.merge_cells("A24:H24")
-            ws_bg["A24"] = (
-                "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao."
-            )
-            ws_bg["A24"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A25:H25")
-            ws_bg["A25"] = (
-                "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi"
-                " tiết)."
-            )
-            ws_bg["A25"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A26:H26")
-            ws_bg["A26"] = "6. Thời hạn chào giá:"
-            ws_bg["A26"].font = Font(name="Times New Roman", size=11, bold=True)
-
+                    cell = ws_bg.cell(row=r, column=col_idx)
+                    cell.border = thin_border
+                    if cell.font:
+                        cell.font = Font(
+                            name="Times New Roman",
+                            size=10,
+                            bold=cell.font.bold,
+                            italic=cell.font.italic
+                        )
+            
+            # --- 4. ĐIỀU KIỆN THƯƠNG MẠI & CHỮ KÝ (DÒNG 13 TỚI CUỐI) ---
+            terms_bg = [
+                ("A13:H13", "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời điểm xuất hóa đơn.", False, True),
+                ("A14:H14", "Điều kiện thương mại:", True, False),
+                ("A15:H15", "1. Địa điểm thực hiện:", True, False),
+                ("A16:H16", "   - ", False, False),
+                ("A17:H17", "2. Giá đã bao gồm:", True, False),
+                ("A18:H18", "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.", False, False),
+                ("A19:H19", "3. Thanh toán:", True, False),
+                ("A20:H20", "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi hoàn thành lắp đặt, nghiệm thu.", False, False),
+                ("A21:H21", "4. Thời gian thực hiện hợp đồng:", True, False),
+                ("A22:H22", "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng.", False, False),
+                ("A23:H23", "5. Thời gian bảo hành:", True, False),
+                ("A24:H24", "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao.", False, False),
+                ("A25:H25", "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi tiết).", False, False),
+                ("A26:H26", "6. Thời hạn chào giá:", True, False),
+                ("A28:H28", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!", False, True),
+            ]
+            
+            for range_str, text, is_bold, is_italic in terms_bg:
+                ws_bg.merge_cells(range_str)
+                first_cell = ws_bg[range_str.split(":")[0]]
+                first_cell.value = text
+                first_cell.font = Font(
+                    name="Times New Roman",
+                    size=10,
+                    bold=is_bold,
+                    italic=is_italic,
+                    underline="single" if text == "Điều kiện thương mại:" else None
+                )
+                first_cell.alignment = Alignment(horizontal="left", vertical="center")
+            
             ws_bg["A27"] = "   - 30 ngày"
-            ws_bg["A27"].font = Font(name="Times New Roman", size=11, bold=False)
-
-            ws_bg.merge_cells("A28:H28")
-            ws_bg["A28"] = "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!"
-            ws_bg["A28"].font = Font(name="Times New Roman", size=11, italic=True)
-
+            ws_bg["A27"].font = Font(name="Times New Roman", size=10, bold=False)
+            ws_bg["A27"].alignment = Alignment(horizontal="left", vertical="center")
+            
+            # Chữ ký Công ty
             ws_bg["G30"] = "Công ty TNHH Công Nghệ DVC"
-            ws_bg["G30"].font = Font(name="Times New Roman", size=11, bold=True)
-            ws_bg["G30"].alignment = Alignment(horizontal="center")
-
+            ws_bg["G30"].font = Font(name="Times New Roman", size=10, bold=True)
+            ws_bg["G30"].alignment = Alignment(horizontal="center", vertical="center")
+            
+            # --- 5. ĐỘ RỘNG CỘT ---
             col_widths_bg = {
                 "A": 6,
                 "B": 16,
