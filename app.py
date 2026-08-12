@@ -345,7 +345,7 @@ def process_dataframe_and_generate_excel(input_df):
             column=2,
             value="Vật tư thi công\n(Bao gồm các vật tư phụ, dây cáp, gen, phụ kiện...)",
         )
-        cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=False)
+        cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
         cell_ii_tb.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
         cell_ii_dvt = ws_ct.cell(row=row_II, column=6, value="Gói")
@@ -366,7 +366,7 @@ def process_dataframe_and_generate_excel(input_df):
             column=2,
             value="Nhân công lắp đặt, cấu hình, bàn giao, hướng dẫn sử dụng",
         )
-        cell_iii_tb.font = Font(name="Times New Roman", size=11, bold=False)
+        cell_iii_tb.font = Font(name="Times New Roman", size=11, bold=True)
         cell_iii_tb.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
         cell_iii_dvt = ws_ct.cell(row=row_III, column=6, value="Gói")
@@ -380,6 +380,11 @@ def process_dataframe_and_generate_excel(input_df):
         ws_ct.cell(row=row_III, column=8, value=f"=ROUNDUP(P{row_III}/(1-O{row_III}), -3)").number_format = num_format_vnd
         ws_ct.cell(row=row_III, column=9, value=f"=G{row_III}*H{row_III}").number_format = num_format_vnd
 
+        # Bỏ in đậm cho toàn bộ các ô tính toán bên phải của dòng II và III
+        for r in [row_II, row_III]:
+            for col_idx in range(12, 20):  # Cột L (12) đến cột S (19)
+                cell = ws_ct.cell(row=r, column=col_idx)
+                cell.font = Font(name="Times New Roman", size=10, bold=False)
         # --- 5. DÒNG TỔNG CỘNG ---
         ws_ct.merge_cells(start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8)
         cell_total_label = ws_ct.cell(row=tot_row_ct, column=1, value="TỔNG CỘNG")
