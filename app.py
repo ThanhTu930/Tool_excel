@@ -713,7 +713,7 @@ def process_dataframe_and_generate_excel(input_df):
             ("A13:G13", "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời điểm xuất hóa đơn.", False, True),
             ("A14:G14", "Điều kiện thương mại:", True, False),
             ("A15:G15", "1. Địa điểm thực hiện:", True, False),
-            ("A16:G16", "   - ", False, False),
+            ("A16:G16", "   - Phạm vi Thành phố Hồ Chí Minh", False, False),
             ("A17:G17", "2. Giá đã bao gồm:", True, False),
             ("A18:G18", "   - Chi phí vận chuyển, lắp đặt do bên Bán chịu.", False, False),
             ("A19:G19", "3. Thanh toán:", True, False),
