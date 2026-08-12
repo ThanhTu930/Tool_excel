@@ -717,16 +717,15 @@ def process_dataframe_and_generate_excel(input_df):
             ("A17:G17", "2. Giá đã bao gồm:", True, False),
             ("A18:G18", "   - Chi phí vận chuyển, lắp đặt do bên Bán chịu.", False, False),
             ("A19:G19", "3. Thanh toán:", True, False),
-            ("A20:G20", "   - Đợt 1: Tạm ứng 50% giá trị hợp đồng sau khi hợp đồng được ký kết.\n
-                            - Đợt 2: Thanh toán 50% giá trị còn lại của hợp đồng trong vòng 15 ngày làm việc sau khi hai Bên 
-             ký Biên bản nghiệm thu hoàn thành và đưa vào sử dụng, đồng thời bên Mua đã nhận đầy đủ hố sơ thanh toán hợp lệ của bên Bán.", False, False),
-            ("A21:G21", "4. Thời gian thực hiện hợp đồng:", True, False),
-            ("A22:G22", "   - Trong vòng 15 ngày kể từ ngày kí hợp đồng và bên Bán nhận được tạm ứng của bên Mua.", False, False),
-            ("A23:G23", "5. Thời gian bảo hành:", True, False),
-            ("A24:G24", "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao.", False, False),
-            ("A25:G25", "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi tiết).", False, False),
-            ("A26:G26", "6. Thời hạn chào giá:", True, False),
-            ("A28:G28", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!", False, True),
+            ("A20:G20", "   - Đợt 1: Tạm ứng 50% giá trị hợp đồng sau khi hợp đồng được ký kết.", False, False),
+            ("A21:G21", "   - Đợt 2: Thanh toán 50% giá trị còn lại của hợp đồng trong vòng 15 ngày làm việc sau khi hai Bên ký Biên bản nghiệm thu hoàn thành và đưa vào sử dụng, đồng thời bên Mua đã nhận đầy đủ hồ sơ thanh toán hợp lệ của bên Bán.", False, False),
+            ("A22:G22", "4. Thời gian thực hiện hợp đồng:", True, False),
+            ("A23:G23", "   - Trong vòng 15 ngày kể từ ngày kí hợp đồng và bên Bán nhận được tạm ứng của bên Mua.", False, False),
+            ("A24:G24", "5. Thời gian bảo hành:", True, False),
+            ("A25:G25", "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao.", False, False),
+            ("A26:G26", "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi tiết).", False, False),
+            ("A27:G27", "6. Thời hạn chào giá:", True, False),
+            ("A29:G29", "Chúng tôi rất mong nhận được sự hợp tác với Quý khách hàng!", False, True),
         ]
 
         for range_str, text, is_bold, is_italic in terms_bg:
@@ -739,13 +738,13 @@ def process_dataframe_and_generate_excel(input_df):
             )
             first_cell.alignment = Alignment(horizontal="left", vertical="center")
 
-        ws_bg["A27"] = "   - 30 ngày"
-        ws_bg["A27"].font = Font(name="Times New Roman", size=10, bold=False)
-        ws_bg["A27"].alignment = Alignment(horizontal="left", vertical="center")
+        ws_bg["A28"] = "   - 30 ngày"
+        ws_bg["A28"].font = Font(name="Times New Roman", size=10, bold=False)
+        ws_bg["A28"].alignment = Alignment(horizontal="left", vertical="center")
 
-        ws_bg["F30"] = "Công ty TNHH Công Nghệ DVC"
-        ws_bg["F30"].font = Font(name="Times New Roman", size=10, bold=True)
-        ws_bg["F30"].alignment = Alignment(horizontal="center", vertical="center")
+        ws_bg["F31"] = "Công ty TNHH Công Nghệ DVC"
+        ws_bg["F31"].font = Font(name="Times New Roman", size=10, bold=True)
+        ws_bg["F31"].alignment = Alignment(horizontal="center", vertical="center")
 
         # CẤU HÌNH ĐỘ RỘNG CỘT (Đã tăng cột B lên 32 để chứa đủ thông tin)
         col_widths_bg = {"A": 6, "B": 32, "C": 10, "D": 10, "E": 15, "F": 14, "G": 16}
