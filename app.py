@@ -345,7 +345,7 @@ def process_dataframe_and_generate_excel(input_df):
             column=2,
             value="Vật tư thi công\n(Bao gồm các vật tư phụ, dây cáp, gen, phụ kiện...)",
         )
-        cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
+        cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=False)
         cell_ii_tb.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
         cell_ii_dvt = ws_ct.cell(row=row_II, column=6, value="Gói")
@@ -366,7 +366,7 @@ def process_dataframe_and_generate_excel(input_df):
             column=2,
             value="Nhân công lắp đặt, cấu hình, bàn giao, hướng dẫn sử dụng",
         )
-        cell_iii_tb.font = Font(name="Times New Roman", size=11, bold=True)
+        cell_iii_tb.font = Font(name="Times New Roman", size=11, bold=False)
         cell_iii_tb.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
         cell_iii_dvt = ws_ct.cell(row=row_III, column=6, value="Gói")
