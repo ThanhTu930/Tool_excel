@@ -380,11 +380,6 @@ def process_dataframe_and_generate_excel(input_df):
         ws_ct.cell(row=row_III, column=8, value=f"=ROUNDUP(P{row_III}/(1-O{row_III}), -3)").number_format = num_format_vnd
         ws_ct.cell(row=row_III, column=9, value=f"=G{row_III}*H{row_III}").number_format = num_format_vnd
 
-        # Bỏ in đậm cho toàn bộ các ô tính toán bên phải của dòng II và III
-        for r in [row_II, row_III]:
-            for col_idx in range(12, 20):  # Cột L (12) đến cột S (19)
-                cell = ws_ct.cell(row=r, column=col_idx)
-                cell.font = Font(name="Times New Roman", size=10, bold=False)
         # --- 5. DÒNG TỔNG CỘNG ---
         ws_ct.merge_cells(start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8)
         cell_total_label = ws_ct.cell(row=tot_row_ct, column=1, value="TỔNG CỘNG")
@@ -720,11 +715,13 @@ def process_dataframe_and_generate_excel(input_df):
             ("A15:G15", "1. Địa điểm thực hiện:", True, False),
             ("A16:G16", "   - ", False, False),
             ("A17:G17", "2. Giá đã bao gồm:", True, False),
-            ("A18:G18", "   - Chi phí vận chuyển, lắp đặt hệ thống do bên Bán chịu.", False, False),
+            ("A18:G18", "   - Chi phí vận chuyển, lắp đặt do bên Bán chịu.", False, False),
             ("A19:G19", "3. Thanh toán:", True, False),
-            ("A20:G20", "   - Thanh toán 100% giá trị hợp đồng trong vòng 07 ngày làm việc sau khi hoàn thành lắp đặt, nghiệm thu.", False, False),
+            ("A20:G20", "   - Đợt 1: Tạm ứng 50% giá trị hợp đồng sau khi hợp đồng được ký kết.\n
+                            - Đợt 2: Thanh toán 50% giá trị còn lại của hợp đồng trong vòng 15 ngày làm việc sau khi hai Bên 
+             ký Biên bản nghiệm thu hoàn thành và đưa vào sử dụng, đồng thời bên Mua đã nhận đầy đủ hố sơ thanh toán hợp lệ của bên Bán.", False, False),
             ("A21:G21", "4. Thời gian thực hiện hợp đồng:", True, False),
-            ("A22:G22", "   - Thời gian thực hiện: trong vòng 07 ngày kể từ ngày ký hợp đồng.", False, False),
+            ("A22:G22", "   - Trong vòng 15 ngày kể từ ngày kí hợp đồng và bên Bán nhận được tạm ứng của bên Mua.", False, False),
             ("A23:G23", "5. Thời gian bảo hành:", True, False),
             ("A24:G24", "   - BH lắp đặt hệ thống: 12 tháng kể từ ngày nghiệm thu, bàn giao.", False, False),
             ("A25:G25", "   - BH thiết bị theo chính sách của hãng sản xuất (xem bảng giá chi tiết).", False, False),
