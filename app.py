@@ -362,7 +362,6 @@ def process_dataframe_and_generate_excel(input_df):
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
         
-        # Giữ tổng TT COST Thiết bị (Cột N - Col 14) và TT COST Lắp đặt (Cột Q - Col 17) tại dòng TỔNG CỘNG
         for col in range(10, 20):
             if col == 14:
                 cell_sum_n = ws_ct.cell(row=tot_row_ct, column=col, value=f"=SUM(N6:N{last_item_row})")
@@ -470,15 +469,24 @@ def process_dataframe_and_generate_excel(input_df):
             cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
             cell.border = thin_border
 
+        # Duyệt qua từng dòng từ dòng 5 đến dòng trước TỔNG CỘNG
         for r in range(5, tot_row_ct):
             ws_kh.row_dimensions[r].height = ws_ct.row_dimensions[r].height or 20
             
-            for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
-                if col_letter == "I":
-                    # CỘT THÀNH TIỀN DÙNG CÔNG THỨC ĐƠN GIÁ * SỐ LƯỢNG
-                    ws_kh[f"I{r}"] = f"=G{r}*H{r}"
-                else:
-                    ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
+            # Tham chiếu dữ liệu các cột không phải Thành tiền từ sheet CHI TIẾT
+            for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K"]:
+                ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
+
+            # ĐIỀU CHỈNH CÔNG THỨC CỘT I (THÀNH TIỀN) TÙY THEO DÒNG:
+            if r == 5:
+                # Dòng I: Tính tổng các thiết bị bên dưới
+                ws_kh[f"I{r}"] = f"=SUM(I6:I{last_item_row})"
+            elif r == row_II:
+                # Dòng II: Nhân Số lượng với Đơn giá
+                ws_kh[f"I{r}"] = f"=G{r}*H{r}"
+            else:
+                # Dòng các thiết bị (6 -> last_item_row): Nhân Số lượng với Đơn giá
+                ws_kh[f"I{r}"] = f"=G{r}*H{r}"
 
             is_bold = (r in [5, row_II])
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
@@ -494,13 +502,13 @@ def process_dataframe_and_generate_excel(input_df):
                 else:
                     c.alignment = Alignment(horizontal="left", vertical="center")
 
+        # DÒNG TỔNG CỘNG TRÊN SHEET GUI_KH: CỘNG DÒNG I VÀ DÒNG II
         ws_kh.merge_cells(f"A{tot_row_ct}:H{tot_row_ct}")
         ws_kh[f"A{tot_row_ct}"] = "TỔNG CỘNG"
         ws_kh[f"A{tot_row_ct}"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_kh[f"A{tot_row_ct}"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # TỔNG CỘNG TRÊN SHEET GUI_KH TÍNH TỔNG TỪ CỘT I
-        ws_kh[f"I{tot_row_ct}"] = f"=SUM(I5:I{tot_row_ct-1})"
+        ws_kh[f"I{tot_row_ct}"] = f"=I5+I{row_II}"
         ws_kh[f"I{tot_row_ct}"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_kh[f"I{tot_row_ct}"].alignment = Alignment(horizontal="right", vertical="center")
         ws_kh[f"I{tot_row_ct}"].number_format = num_format_vnd
