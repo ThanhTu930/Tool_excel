@@ -646,7 +646,7 @@ def process_dataframe_and_generate_excel(input_df):
             "Cảm ơn Quý khách hàng đã quan tâm và tin tưởng sản phẩm và dịch vụ"
             " của công ty chúng tôi. Chúng tôi hân hạnh gửi đến Quý khách hàng"
             " bảng chào giá như sau:"
-        )
+        )    
         ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
         ws_bg["A10"].alignment = Alignment(horizontal="left", vertical="center",wrap_text=True)
         ws_bg.row_dimensions[10].height = 35
@@ -736,7 +736,9 @@ def process_dataframe_and_generate_excel(input_df):
                 name="Times New Roman", size=10, bold=is_bold, italic=is_italic,
                 underline="single" if text == "Điều kiện thương mại:" else None
             )
-            first_cell.alignment = Alignment(horizontal="left", vertical="center")
+            first_cell.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
+        # Đặt độ cao cho dòng 21 để chứa đủ 3 dòng văn bản của Đợt 2
+        ws_bg.row_dimensions[21].height = 35
 
         ws_bg["A28"] = "   - 30 ngày"
         ws_bg["A28"].font = Font(name="Times New Roman", size=10, bold=False)
