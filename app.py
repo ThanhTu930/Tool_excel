@@ -456,7 +456,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 c = ws_kh[f"{col_letter}{r}"]
                 c.font = Font(name="Times New Roman", size=10, bold=is_bold)
                 c.border = thin_border
-                if col_letter in ["A", "F", "G", "J"]:
+                if col_letter in ["A","C","D", "F", "G", "J"]:
                     c.alignment = align_center
                 elif col_letter in ["H", "I"]:
                     c.alignment = align_right
@@ -482,7 +482,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             cell.fill = gray_fill
 
         col_widths_kh = {
-            "A": 3, "B": 28, "C": 10, "D": 10, "E": 18, 
+            "A": 5, "B": 28, "C": 10, "D": 10, "E": 18, 
             "F": 5, "G": 9, "H": 10, "I": 12, "J": 12, "K": 12
         }
         for col_letter, width in col_widths_kh.items():
