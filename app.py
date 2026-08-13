@@ -177,41 +177,7 @@ def clean_currency(val):
         return 0.0
 
 
-# --- 5. HÀM TỰ ĐỘNG CÂN CHỈNH CỘT VÀ DÒNG CHUẨN ---
-def autofit_sheet(worksheet, min_col_width=10, max_col_width=50, row_padding=18):
-    """
-    Tự động tính toán độ rộng cột dựa trên độ dài văn bản (xử lý ngắt dòng \n).
-    Tự động điều chỉnh chiều cao dòng phù hợp với ô có nội dung nhiều dòng.
-    """
-    for col in worksheet.columns:
-        max_len = 0
-        col_letter = get_column_letter(col[0].column)
-
-        for cell in col:
-            # Kiểm tra xem ô có nằm trong danh sách ô gộp (merged_cells) hay không
-            is_merged = any(cell.coordinate in rng for rng in worksheet.merged_cells.ranges)
-
-            if cell.value is not None:
-                val_str = str(cell.value)
-                lines = val_str.split("\n")
-                line_lens = [len(line) for line in lines]
-                cell_max_len = max(line_lens) if line_lens else 0
-
-                # Bỏ qua các ô gộp khi tính độ rộng cột (để tránh tiêu đề lớn làm tràn chiều rộng cột)
-                if not is_merged:
-                    max_len = max(max_len, cell_max_len)
-
-                # Tự động điều chỉnh chiều cao dòng nếu văn bản có ký tự xuống dòng '\n'
-                if len(lines) > 1:
-                    current_h = worksheet.row_dimensions[cell.row].height or row_padding
-                    worksheet.row_dimensions[cell.row].height = max(current_h, len(lines) * row_padding)
-
-        # Gán độ rộng cột nằm trong khoảng min_col_width đến max_col_width
-        calc_width = max(max_len + 4, min_col_width)
-        worksheet.column_dimensions[col_letter].width = min(calc_width, max_col_width)
-
-
-# --- 6. HÀM CHUẨN HÓA DATAFRAME ĐƠN LẺ ---
+# --- 5. HÀM Chuẩn hóa 1 Dataframe đơn lẻ ---
 def standardize_df(input_df):
     def get_col_val(df, possible_names, default=""):
         for name in possible_names:
@@ -283,7 +249,7 @@ def standardize_df(input_df):
     return df_final.reindex(columns=form_columns)
 
 
-# --- 7. HÀM XỬ LÝ DỮ LIỆU VÀ TẠO FILE EXCEL HOÀN CHỈNH ---
+# --- 6. HÀM XỬ LÝ DỮ LIỆU VÀ TẠO FILE EXCEL HOÀN CHỈNH ---
 def process_dataframe_and_generate_excel(raw_input_df):
     cols = [str(c).replace("\n", " ").strip() for c in raw_input_df.columns]
     raw_input_df.columns = cols
@@ -409,6 +375,9 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
         ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=11, bold=True)
 
+        # Tăng độ rộng cột I sheet CHI TIẾT để tránh lỗi #####
+        ws_ct.column_dimensions["I"].width = 22
+
         # Định dạng kẻ bảng cho Sheet CHI TIẾT
         gray_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
         thin_border = Border(left=Side(style="thin"), right=Side(style="thin"), top=Side(style="thin"), bottom=Side(style="thin"))
@@ -446,10 +415,6 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 if r == tot_row_ct:
                     cell.fill = gray_fill
 
-        # TỰ ĐỘNG CÂN CHỈNH CỘT VÀ CHIỀU CAO DÒNG SHEET CHI TIẾT
-        autofit_sheet(ws_ct)
-
-
         # =========================================================
         # B. TẠO VÀ XỬ LÝ SHEET GUI_KH
         # =========================================================
@@ -465,7 +430,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             ("G4", "Số lượng"), ("H4", "Đơn giá\n(VNĐ)"), 
             ("I4", "Thành tiền\n(VNĐ)"), ("J4", "Thời gian\nbảo hành"), ("K4", "Ghi chú")
         ]
-        
+        ws_kh.row_dimensions[4].height = 28
         for cell_id, text in headers_kh:
             c = ws_kh[cell_id]
             c.value = text
@@ -516,9 +481,12 @@ def process_dataframe_and_generate_excel(raw_input_df):
             cell.border = thin_border
             cell.fill = gray_fill
 
-        # TỰ ĐỘNG CÂN CHỈNH CỘT VÀ CHIỀU CAO DÒNG SHEET GUI_KH
-        autofit_sheet(ws_kh)
-
+        col_widths_kh = {
+            "A": 6, "B": 28, "C": 15, "D": 14, "E": 18, 
+            "F": 8, "G": 10, "H": 14, "I": 22, "J": 12, "K": 12
+        }
+        for col_letter, width in col_widths_kh.items():
+            ws_kh.column_dimensions[col_letter].width = width
 
         # =========================================================
         # C. TẠO VÀ XỬ LÝ SHEET BÁO GIÁ
@@ -600,6 +568,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         )
         ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
         ws_bg["A10"].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
+        ws_bg.row_dimensions[10].height = 35
 
         headers_bg = [
             ("A11", "Stt"),
@@ -640,6 +609,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_bg["G12"] = "=E12+F12"
         ws_bg["G12"].number_format = num_format_vnd
         ws_bg["G12"].alignment = Alignment(horizontal="right", vertical="center")
+
+        ws_bg.row_dimensions[12].height = 35
 
         for r in range(11, 13):
             for col_idx in range(1, 8):
@@ -682,6 +653,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
             )
             first_cell.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
+        ws_bg.row_dimensions[21].height = 35
+
         ws_bg["A28"] = "   - 30 ngày"
         ws_bg["A28"].font = Font(name="Times New Roman", size=10, bold=False)
         ws_bg["A28"].alignment = Alignment(horizontal="left", vertical="center")
@@ -700,7 +673,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
     return output.getvalue()
 
 
-# --- 8. GIAO DIỆN TẢI FORM MẪU & NHẬP TRỰC TIẾP ---
+# --- 7. GIAO DIỆN TẢI FORM MẪU & NHẬP TRỰC TIẾP ---
 if "show_manual_input" not in st.session_state:
     st.session_state.show_manual_input = False
 
@@ -722,7 +695,7 @@ with col_manual_btn:
     if st.button("Nhập Báo Giá Trực Tiếp", use_container_width=True, type="secondary"):
         st.session_state.show_manual_input = not st.session_state.show_manual_input
 
-# --- 9. KHUNG NHẬP DỮ LIỆU BÁO GIÁ TRỰC TIẾP ---
+# --- 8. KHUNG NHẬP DỮ LIỆU BÁO GIÁ TRỰC TIẾP ---
 if st.session_state.show_manual_input:
     st.markdown("---")
     st.subheader("Bảng nhập thông tin báo giá trực tiếp")
@@ -797,7 +770,7 @@ if st.session_state.show_manual_input:
 
 st.divider()
 
-# --- 10. GIAO DIỆN UPLOAD FILE EXCEL CÓ SẴN ---
+# --- 9. GIAO DIỆN UPLOAD FILE EXCEL CÓ SẴN ---
 st.write("HOẶC UPLOAD FILE EXCEL CÓ SẴN TẠI ĐÂY (.xlsx, .xls):")
 
 uploaded_file = st.file_uploader(
