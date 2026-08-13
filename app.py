@@ -293,7 +293,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
         form_columns = [
             "STT", "Thiết bị", "Mã hàng", "Hãng/\nXuất xứ", "Mô tả", "ĐVT",
-            "Số lượng", "Đơn giá (VNĐ)", "Thành tiền (VNĐ)", "Thời gian bảo hành",
+            "Số lượng", "Đơn giá\n(VNĐ)", "Thành tiền\n(VNĐ)", "Thời gian bảo hành",
             "Ghi chú", "Margin Thiết bị", "ĐG COST Thiết bị", "TT COST Thiết bị",
             "Margin Lắp đặt", "ĐG COST Lắp đặt", "TT COST Lắp đặt", "NCC", "NOTE"
         ]
