@@ -281,11 +281,6 @@ def process_dataframe_and_generate_excel(input_df):
         row_II = last_item_row + 1
         tot_row_ct = row_II + 1
 
-        note_col = 19
-        start_col = note_col + 3
-        r0 = tot_row_ct + 3
-        c_val = get_column_letter(start_col + 1)
-
         # --- 1. MỤC I: HÀNG HÓA/THIẾT BỊ CHÍNH ---
         ws_ct.cell(row=5, column=1, value="I").alignment = Alignment(
             horizontal="center", vertical="center"
@@ -367,7 +362,7 @@ def process_dataframe_and_generate_excel(input_df):
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
         
-        # Giữ nguyên giá trị tổng TT COST Thiết bị (Cột N - Col 14) và TT COST Lắp đặt (Cột Q - Col 17) tại dòng TỔNG CỘNG
+        # Giữ tổng TT COST Thiết bị (Cột N - Col 14) và TT COST Lắp đặt (Cột Q - Col 17) tại dòng TỔNG CỘNG
         for col in range(10, 20):
             if col == 14:
                 cell_sum_n = ws_ct.cell(row=tot_row_ct, column=col, value=f"=SUM(N6:N{last_item_row})")
@@ -382,123 +377,7 @@ def process_dataframe_and_generate_excel(input_df):
             else:
                 ws_ct.cell(row=tot_row_ct, column=col).value = None
 
-        # --- 5. TÍNH TOÁN BẢNG PHÂN TÍCH MARGIN / COST (BÊN PHẢI) ---
-        c_cost = get_column_letter(start_col + 3)
-        c_sale = get_column_letter(start_col + 4)
-
-        font_bold = Font(name="Times New Roman", size=11, bold=True)
-        font_regular = Font(name="Times New Roman", size=11, bold=False)
-        align_left = Alignment(horizontal="left", vertical="center")
-        align_right = Alignment(horizontal="right", vertical="center")
-
-        num_format_number = "#,##0"
-        num_format_percent = "0%"
-
-        row_header = r0 - 1
-        ws_ct.cell(row=row_header, column=start_col + 3, value="COST").font = font_bold
-        ws_ct.cell(row=row_header, column=start_col + 3).alignment = align_right
-        ws_ct.cell(row=row_header, column=start_col + 4, value="GIÁ BÁN").font = font_bold
-        ws_ct.cell(row=row_header, column=start_col + 4).alignment = align_right
-        ws_ct.cell(row=row_header, column=start_col + 5, value="MARGIN").font = font_bold
-        ws_ct.cell(row=row_header, column=start_col + 5).alignment = align_right
-
-        ws_ct.cell(row=r0, column=start_col, value="Chi phí triển khai").font = font_bold
-        ws_ct.cell(row=r0, column=start_col).alignment = align_right
-
-        cell_sum_cp = ws_ct.cell(
-            row=r0, column=start_col + 1, value=f"=SUM({c_val}{r0+1}:{c_val}{r0+8})"
-        )
-        cell_sum_cp.font = font_bold
-        cell_sum_cp.alignment = align_right
-        cell_sum_cp.number_format = num_format_number
-
-        cell_cost_tot = ws_ct.cell(
-            row=r0, column=start_col + 3, value=f"=SUM({c_cost}{r0+1}:{c_cost}{r0+2})"
-        )
-        cell_cost_tot.font = font_bold
-        cell_cost_tot.alignment = align_right
-        cell_cost_tot.number_format = num_format_number
-
-        cell_sale_tot = ws_ct.cell(
-            row=r0, column=start_col + 4, value=f"=SUM({c_sale}{r0+1}:{c_sale}{r0+2})"
-        )
-        cell_sale_tot.font = font_bold
-        cell_sale_tot.alignment = align_right
-        cell_sale_tot.number_format = num_format_number
-
-        cell_margin_tot = ws_ct.cell(
-            row=r0, column=start_col + 5, value=f"=IF({c_sale}{r0}=0, 0, ({c_sale}{r0}-{c_cost}{r0})/{c_sale}{r0})"
-        )
-        cell_margin_tot.font = font_bold
-        cell_margin_tot.alignment = align_right
-        cell_margin_tot.number_format = num_format_percent
-
-        ws_ct.cell(row=r0, column=start_col + 6, value="TỔNG TRƯỚC THUẾ").font = font_bold
-        ws_ct.cell(row=r0, column=start_col + 6).alignment = align_left
-
-        items_cp = [
-            "Nhân công lắp đặt", "Vận chuyển", "Di chuyển (vé xe, xe cty, xăng ...)",
-            "Thuê chỗ ở", "Nghiệm thu, hướng dẫn sử dụng", "Mua, thuê dụng cụ thi công",
-            "Chi phí khác (ATLĐ, Bảo hiểm, ...)", "Chi phí nhân sự quản lý dự án"
-        ]
-
-        for idx, label in enumerate(items_cp, start=1):
-            curr_row = r0 + idx
-            cell_lbl = ws_ct.cell(row=curr_row, column=start_col, value=label)
-            cell_lbl.font = font_regular
-            cell_lbl.alignment = align_right
-
-            cell_val_item = ws_ct.cell(row=curr_row, column=start_col + 1)
-            cell_val_item.font = font_regular
-            cell_val_item.alignment = align_right
-            cell_val_item.number_format = num_format_number
-            if idx == 1:
-                # Lấy trực tiếp từ ô tổng TT COST Lắp đặt (Q_tot_row)
-                cell_val_item.value = f"=Q{tot_row_ct}"
-
-        row_thiet_bi = r0 + 1
-        # Lấy trực tiếp từ ô tổng TT COST Thiết bị (N_tot_row)
-        cell_cost_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 3, value=f"=N{tot_row_ct}")
-        cell_cost_tb.font = font_regular
-        cell_cost_tb.alignment = align_right
-        cell_cost_tb.number_format = num_format_number
-
-        cell_sale_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 4, value=f"=I5")
-        cell_sale_tb.font = font_regular
-        cell_sale_tb.alignment = align_right
-        cell_sale_tb.number_format = num_format_number
-
-        cell_mg_tb = ws_ct.cell(
-            row=row_thiet_bi, column=start_col + 5,
-            value=f"=IF({c_sale}{row_thiet_bi}=0, 0, ({c_sale}{row_thiet_bi}-{c_cost}{row_thiet_bi})/{c_sale}{row_thiet_bi})"
-        )
-        cell_mg_tb.font = font_regular
-        cell_mg_tb.alignment = align_right
-        cell_mg_tb.number_format = num_format_percent
-
-        ws_ct.cell(row=row_thiet_bi, column=start_col + 6, value="Thiết bị").font = font_regular
-
-        row_cptk = r0 + 2
-        cell_cost_cptk = ws_ct.cell(row=row_cptk, column=start_col + 3, value=f"={c_val}{r0}")
-        cell_cost_cptk.font = font_regular
-        cell_cost_cptk.alignment = align_right
-        cell_cost_cptk.number_format = num_format_number
-
-        cell_sale_cptk = ws_ct.cell(row=row_cptk, column=start_col + 4, value=f"=I{row_II}")
-        cell_sale_cptk.font = font_regular
-        cell_sale_cptk.alignment = align_right
-        cell_sale_cptk.number_format = num_format_number
-
-        cell_mg_cptk = ws_ct.cell(
-            row=row_cptk, column=start_col + 5,
-            value=f"=IF({c_sale}{row_cptk}=0, 0, ({c_sale}{row_cptk}-{c_cost}{row_cptk})/{c_sale}{row_cptk})"
-        )
-        cell_mg_cptk.font = font_regular
-        cell_mg_cptk.alignment = align_right
-        cell_mg_cptk.number_format = num_format_percent
-
-        ws_ct.cell(row=row_cptk, column=start_col + 6, value="Chi phí triển khai").font = font_regular
-
+        # --- 5. ĐỊNH DẠNG VÀ KẺ BẢNG SHEET CHI TIẾT ---
         gray_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
         thin_border = Border(left=Side(style="thin"), right=Side(style="thin"), top=Side(style="thin"), bottom=Side(style="thin"))
         blue_thick_side = Side(style="medium", color="0000FF")
@@ -594,7 +473,11 @@ def process_dataframe_and_generate_excel(input_df):
             ws_kh.row_dimensions[r].height = ws_ct.row_dimensions[r].height or 20
             
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
-                ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
+                if col_letter == "I":
+                    # CỘT THÀNH TIỀN DÙNG CÔNG THỨC ĐƠN GIÁ * SỐ LƯỢNG
+                    ws_kh[f"I{r}"] = f"=G{r}*H{r}"
+                else:
+                    ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
 
             is_bold = (r in [5, row_II])
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
@@ -615,7 +498,8 @@ def process_dataframe_and_generate_excel(input_df):
         ws_kh[f"A{tot_row_ct}"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_kh[f"A{tot_row_ct}"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_kh[f"I{tot_row_ct}"] = f"='CHI TIẾT'!I{tot_row_ct}"
+        # TỔNG CỘNG TRÊN SHEET GUI_KH TÍNH TỔNG TỪ CỘT I
+        ws_kh[f"I{tot_row_ct}"] = f"=SUM(I5:I{tot_row_ct-1})"
         ws_kh[f"I{tot_row_ct}"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_kh[f"I{tot_row_ct}"].alignment = Alignment(horizontal="right", vertical="center")
         ws_kh[f"I{tot_row_ct}"].number_format = num_format_vnd
@@ -756,7 +640,6 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["D12"] = 1
         ws_bg["D12"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # CẬP NHẬT: Tham chiếu Đơn giá từ Sheet GUI_KH
         ws_bg["E12"] = f"='GUI_KH'!I{tot_row_ct}"
         ws_bg["E12"].number_format = num_format_vnd
         ws_bg["E12"].alignment = Alignment(horizontal="right", vertical="center")
