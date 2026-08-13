@@ -412,9 +412,9 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 cell.border = thin_border
                 cell.font = Font(name="Times New Roman", size=10, bold=is_header)
 
-                if c in [1, 3, 4, 6, 7, 10, 12, 15]:
+                if c in [1, 3, 4, 6, 7, 10, 12, 15, 18]:
                     cell.alignment = align_center
-                elif c in [2, 5, 11, 18, 19]:
+                elif c in [2, 5, 11, 19]:
                     cell.alignment = align_left
                 else:
                     cell.alignment = align_right
@@ -675,7 +675,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_bg["F31"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_bg["F31"].alignment = Alignment(horizontal="center", vertical="center")
 
-        col_widths_bg = {"A": 6, "B": 32, "C": 10, "D": 10, "E": 20, "F": 14, "G": 20}
+        col_widths_bg = {"A": 5, "B": 28, "C": 9, "D": 9, "E": 10, "F": 10, "G": 11}
         for col_letter, width in col_widths_bg.items():
             ws_bg.column_dimensions[col_letter].width = width
 
