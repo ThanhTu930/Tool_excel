@@ -423,7 +423,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_kh["A2"] = "BẢNG GIÁ CHI TIẾT"
         ws_kh["A2"].font = Font(name="Times New Roman", size=18, bold=True)
         ws_kh["A2"].alignment = Alignment(horizontal="center", vertical="center")
-
+    
         headers_kh = [
             ("A4", "STT"), ("B4", "Thiết bị"), ("C4", "Mã hàng"), 
             ("D4", "Hãng/\nXuất xứ"), ("E4", "Mô tả"), ("F4", "ĐVT"), 
@@ -482,8 +482,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
             cell.fill = gray_fill
 
         col_widths_kh = {
-            "A": 6, "B": 28, "C": 15, "D": 14, "E": 18, 
-            "F": 8, "G": 10, "H": 14, "I": 22, "J": 12, "K": 12
+            "A": 3, "B": 28, "C": 10, "D": 10, "E": 18, 
+            "F": 5, "G": 9, "H": 10, "I": 12, "J": 12, "K": 12
         }
         for col_letter, width in col_widths_kh.items():
             ws_kh.column_dimensions[col_letter].width = width
