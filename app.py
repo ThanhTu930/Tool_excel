@@ -293,7 +293,6 @@ def process_dataframe_and_generate_excel(input_df):
         cell_i_tb = ws_ct.cell(row=5, column=2, value="Hàng hóa/Thiết bị chính")
         cell_i_tb.font = Font(name="Times New Roman", size=11, bold=True)
 
-        # Xóa các giá trị rỗng/0 không cần thiết dòng I
         for col in range(3, 9):
             ws_ct.cell(row=5, column=col).value = None
 
@@ -368,9 +367,20 @@ def process_dataframe_and_generate_excel(input_df):
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
         
-        # Xóa sạch dữ liệu các ô góc dưới bên phải dòng TỔNG CỘNG
+        # Giữ nguyên giá trị tổng TT COST Thiết bị (Cột N - Col 14) và TT COST Lắp đặt (Cột Q - Col 17) tại dòng TỔNG CỘNG
         for col in range(10, 20):
-            ws_ct.cell(row=tot_row_ct, column=col).value = None
+            if col == 14:
+                cell_sum_n = ws_ct.cell(row=tot_row_ct, column=col, value=f"=SUM(N6:N{last_item_row})")
+                cell_sum_n.font = Font(name="Times New Roman", size=11, bold=True)
+                cell_sum_n.number_format = num_format_vnd
+                cell_sum_n.alignment = Alignment(horizontal="right", vertical="center")
+            elif col == 17:
+                cell_sum_q = ws_ct.cell(row=tot_row_ct, column=col, value=f"=SUM(Q6:Q{last_item_row})")
+                cell_sum_q.font = Font(name="Times New Roman", size=11, bold=True)
+                cell_sum_q.number_format = num_format_vnd
+                cell_sum_q.alignment = Alignment(horizontal="right", vertical="center")
+            else:
+                ws_ct.cell(row=tot_row_ct, column=col).value = None
 
         # --- 5. TÍNH TOÁN BẢNG PHÂN TÍCH MARGIN / COST (BÊN PHẢI) ---
         c_cost = get_column_letter(start_col + 3)
@@ -443,12 +453,12 @@ def process_dataframe_and_generate_excel(input_df):
             cell_val_item.alignment = align_right
             cell_val_item.number_format = num_format_number
             if idx == 1:
-                # Tính tổng TT COST Lắp đặt trực tiếp từ danh sách thiết bị
-                cell_val_item.value = f"=SUM(Q6:Q{last_item_row})"
+                # Lấy trực tiếp từ ô tổng TT COST Lắp đặt (Q_tot_row)
+                cell_val_item.value = f"=Q{tot_row_ct}"
 
         row_thiet_bi = r0 + 1
-        # Tính tổng TT COST Thiết bị trực tiếp từ danh sách thiết bị
-        cell_cost_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 3, value=f"=SUM(N6:N{last_item_row})")
+        # Lấy trực tiếp từ ô tổng TT COST Thiết bị (N_tot_row)
+        cell_cost_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 3, value=f"=N{tot_row_ct}")
         cell_cost_tb.font = font_regular
         cell_cost_tb.alignment = align_right
         cell_cost_tb.number_format = num_format_number
@@ -580,7 +590,6 @@ def process_dataframe_and_generate_excel(input_df):
             cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
             cell.border = thin_border
 
-        # Liên kết dữ liệu động từ CHI TIẾT, xử lý ô rỗng không hiện số 0
         for r in range(5, tot_row_ct):
             ws_kh.row_dimensions[r].height = ws_ct.row_dimensions[r].height or 20
             
@@ -628,7 +637,7 @@ def process_dataframe_and_generate_excel(input_df):
         writer.book._sheets = [writer.book[s] for s in sheet_order if s in writer.book.sheetnames]
 
         # =========================================================
-        # C. XỬ LÝ SHEET BÁO GIÁ
+        # C. XỬ LÝ SHEET BÁO GIÁ (LẤY DỮ LIỆU TỪ SHEET GUI_KH)
         # =========================================================
         ws_bg.page_setup.orientation = ws_bg.ORIENTATION_PORTRAIT
         ws_bg.page_setup.paperSize = ws_bg.PAPERSIZE_A4
@@ -747,7 +756,8 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["D12"] = 1
         ws_bg["D12"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws_bg["E12"] = f"='CHI TIẾT'!I{tot_row_ct}"
+        # CẬP NHẬT: Tham chiếu Đơn giá từ Sheet GUI_KH
+        ws_bg["E12"] = f"='GUI_KH'!I{tot_row_ct}"
         ws_bg["E12"].number_format = num_format_vnd
         ws_bg["E12"].alignment = Alignment(horizontal="right", vertical="center")
 
