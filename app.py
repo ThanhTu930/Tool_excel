@@ -418,7 +418,12 @@ def process_dataframe_and_generate_excel(raw_input_df):
                     cell.alignment = align_left
                 else:
                     cell.alignment = align_right
-
+                    
+                if c in [12, 15]:  # Cột Margin Thiết bị (L) & Margin Lắp đặt (O)
+                    cell.number_format = num_format_percent
+                elif c in [8, 9, 13, 14, 16, 17]:  # Cột Đơn giá, COST, Thành tiền
+                    cell.number_format = num_format_vnd
+                    
                 if r == tot_row_ct:
                     cell.fill = gray_fill
 
