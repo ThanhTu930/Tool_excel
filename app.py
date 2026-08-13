@@ -381,7 +381,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         col_widths_ct = {
             "A": 5, "B": 28, "C": 10, "D": 10, "E": 18,
             "F": 5, "G": 9, "H": 10, "I": 12, "J": 12, "K": 12,
-            "L": 12, "M": 15, "N": 15, "O": 12, "P": 15, "Q": 15, "R": 15, "S": 15
+            "L": 8, "M": 11, "N": 12, "O": 8, "P": 11, "Q": 12, "R": 7, "S": 8
         }
         for col_letter, width in col_widths_ct.items():
             ws_ct.column_dimensions[col_letter].width = width
