@@ -293,9 +293,9 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
         form_columns = [
             "STT", "Thiết bị", "Mã hàng", "Hãng/\nXuất xứ", "Mô tả", "ĐVT",
-            "Số lượng", "Đơn giá (VNĐ)", "Thành tiền (VNĐ)", "Thời gian bảo hành",
-            "Ghi chú", "Margin Thiết bị", "ĐG COST Thiết bị", "TT COST Thiết bị",
-            "Margin Lắp đặt", "ĐG COST Lắp đặt", "TT COST Lắp đặt", "NCC", "NOTE"
+            "Số lượng", "Đơn giá (VNĐ)", "Thành tiền (VNĐ)", "Thời gian\nbảo hành",
+            "Ghi chú", "Margin\nThiết bị", "ĐG COST\nThiết bị", "TT COST\nThiết bị",
+            "Margin\nLắp đặt", "ĐG COST\nLắp đặt", "TT COST\nLắp đặt", "NCC", "NOTE"
         ]
 
         for col_idx, col_name in enumerate(form_columns, 1):
