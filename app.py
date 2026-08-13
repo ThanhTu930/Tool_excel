@@ -304,14 +304,14 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.merge_cells("B2:J2")
         title_ct = ws_ct["B2"]
         title_ct.value = "BẢNG GIÁ CHI TIẾT"
-        title_ct.font = Font(name="Times New Roman", size=26, bold=True)
+        title_ct.font = Font(name="Times New Roman", size=18, bold=True)
         title_ct.alignment = Alignment(horizontal="center", vertical="center")
 
         num_format_vnd = "#,##0"
 
         # --- GHI MỤC I ---
         ws_ct.cell(row=5, column=1, value="I").alignment = Alignment(horizontal="center", vertical="center")
-        ws_ct.cell(row=5, column=2, value="Hàng hóa/Thiết bị chính").font = Font(name="Times New Roman", size=11, bold=True)
+        ws_ct.cell(row=5, column=2, value="Hàng hóa/Thiết bị chính").font = Font(name="Times New Roman", size=10, bold=True)
 
         n_sec1 = len(df_sec1)
         start_r_sec1 = 6
@@ -338,7 +338,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         # --- GHI MỤC II ---
         row_II = end_r_sec1 + 1 if n_sec1 > 0 else 6
         ws_ct.cell(row=row_II, column=1, value="II").alignment = Alignment(horizontal="center", vertical="center")
-        ws_ct.cell(row=row_II, column=2, value="Chi phí triển khai").font = Font(name="Times New Roman", size=11, bold=True)
+        ws_ct.cell(row=row_II, column=2, value="Chi phí triển khai").font = Font(name="Times New Roman", size=10, bold=True)
 
         n_sec2 = len(df_sec2)
         start_r_sec2 = row_II + 1
@@ -363,7 +363,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             ws_ct.cell(row=row_II, column=8, value=0).number_format = num_format_vnd
             ws_ct.cell(row=row_II, column=9, value=f"=G{row_II}*H{row_II}").number_format = num_format_vnd
 
-        ws_ct.cell(row=row_II, column=9).font = Font(name="Times New Roman", size=11, bold=True)
+        ws_ct.cell(row=row_II, column=9).font = Font(name="Times New Roman", size=10, bold=True)
 
         # --- DÒNG TỔNG CỘNG ---
         tot_row_ct = end_r_sec2 + 1 if n_sec2 > 0 else row_II + 1
@@ -373,7 +373,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         cell_tot.alignment = Alignment(horizontal="center", vertical="center")
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
-        ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=11, bold=True)
+        ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=10, bold=True)
 
         # Tăng độ rộng cột I sheet CHI TIẾT để tránh lỗi #####
         ws_ct.column_dimensions["I"].width = 22
@@ -385,13 +385,13 @@ def process_dataframe_and_generate_excel(raw_input_df):
         for col in range(1, 12):
             cell = ws_ct.cell(row=4, column=col)
             cell.fill, cell.border = gray_fill, thin_border
-            cell.font = Font(name="Times New Roman", size=12, bold=True, color="000000")
+            cell.font = Font(name="Times New Roman", size=10, bold=True, color="000000")
             cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
         for col in range(12, 20):
             cell = ws_ct.cell(row=4, column=col)
             cell.fill, cell.border = gray_fill, thin_border
-            cell.font = Font(name="Times New Roman", size=12, bold=True, color="FF0000")
+            cell.font = Font(name="Times New Roman", size=10, bold=True, color="FF0000")
             cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
         align_center = Alignment(horizontal="center", vertical="center")
