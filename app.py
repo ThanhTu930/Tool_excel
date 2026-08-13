@@ -404,7 +404,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         align_center = Alignment(horizontal="center", vertical="center")
         align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
         align_right = Alignment(horizontal="right", vertical="center")
-
+        num_format_percent = "0%"
         for r in range(5, tot_row_ct + 1):
             is_header = r in (5, row_II, tot_row_ct)
             for c in range(1, 20):
