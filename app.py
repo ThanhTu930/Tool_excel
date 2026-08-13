@@ -376,8 +376,15 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=11, bold=True)
 
         # Tăng độ rộng cột I sheet CHI TIẾT để tránh lỗi #####
-        ws_ct.column_dimensions["I"].width = 22
-
+       
+        # Áp dụng độ rộng cột cố định cho sheet CHI TIẾT
+        col_widths_ct = {
+            "A": 5, "B": 28, "C": 10, "D": 10, "E": 18,
+            "F": 5, "G": 9, "H": 10, "I": 12, "J": 12, "K": 12,
+            "L": 12, "M": 15, "N": 15, "O": 12, "P": 15, "Q": 15, "R": 15, "S": 15
+        }
+        for col_letter, width in col_widths_ct.items():
+            ws_ct.column_dimensions[col_letter].width = width
         # Định dạng kẻ bảng cho Sheet CHI TIẾT
         gray_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
         thin_border = Border(left=Side(style="thin"), right=Side(style="thin"), top=Side(style="thin"), bottom=Side(style="thin"))
