@@ -396,6 +396,7 @@ def process_dataframe_and_generate_excel(input_df):
 
         align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
         align_left_wrap = Alignment(horizontal="left", vertical="center", wrap_text=True)
+        align_right = Alignment(horizontal="right", vertical="center", wrap_text=True)
 
         cols_center = [1, 3, 4, 6, 7, 10, 12, 15]
         cols_left = [2, 5, 11, 18, 19]
