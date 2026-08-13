@@ -177,40 +177,41 @@ def clean_currency(val):
         return 0.0
 
 
-# --- 5. HÀM HỖ TRỢ TỰ ĐỘNG CHỈNH ĐỘ RỘNG CỘT VÀ CHIỀU CAO DÒNG ---
+# --- 5. HÀM TỰ ĐỘNG CÂN CHỈNH CỘT VÀ DÒNG CHUẨN ---
 def autofit_sheet(worksheet, min_col_width=10, max_col_width=50, row_padding=18):
     """
-    Tự động tính toán độ rộng cột dựa trên độ dài văn bản (xử lý cả trường hợp xuống dòng \n).
-    Đồng thời điều chỉnh chiều cao dòng cho hợp lý dựa trên số dòng văn bản.
+    Tự động tính toán độ rộng cột dựa trên độ dài văn bản (xử lý ngắt dòng \n).
+    Tự động điều chỉnh chiều cao dòng phù hợp với ô có nội dung nhiều dòng.
     """
     for col in worksheet.columns:
         max_len = 0
         col_letter = get_column_letter(col[0].column)
-        
-        for cell in col:
-            # Bỏ qua dòng tiêu đề lớn (merge cells) để tránh méo độ rộng cột
-            if cell.coordinate in worksheet.merged_cells:
-                continue
 
-            # Tính độ rộng cột dựa trên dòng chữ dài nhất trong cell
+        for cell in col:
+            # Kiểm tra xem ô có nằm trong danh sách ô gộp (merged_cells) hay không
+            is_merged = any(cell.coordinate in rng for rng in worksheet.merged_cells.ranges)
+
             if cell.value is not None:
                 val_str = str(cell.value)
                 lines = val_str.split("\n")
                 line_lens = [len(line) for line in lines]
                 cell_max_len = max(line_lens) if line_lens else 0
-                max_len = max(max_len, cell_max_len)
 
-                # Tự động tăng chiều cao dòng nếu văn bản có chứa ký tự xuống dòng '\n'
-                if len(lines) > 1 and not cell.row in worksheet.merged_cells:
+                # Bỏ qua các ô gộp khi tính độ rộng cột (để tránh tiêu đề lớn làm tràn chiều rộng cột)
+                if not is_merged:
+                    max_len = max(max_len, cell_max_len)
+
+                # Tự động điều chỉnh chiều cao dòng nếu văn bản có ký tự xuống dòng '\n'
+                if len(lines) > 1:
                     current_h = worksheet.row_dimensions[cell.row].height or row_padding
                     worksheet.row_dimensions[cell.row].height = max(current_h, len(lines) * row_padding)
 
-        # Gán độ rộng cột trong khoảng min/max
+        # Gán độ rộng cột nằm trong khoảng min_col_width đến max_col_width
         calc_width = max(max_len + 4, min_col_width)
         worksheet.column_dimensions[col_letter].width = min(calc_width, max_col_width)
 
 
-# --- 6. HÀM Chuẩn hóa 1 Dataframe đơn lẻ ---
+# --- 6. HÀM CHUẨN HÓA DATAFRAME ĐƠN LẺ ---
 def standardize_df(input_df):
     def get_col_val(df, possible_names, default=""):
         for name in possible_names:
