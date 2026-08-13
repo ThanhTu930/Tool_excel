@@ -82,7 +82,6 @@ st.markdown(
         font-size: 18px !important;
         font-weight: bold !important;
     }
-    /* Đổi màu nút Nhập Báo Giá Trực Tiếp (Màu Xám) */
     div.stButton > button[kind="secondary"] {
         background-color: Gray !important;
         color: #FFFFFF !important;
@@ -294,12 +293,19 @@ def process_dataframe_and_generate_excel(input_df):
         cell_i_tb = ws_ct.cell(row=5, column=2, value="Hàng hóa/Thiết bị chính")
         cell_i_tb.font = Font(name="Times New Roman", size=11, bold=True)
 
+        # Xóa các giá trị rỗng/0 không cần thiết dòng I
+        for col in range(3, 9):
+            ws_ct.cell(row=5, column=col).value = None
+
         cell_i_tt = ws_ct.cell(
             row=5, column=9, value=f"=SUM(I6:I{last_item_row})"
         )
         cell_i_tt.font = Font(name="Times New Roman", size=11, bold=True)
         cell_i_tt.number_format = num_format_vnd
         cell_i_tt.alignment = Alignment(horizontal="right", vertical="center")
+
+        for col in range(10, 20):
+            ws_ct.cell(row=5, column=col).value = None
 
         # --- 2. DÒNG DỮ LIỆU THIẾT BỊ CHÍNH ---
         for i in range(num_items):
@@ -340,6 +346,9 @@ def process_dataframe_and_generate_excel(input_df):
         cell_ii_tb.font = Font(name="Times New Roman", size=11, bold=True)
         cell_ii_tb.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
+        for col in range(3, 6):
+            ws_ct.cell(row=row_II, column=col).value = None
+
         cell_ii_dvt = ws_ct.cell(row=row_II, column=6, value="Gói")
         cell_ii_dvt.alignment = Alignment(horizontal="center", vertical="center")
         cell_ii_sl = ws_ct.cell(row=row_II, column=7, value=1)
@@ -348,6 +357,9 @@ def process_dataframe_and_generate_excel(input_df):
         ws_ct.cell(row=row_II, column=8, value=0).number_format = num_format_vnd
         ws_ct.cell(row=row_II, column=9, value=f"=G{row_II}*H{row_II}").number_format = num_format_vnd
 
+        for col in range(10, 20):
+            ws_ct.cell(row=row_II, column=col).value = None
+
         # --- 4. DÒNG TỔNG CỘNG SHEET CHI TIẾT ---
         ws_ct.merge_cells(start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8)
         cell_total_label = ws_ct.cell(row=tot_row_ct, column=1, value="TỔNG CỘNG")
@@ -355,8 +367,10 @@ def process_dataframe_and_generate_excel(input_df):
         cell_total_label.alignment = Alignment(horizontal="center", vertical="center")
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
-        ws_ct.cell(row=tot_row_ct, column=14, value=f"=SUM(N6:N{row_II})").number_format = num_format_vnd
-        ws_ct.cell(row=tot_row_ct, column=17, value=f"=SUM(Q6:Q{last_item_row})").number_format = num_format_vnd
+        
+        # Xóa sạch dữ liệu các ô góc dưới bên phải dòng TỔNG CỘNG
+        for col in range(10, 20):
+            ws_ct.cell(row=tot_row_ct, column=col).value = None
 
         # --- 5. TÍNH TOÁN BẢNG PHÂN TÍCH MARGIN / COST (BÊN PHẢI) ---
         c_cost = get_column_letter(start_col + 3)
@@ -429,15 +443,17 @@ def process_dataframe_and_generate_excel(input_df):
             cell_val_item.alignment = align_right
             cell_val_item.number_format = num_format_number
             if idx == 1:
-                cell_val_item.value = f"=Q{tot_row_ct}"
+                # Tính tổng TT COST Lắp đặt trực tiếp từ danh sách thiết bị
+                cell_val_item.value = f"=SUM(Q6:Q{last_item_row})"
 
         row_thiet_bi = r0 + 1
-        cell_cost_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 3, value=f"=N{tot_row_ct}")
+        # Tính tổng TT COST Thiết bị trực tiếp từ danh sách thiết bị
+        cell_cost_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 3, value=f"=SUM(N6:N{last_item_row})")
         cell_cost_tb.font = font_regular
         cell_cost_tb.alignment = align_right
         cell_cost_tb.number_format = num_format_number
 
-        cell_sale_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 4, value=f"=I{tot_row_ct}-I{row_II}")
+        cell_sale_tb = ws_ct.cell(row=row_thiet_bi, column=start_col + 4, value=f"=I5")
         cell_sale_tb.font = font_regular
         cell_sale_tb.alignment = align_right
         cell_sale_tb.number_format = num_format_number
@@ -500,7 +516,6 @@ def process_dataframe_and_generate_excel(input_df):
             for c in range(1, 20):
                 cell = ws_ct.cell(row=r, column=c)
                 
-                # Giữ nguyên chữ thường cho các cột từ L trở đi ở dòng II
                 if r == row_II and c >= 12:
                     cell.font = Font(name="Times New Roman", size=10, bold=False)
                 else:
@@ -544,13 +559,11 @@ def process_dataframe_and_generate_excel(input_df):
         # =========================================================
         ws_kh = writer.book.create_sheet(title="GUI_KH", index=1)
 
-        # Tiêu đề BẢNG GIÁ CHI TIẾT
         ws_kh.merge_cells("A2:K2")
         ws_kh["A2"] = "BẢNG GIÁ CHI TIẾT"
         ws_kh["A2"].font = Font(name="Times New Roman", size=18, bold=True)
         ws_kh["A2"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # Header Bảng GUI_KH
         headers_kh = [
             ("A4", "STT"), ("B4", "Thiết bị"), ("C4", "Mã hàng"), 
             ("D4", "Hãng/\nXuất xứ"), ("E4", "Mô tả"), ("F4", "ĐVT"), 
@@ -567,12 +580,12 @@ def process_dataframe_and_generate_excel(input_df):
             cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
             cell.border = thin_border
 
-        # Liên kết dữ liệu động từ sheet CHI TIẾT sang GUI_KH
+        # Liên kết dữ liệu động từ CHI TIẾT, xử lý ô rỗng không hiện số 0
         for r in range(5, tot_row_ct):
             ws_kh.row_dimensions[r].height = ws_ct.row_dimensions[r].height or 20
             
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
-                ws_kh[f"{col_letter}{r}"] = f"='CHI TIẾT'!{col_letter}{r}"
+                ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
 
             is_bold = (r in [5, row_II])
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
@@ -588,7 +601,6 @@ def process_dataframe_and_generate_excel(input_df):
                 else:
                     c.alignment = Alignment(horizontal="left", vertical="center")
 
-        # Dòng TỔNG CỘNG sheet GUI_KH
         ws_kh.merge_cells(f"A{tot_row_ct}:H{tot_row_ct}")
         ws_kh[f"A{tot_row_ct}"] = "TỔNG CỘNG"
         ws_kh[f"A{tot_row_ct}"].font = Font(name="Times New Roman", size=10, bold=True)
@@ -612,7 +624,6 @@ def process_dataframe_and_generate_excel(input_df):
         for col_letter, width in col_widths_kh.items():
             ws_kh.column_dimensions[col_letter].width = width
 
-        # Sắp xếp thứ tự chính xác: BÁO GIÁ -> GUI_KH -> CHI TIẾT
         sheet_order = ["BÁO GIÁ", "GUI_KH", "CHI TIẾT"]
         writer.book._sheets = [writer.book[s] for s in sheet_order if s in writer.book.sheetnames]
 
@@ -643,7 +654,6 @@ def process_dataframe_and_generate_excel(input_df):
         except Exception:
             pass
 
-        # HEADER CÔNG TY (Bảng rộng từ A -> G)
         ws_bg.merge_cells("A1:G1")
         ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
         ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
@@ -668,7 +678,6 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
         ws_bg["A5"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # THÔNG TIN KHÁCH HÀNG & NGUỜI GỬI
         ws_bg["A6"] = "Kính gửi:"
         ws_bg["A7"] = "Người nhận:"
         ws_bg["A8"] = "Email/Sdt:"
@@ -687,7 +696,6 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["A9"] = "Nội dung:"
         ws_bg["A9"].font = Font(name="Times New Roman", size=10, bold=True)
 
-        # KHUNG VIỀN THÔNG TIN KHÁCH HÀNG
         thin_side = Side(style="thin", color="000000")
         for r in range(6, 9):
             for c in range(1, 8):
@@ -711,7 +719,6 @@ def process_dataframe_and_generate_excel(input_df):
         ws_bg["A10"].alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
         ws_bg.row_dimensions[10].height = 35
 
-        # TIÊU ĐỀ BẢNG
         headers_bg = [
             ("A11", "Stt"),
             ("B11", "Nội dung báo giá"),
@@ -728,7 +735,6 @@ def process_dataframe_and_generate_excel(input_df):
             c.font = Font(name="Times New Roman", size=10, bold=True)
             c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-        # DÒNG DỮ LIỆU BẢNG (Dòng 12)
         ws_bg["A12"] = 1
         ws_bg["A12"].alignment = Alignment(horizontal="center", vertical="center")
 
@@ -755,7 +761,6 @@ def process_dataframe_and_generate_excel(input_df):
 
         ws_bg.row_dimensions[12].height = 35
 
-        # VIỀN BẢNG BÁO GIÁ
         for r in range(11, 13):
             for col_idx in range(1, 8):
                 cell = ws_bg.cell(row=r, column=col_idx)
@@ -768,7 +773,6 @@ def process_dataframe_and_generate_excel(input_df):
                         italic=cell.font.italic
                     )
 
-        # ĐIỀU KIỆN THƯƠNG MẠI & GHI CHÚ
         terms_bg = [
             ("A13:G13", "Ghi chú: Thuế GTGT tạm tính, được điều chỉnh theo quy định tại thời điểm xuất hóa đơn.", False, True),
             ("A14:G14", "Điều kiện thương mại:", True, False),
