@@ -458,7 +458,7 @@ def process_dataframe_and_generate_excel(input_df):
 
         ws_kh.merge_cells("A2:K2")
         ws_kh["A2"] = "BẢNG GIÁ CHI TIẾT"
-        ws_kh["A2"].font = Font(name="Times New Roman", size=18, bold=True)
+        ws_kh["A2"].font = Font(name="Times New Roman", size=26, bold=True)
         ws_kh["A2"].alignment = Alignment(horizontal="center", vertical="center")
 
         headers_kh = [
