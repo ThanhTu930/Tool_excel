@@ -254,23 +254,28 @@ def process_dataframe_and_generate_excel(raw_input_df):
     cols = [str(c).replace("\n", " ").strip() for c in raw_input_df.columns]
     raw_input_df.columns = cols
 
-    # TÌM DÒNG TRỐNG LÀM RANH GIỚI TÁCH MỤC I VÀ MỤC II
+    # 1. Tìm vị trí dòng trống đầu tiên làm ranh giới tách Mục I và Mục II
     split_idx = None
     for idx, row in raw_input_df.iterrows():
         device_val = str(row.get("Thiết bị", "")).strip()
         if device_val == "" or pd.isna(row.get("Thiết bị")):
-            # Kiểm tra xem đằng sau dòng trống có dữ liệu hay không
             remaining = raw_input_df.iloc[idx + 1 :]
             if not remaining.empty and remaining["Thiết bị"].dropna().astype(str).str.strip().ne("").any():
                 split_idx = idx
                 break
 
+    # 2. Tách và lọc sạch các dòng trống/rác
     if split_idx is not None:
-        raw_sec1 = raw_input_df.iloc[:split_idx].dropna(how="all").copy()
-        raw_sec2 = raw_input_df.iloc[split_idx + 1 :].dropna(how="all").copy()
+        raw_sec1 = raw_input_df.iloc[:split_idx].copy()
+        raw_sec2 = raw_input_df.iloc[split_idx + 1 :].copy()
     else:
-        raw_sec1 = raw_input_df.dropna(how="all").copy()
+        raw_sec1 = raw_input_df.copy()
         raw_sec2 = pd.DataFrame()
+
+    if "Thiết bị" in raw_sec1.columns:
+        raw_sec1 = raw_sec1[raw_sec1["Thiết bị"].dropna().astype(str).str.strip().ne("")].reset_index(drop=True)
+    if "Thiết bị" in raw_sec2.columns and not raw_sec2.empty:
+        raw_sec2 = raw_sec2[raw_sec2["Thiết bị"].dropna().astype(str).str.strip().ne("")].reset_index(drop=True)
 
     df_sec1 = standardize_df(raw_sec1)
     df_sec2 = standardize_df(raw_sec2)
@@ -313,7 +318,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         end_r_sec1 = start_r_sec1 + n_sec1 - 1 if n_sec1 > 0 else start_r_sec1
 
         if n_sec1 > 0:
-            for i, row_data in df_sec1.iterrows():
+            for i, (_, row_data) in enumerate(df_sec1.iterrows()):
                 r = start_r_sec1 + i
                 for c_idx, val in enumerate(row_data, 1):
                     ws_ct.cell(row=r, column=c_idx, value=val)
@@ -340,7 +345,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         end_r_sec2 = start_r_sec2 + n_sec2 - 1 if n_sec2 > 0 else start_r_sec2
 
         if n_sec2 > 0:
-            for i, row_data in df_sec2.iterrows():
+            for i, (_, row_data) in enumerate(df_sec2.iterrows()):
                 r = start_r_sec2 + i
                 for c_idx, val in enumerate(row_data, 1):
                     ws_ct.cell(row=r, column=c_idx, value=val)
@@ -369,6 +374,9 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{row_II}").number_format = num_format_vnd
         ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=11, bold=True)
+
+        # Tăng độ rộng cột I sheet CHI TIẾT để tránh lỗi #####
+        ws_ct.column_dimensions["I"].width = 22
 
         # Định dạng kẻ bảng cho Sheet CHI TIẾT
         gray_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
@@ -475,7 +483,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
         col_widths_kh = {
             "A": 6, "B": 28, "C": 15, "D": 14, "E": 18, 
-            "F": 8, "G": 10, "H": 14, "I": 16, "J": 12, "K": 12
+            "F": 8, "G": 10, "H": 14, "I": 22, "J": 12, "K": 12
         }
         for col_letter, width in col_widths_kh.items():
             ws_kh.column_dimensions[col_letter].width = width
@@ -655,7 +663,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_bg["F31"].font = Font(name="Times New Roman", size=10, bold=True)
         ws_bg["F31"].alignment = Alignment(horizontal="center", vertical="center")
 
-        col_widths_bg = {"A": 6, "B": 32, "C": 10, "D": 10, "E": 15, "F": 14, "G": 16}
+        col_widths_bg = {"A": 6, "B": 32, "C": 10, "D": 10, "E": 20, "F": 14, "G": 20}
         for col_letter, width in col_widths_bg.items():
             ws_bg.column_dimensions[col_letter].width = width
 
