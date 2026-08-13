@@ -179,13 +179,17 @@ def clean_currency(val):
 
 # --- 5. HÀM XỬ LÝ DỮ LIỆU VÀ TẠO FILE EXCEL HOÀN CHỈNH ---
 def process_dataframe_and_generate_excel(input_df):
-    cols = [str(c).strip() for c in input_df.columns]
+    # Chuẩn hóa tên cột của dataframe đầu vào (loại bỏ xuống dòng \n và khoảng trắng thừa)
+    cols = [str(c).replace("\n", " ").strip() for c in input_df.columns]
     input_df.columns = cols
 
     def get_col_val(df, possible_names, default=""):
         for name in possible_names:
             for c in df.columns:
-                if name.lower() in c.lower():
+                # So sánh tên cột sau khi loại bỏ mọi dấu / và khoảng trắng
+                c_clean = c.lower().replace("/", "").replace(" ", "")
+                target_clean = name.lower().replace("/", "").replace(" ", "")
+                if target_clean in c_clean:
                     return df[c]
         return pd.Series([default] * len(df))
 
@@ -197,7 +201,9 @@ def process_dataframe_and_generate_excel(input_df):
         "",
     )
     df_final["Mã hàng"] = get_col_val(input_df, ["mã hàng"], "")
-    df_final["Hãng/Xuất xứ"] = get_col_val(
+    
+    # ĐỒNG NHẤT TÊN CỘT CÓ KÝ TỰ \n VỚI FORM_COLUMNS
+    df_final["Hãng/\nXuất xứ"] = get_col_val(
         input_df, ["hãng/xuất xứ", "nhãn hiệu/xuất xứ", "xuất xứ", "hãng"], ""
     )
     df_final["Mô tả"] = get_col_val(input_df, ["mô tả"], "")
@@ -249,6 +255,8 @@ def process_dataframe_and_generate_excel(input_df):
         "Ghi chú", "Margin Thiết bị", "ĐG COST Thiết bị", "TT COST Thiết bị",
         "Margin Lắp đặt", "ĐG COST Lắp đặt", "TT COST Lắp đặt", "NCC", "NOTE"
     ]
+    
+    # Reindex khớp 100% tên cột bao gồm ký tự xuống dòng \n
     df_final = df_final.reindex(columns=form_columns)
 
     output = io.BytesIO()
