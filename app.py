@@ -712,12 +712,12 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_pakd["A1"].alignment = Alignment(horizontal="center", vertical="center")
 
         ws_pakd.merge_cells("A2:O2")
-        ws_pakd["A2"] = "KHÁCH HÀNG: NRAST"
+        ws_pakd["A2"] = "KHÁCH HÀNG:"
         ws_pakd["A2"].font = Font(name="Times New Roman", size=11, bold=True)
         ws_pakd["A2"].alignment = Alignment(horizontal="center", vertical="center")
 
         ws_pakd.merge_cells("A3:O3")
-        ws_pakd["A3"] = "DỰ ÁN: LED"
+        ws_pakd["A3"] = "DỰ ÁN:"
         ws_pakd["A3"].font = Font(name="Times New Roman", size=11, bold=True)
         ws_pakd["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
