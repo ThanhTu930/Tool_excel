@@ -796,7 +796,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             ws_pakd.cell(row=r, column=12, value="").number_format = num_format_percent
 
             # LG SAU CPKH: Giá trị & Tỷ lệ
-            ws_pakd.cell(row=r, column=13, value=0).number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=13, value="").number_format = num_format_vnd
             ws_pakd.cell(row=r, column=14, value=f"=M{r}/H{r}").number_format = num_format_percent
 
             # GHI CHÚ
