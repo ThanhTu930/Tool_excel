@@ -789,15 +789,15 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
             # LÃI GỘP: Giá trị (=Thành tiền đầu ra - Thành tiền đầu vào) & Tỷ lệ (=Giá trị / Thành tiền đầu ra)
             ws_pakd.cell(row=r, column=9, value=f"=H{r}-F{r}").number_format = num_format_vnd
-            ws_pakd.cell(row=r, column=10, value=f"=IF(H{r}=0,0,I{r}/H{r})").number_format = num_format_percent
+            ws_pakd.cell(row=r, column=10, value=f"=I{r}/H{r}").number_format = num_format_percent
 
             # CPKH: Giá trị & Tỷ lệ (mặc định để trống như mẫu)
             ws_pakd.cell(row=r, column=11, value="").number_format = num_format_vnd
             ws_pakd.cell(row=r, column=12, value="").number_format = num_format_percent
 
             # LG SAU CPKH: Giá trị & Tỷ lệ
-            ws_pakd.cell(row=r, column=13, value=f"=I{r}-IF(ISNUMBER(K{r}),K{r},0)").number_format = num_format_vnd
-            ws_pakd.cell(row=r, column=14, value=f"=IF(H{r}=0,0,M{r}/H{r})").number_format = num_format_percent
+            ws_pakd.cell(row=r, column=13, value=f"=I{r}-K{r}").number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=14, value=f"=M{r}/H{r}").number_format = num_format_percent
 
             # GHI CHÚ
             ws_pakd.cell(row=r, column=15, value=f"='CHI TIẾT'!K{r_ct}").alignment = align_left
@@ -828,13 +828,13 @@ def process_dataframe_and_generate_excel(raw_input_df):
             ws_pakd.cell(row=tot_r_pakd, column=8, value=0).number_format = num_format_vnd
 
         ws_pakd.cell(row=tot_r_pakd, column=9, value=f"=H{tot_r_pakd}-F{tot_r_pakd}").number_format = num_format_vnd
-        ws_pakd.cell(row=tot_r_pakd, column=10, value=f"=IF(H{tot_r_pakd}=0,0,I{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+        ws_pakd.cell(row=tot_r_pakd, column=10, value=f"=I{tot_r_pakd}/H{tot_r_pakd}").number_format = num_format_percent
 
-        ws_pakd.cell(row=tot_r_pakd, column=11, value=f"=IF(COUNT(K{start_r_pakd}:K{end_r_pakd})>0,SUM(K{start_r_pakd}:K{end_r_pakd}),0)").number_format = num_format_vnd
-        ws_pakd.cell(row=tot_r_pakd, column=12, value=f"=IF(H{tot_r_pakd}=0,0,K{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+        ws_pakd.cell(row=tot_r_pakd, column=11, value=f"=").number_format = num_format_vnd
+        ws_pakd.cell(row=tot_r_pakd, column=12, value=f"=K{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
 
         ws_pakd.cell(row=tot_r_pakd, column=13, value=f"=I{tot_r_pakd}-K{tot_r_pakd}").number_format = num_format_vnd
-        ws_pakd.cell(row=tot_r_pakd, column=14, value=f"=IF(H{tot_r_pakd}=0,0,M{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+        ws_pakd.cell(row=tot_r_pakd, column=14, value=f"=M{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
 
         for c_idx in range(1, 16):
             cell = ws_pakd.cell(row=tot_r_pakd, column=c_idx)
