@@ -789,16 +789,16 @@ def generate_direct_input_excel(raw_input_df):
 
     # Khung viền phần thông tin khách hàng
     for r in range(6, 10):
-        for c in range(1, 10):
+        for c in range(1, 9):
             cell = ws_bg.cell(row=r, column=c)
             cell.border = Border(
                 top=thin_side if r == 6 else cell.border.top,
-                bottom=thin_side if r == 8 else cell.border.bottom,
+                bottom=thin_side if r == 9 else cell.border.bottom,
                 left=thin_side if c == 1 else cell.border.left,
-                right=thin_side if c == 9 else cell.border.right,
+                right=thin_side if c == 8 else cell.border.right,
             )
-    for c in range(1, 9):
-        ws_bg.cell(row=10, column=c).border = Border(bottom=thin_side)
+    for c in range(1, 8):
+        ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
 
     ws_bg["A10"] = (
         "Cảm ơn Quý Đơn vị đã quan tâm và tin tưởng sản phẩm và dịch vụ"
