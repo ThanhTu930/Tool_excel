@@ -1115,8 +1115,8 @@ def generate_direct_input_excel(raw_input_df):
     col_widths_bg = {
         "A": 6,   # STT
         "B": 35,  # Tên hàng hóa/Dịch vụ
-        "C": 12,  # Mã hàng
-        "D": 10,  # Hãng/Xuất xứ
+        "C": 13,  # Mã hàng
+        "D": 13,  # Hãng/Xuất xứ
         "E": 15,  # Mô tả
         "F": 5,   # ĐVT
         "G": 9,   # Số lượng
