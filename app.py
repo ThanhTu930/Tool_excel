@@ -940,17 +940,17 @@ def generate_direct_input_excel(raw_input_df):
     terms_bg = [
         (f"A{r_terms_start}:N{r_terms_start}", "Điều kiện thương mại:", True, False),
         (f"A{r_terms_start+1}:N{r_terms_start+1}", "1. Địa điểm thực hiện:", True, False),
-        (f"A{r_terms_start+2}:N{r_terms_start+2}", "   - Phạm vi Thành phố Hồ Chí Minh", False, False),
+        (f"A{r_terms_start+2}:N{r_terms_start+2}", "- Phạm vi Thành phố Hồ Chí Minh", False, False),
         (f"A{r_terms_start+3}:N{r_terms_start+3}", "2. Giá đã bao gồm:", True, False),
-        (f"A{r_terms_start+4}:N{r_terms_start+4}", "   - Chi phí vận chuyển, lắp đặt do bên Bán chịu.", False, False),
+        (f"A{r_terms_start+4}:N{r_terms_start+4}", "- Chi phí vận chuyển, lắp đặt do bên Bán chịu.", False, False),
         (f"A{r_terms_start+5}:N{r_terms_start+5}", "3. Thanh toán:", True, False),
-        (f"A{r_terms_start+6}:N{r_terms_start+6}", "   - Thanh toán 100% ngay sau khi bàn giao", False, False),
+        (f"A{r_terms_start+6}:N{r_terms_start+6}", "- Thanh toán 100% ngay sau khi bàn giao", False, False),
         (f"A{r_terms_start+7}:N{r_terms_start+7}", "4. Thời gian thực hiện:", True, False),
-        (f"A{r_terms_start+8}:N{r_terms_start+8}", "   - Ngay sau khi xác nhận đơn hàng.", False, False),
+        (f"A{r_terms_start+8}:N{r_terms_start+8}", "- Ngay sau khi xác nhận đơn hàng.", False, False),
         (f"A{r_terms_start+9}:N{r_terms_start+9}", "5. Thời gian bảo hành:", True, False),
         (f"A{r_terms_start+10}:N{r_terms_start+10}", "- BH thiết bị theo chính sách của hãng.", False, False),
         (f"A{r_terms_start+11}:N{r_terms_start+11}", "6. Thời hạn chào giá:", True, False),
-        (f"A{r_terms_start+12}:N{r_terms_start+12}", "   - 07 ngày kể từ ngày chào giá.", False, False),
+        (f"A{r_terms_start+12}:N{r_terms_start+12}", "- 07 ngày kể từ ngày chào giá.", False, False),
         (f"A{r_terms_start+13}:N{r_terms_start+13}", "Chúng tôi rất mong được hợp tác với Quý Đơn vị.", False, True),
     ]
 
