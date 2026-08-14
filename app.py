@@ -743,26 +743,26 @@ def generate_direct_input_excel(raw_input_df):
     ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
     ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
     ws_bg["A1"].alignment = align_center
-    ws_bg.merge_cells("A1:H1")
+    ws_bg.merge_cells("A1:I1")
 
     ws_bg["A2"] = "**********"
     ws_bg["A2"].alignment = align_center
-    ws_bg.merge_cells("A2:H2")
+    ws_bg.merge_cells("A2:I2")
 
     ws_bg["A3"] = "Hotline: 0909 661 579"
     ws_bg["A3"].font = Font(name="Times New Roman", size=10)
     ws_bg["A3"].alignment = align_center
-    ws_bg.merge_cells("A3:H3")
+    ws_bg.merge_cells("A3:I3")
 
     ws_bg["A4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
     ws_bg["A4"].font = Font(name="Times New Roman", size=10, underline="single")
     ws_bg["A4"].alignment = align_center
-    ws_bg.merge_cells("A4:H4")
+    ws_bg.merge_cells("A4:I4")
 
     ws_bg["A5"] = "BẢNG BÁO GIÁ"
     ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
     ws_bg["A5"].alignment = align_center
-    ws_bg.merge_cells("A5:H5")
+    ws_bg.merge_cells("A5:I5")
 
     # 3. THÔNG TIN KHÁCH HÀNG & GIAO DỊCH
     ws_bg["A6"] = "Kính gửi:"
@@ -774,10 +774,10 @@ def generate_direct_input_excel(raw_input_df):
             horizontal="left", vertical="center"
         )
 
-    ws_bg["H6"] = "Người gửi:"
-    ws_bg["H7"] = "Điện thoại:"
-    ws_bg["H8"] = "TPHCM, ngày tháng năm 2026"
-    for cell_id2 in ["H6", "H7", "H8"]:
+    ws_bg["I6"] = "Người gửi:"
+    ws_bg["I7"] = "Điện thoại:"
+    ws_bg["I8"] = "TPHCM, ngày tháng năm 2026"
+    for cell_id2 in ["I6", "I7", "I8"]:
         ws_bg[cell_id2].font = Font(name="Times New Roman", size=10, bold=True)
         ws_bg[cell_id2].alignment = Alignment(
             horizontal="right", vertical="center"
@@ -785,20 +785,20 @@ def generate_direct_input_excel(raw_input_df):
 
     ws_bg["A9"] = "Nội dung:"
     ws_bg["A9"].font = Font(name="Times New Roman", size=10, bold=True)
-    ws_bg.merge_cells("A9:H9")
+    ws_bg.merge_cells("A9:I9")
 
     # Khung viền phần thông tin khách hàng
-    for r in range(6, 9):
-        for c in range(1, 9):
+    for r in range(6, 10):
+        for c in range(1, 10):
             cell = ws_bg.cell(row=r, column=c)
             cell.border = Border(
                 top=thin_side if r == 6 else cell.border.top,
-                bottom=thin_side if r == 8 else cell.border.bottom,
+                bottom=thin_side if r == 9 else cell.border.bottom,
                 left=thin_side if c == 1 else cell.border.left,
-                right=thin_side if c == 8 else cell.border.right,
+                right=thin_side if c == 9 else cell.border.right,
             )
-    for c in range(1, 9):
-        ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
+    for c in range(1, 10):
+        ws_bg.cell(row=10, column=c).border = Border(bottom=thin_side)
 
     ws_bg["A10"] = (
         "Cảm ơn Quý Đơn vị đã quan tâm và tin tưởng sản phẩm và dịch vụ"
@@ -808,7 +808,7 @@ def generate_direct_input_excel(raw_input_df):
     ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
     ws_bg["A10"].alignment = align_left
     ws_bg.row_dimensions[10].height = 35
-    ws_bg.merge_cells("A10:H10")
+    ws_bg.merge_cells("A10:I10")
 
     # 4. TIÊU ĐỀ BẢNG DỮ LIỆU (Bổ sung cột NCC ở vị trí M11)
     headers = [
@@ -1005,85 +1005,85 @@ def generate_direct_input_excel(raw_input_df):
     r_terms_start = r_total + 1
     terms_bg = [
         (
-            f"A{r_terms_start}:H{r_terms_start}",
+            f"A{r_terms_start}:I{r_terms_start}",
             "Điều kiện thương mại:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+1}:H{r_terms_start+1}",
+            f"A{r_terms_start+1}:I{r_terms_start+1}",
             "1. Địa điểm thực hiện:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+2}:H{r_terms_start+2}",
+            f"A{r_terms_start+2}:I{r_terms_start+2}",
             "   - Phạm vi Thành phố Hồ Chí Minh",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+3}:H{r_terms_start+3}",
+            f"A{r_terms_start+3}:I{r_terms_start+3}",
             "2. Giá đã bao gồm:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+4}:H{r_terms_start+4}",
+            f"A{r_terms_start+4}:I{r_terms_start+4}",
             "   - Chi phí vận chuyển, lắp đặt do bên Bán chịu.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+5}:H{r_terms_start+5}",
+            f"A{r_terms_start+5}:I{r_terms_start+5}",
             "3. Thanh toán:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+6}:H{r_terms_start+6}",
+            f"A{r_terms_start+6}:I{r_terms_start+6}",
             "   - Thanh toán 100% ngay sau khi bàn giao",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+7}:H{r_terms_start+7}",
+            f"A{r_terms_start+7}:I{r_terms_start+7}",
             "4. Thời gian thực hiện:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+8}:H{r_terms_start+8}",
+            f"A{r_terms_start+8}:I{r_terms_start+8}",
             "   - Ngay sau khi xác nhận đơn hàng.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+9}:H{r_terms_start+9}",
+            f"A{r_terms_start+9}:I{r_terms_start+9}",
             "5. Thời gian bảo hành:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+10}:H{r_terms_start+10}",
+            f"A{r_terms_start+10}:I{r_terms_start+10}",
             "   - BH thiết bị theo chính sách của hãng.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+11}:H{r_terms_start+11}",
+            f"A{r_terms_start+11}:I{r_terms_start+11}",
             "6. Thời hạn chào giá:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+12}:H{r_terms_start+12}",
+            f"A{r_terms_start+12}:I{r_terms_start+12}",
             "   - 07 ngày kể từ ngày chào giá.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+13}:H{r_terms_start+13}",
+            f"A{r_terms_start+13}:I{r_terms_start+13}",
             "Chúng tôi rất mong được hợp tác với Quý Đơn vị.",
             False,
             True,
@@ -1108,16 +1108,16 @@ def generate_direct_input_excel(raw_input_df):
 
     # Chữ ký Công ty
     r_sign = r_terms_start + 15
-    ws_bg[f"G{r_sign}"] = "Công ty TNHH Công Nghệ DVC"
-    ws_bg[f"G{r_sign}"].font = Font(name="Times New Roman", size=10, bold=True)
-    ws_bg[f"G{r_sign}"].alignment = align_center
+    ws_bg[f"H{r_sign}"] = "Công ty TNHH Công Nghệ DVC"
+    ws_bg[f"H{r_sign}"].font = Font(name="Times New Roman", size=10, bold=True)
+    ws_bg[f"H{r_sign}"].alignment = align_center
 
     col_widths_bg = {
         "A": 6,   # STT
         "B": 35,  # Tên hàng hóa/Dịch vụ
         "C": 12,  # Mã hàng
         "D": 10,  # Hãng/Xuất xứ
-        "E": 25,  # Mô tả
+        "E": 15,  # Mô tả
         "F": 5,   # ĐVT
         "G": 9,   # Số lượng
         "H": 12,  # Đơn giá (VNĐ)
@@ -1125,7 +1125,7 @@ def generate_direct_input_excel(raw_input_df):
         "J": 10,  # MARGIN
         "K": 11,  # ĐG COST
         "L": 11,  # TT COST
-        "M": 15,  # NCC
+        "M": 10,  # NCC
     }
     for col_letter, width in col_widths_bg.items():
         ws_bg.column_dimensions[col_letter].width = width
