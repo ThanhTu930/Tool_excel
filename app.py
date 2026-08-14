@@ -948,7 +948,7 @@ def generate_direct_input_excel(raw_input_df):
         (f"A{r_terms_start+7}:N{r_terms_start+7}", "4. Thời gian thực hiện:", True, False),
         (f"A{r_terms_start+8}:N{r_terms_start+8}", "   - Ngay sau khi xác nhận đơn hàng.", False, False),
         (f"A{r_terms_start+9}:N{r_terms_start+9}", "5. Thời gian bảo hành:", True, False),
-        (f"A{r_terms_start+9}:N{r_terms_start+10}", "- BH thiết bị theo chính sách của hãng.", True, False),
+        (f"A{r_terms_start+9}:N{r_terms_start+10}", "- BH thiết bị theo chính sách của hãng.", False, False),
         (f"A{r_terms_start+10}:N{r_terms_start+11}", "6. Thời hạn chào giá:", True, False),
         (f"A{r_terms_start+11}:N{r_terms_start+12}", "   - 07 ngày kể từ ngày chào giá.", False, False),
         (f"A{r_terms_start+12}:N{r_terms_start+13}", "Chúng tôi rất mong được hợp tác với Quý Đơn vị.", False, True),
