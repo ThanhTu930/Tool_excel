@@ -830,10 +830,10 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_pakd.cell(row=tot_r_pakd, column=9, value=f"=H{tot_r_pakd}-F{tot_r_pakd}").number_format = num_format_vnd
         ws_pakd.cell(row=tot_r_pakd, column=10, value=f"=I{tot_r_pakd}/H{tot_r_pakd}").number_format = num_format_percent
 
-        ws_pakd.cell(row=tot_r_pakd, column=11, value=f"=").number_format = num_format_vnd
+        ws_pakd.cell(row=tot_r_pakd, column=11, value=0).number_format = num_format_vnd
         ws_pakd.cell(row=tot_r_pakd, column=12, value=f"=K{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
 
-        ws_pakd.cell(row=tot_r_pakd, column=13, value=f"=I{tot_r_pakd}-K{tot_r_pakd}").number_format = num_format_vnd
+        ws_pakd.cell(row=tot_r_pakd, column=13, value=0).number_format = num_format_vnd
         ws_pakd.cell(row=tot_r_pakd, column=14, value=f"=M{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
 
         for c_idx in range(1, 16):
