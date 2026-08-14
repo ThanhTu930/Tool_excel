@@ -706,20 +706,14 @@ def process_dataframe_and_generate_excel(raw_input_df):
     return output.getvalue()
 
 
-# --- 6.1. HÀM TẠO FILE EXCEL DÙNG CHO NHẬP TRỰC TIẾP (CÓ ĐỦ 6 CỘT MARGIN & COST TƯƠNG ỨNG) ---
-import io
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-
-
+# --- 6.1. HÀM TẠO FILE EXCEL DÙNG CHO NHẬP TRỰC TIẾP (BAOGIA_KH - 11 CỘT) ---
 def generate_direct_input_excel(raw_input_df):
     output = io.BytesIO()
     wb = Workbook()
     ws_bg = wb.active
     ws_bg.title = "BAOGIA_KH"
 
-    # 1. THIẾT LẬP TRANG IN & KHỔ GIẤY (In từ A -> I)
+    # 1. THIẾT LẬP TRANG IN & KHỔ GIẤY (In từ A -> K)
     ws_bg.page_setup.orientation = ws_bg.ORIENTATION_PORTRAIT
     ws_bg.page_setup.paperSize = ws_bg.PAPERSIZE_A4
     ws_bg.sheet_properties.pageSetUpPr.fitToPage = True
@@ -737,7 +731,7 @@ def generate_direct_input_excel(raw_input_df):
     align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
     align_right = Alignment(horizontal="right", vertical="center")
 
-    # 2. HEADER CÔNG TY & TIÊU ĐỀ (Gộp từ A -> I)
+    # 2. HEADER CÔNG TY & TIÊU ĐỀ (Gộp từ A -> K)
     try:
         img = Image("logo_dvc.png")
         img.width = 90
@@ -749,28 +743,28 @@ def generate_direct_input_excel(raw_input_df):
     ws_bg["A1"] = "CÔNG TY TNHH CÔNG NGHỆ DVC"
     ws_bg["A1"].font = Font(name="Times New Roman", size=12, bold=True)
     ws_bg["A1"].alignment = align_center
-    ws_bg.merge_cells("A1:I1")
+    ws_bg.merge_cells("A1:K1")
 
     ws_bg["A2"] = "**********"
     ws_bg["A2"].alignment = align_center
-    ws_bg.merge_cells("A2:I2")
+    ws_bg.merge_cells("A2:K2")
 
     ws_bg["A3"] = "Hotline: 0909 661 579"
     ws_bg["A3"].font = Font(name="Times New Roman", size=10)
     ws_bg["A3"].alignment = align_center
-    ws_bg.merge_cells("A3:I3")
+    ws_bg.merge_cells("A3:K3")
 
     ws_bg["A4"] = "Email: dvc@dvctech.vn - Website: dvctech.vn"
     ws_bg["A4"].font = Font(name="Times New Roman", size=10, underline="single")
     ws_bg["A4"].alignment = align_center
-    ws_bg.merge_cells("A4:I4")
+    ws_bg.merge_cells("A4:K4")
 
     ws_bg["A5"] = "BẢNG BÁO GIÁ"
     ws_bg["A5"].font = Font(name="Times New Roman", size=20, bold=True)
     ws_bg["A5"].alignment = align_center
-    ws_bg.merge_cells("A5:I5")
+    ws_bg.merge_cells("A5:K5")
 
-    # 3. THÔNG TIN KHÁCH HÀNG & GIAO DỊCH (Góc phải chuyển về cột I)
+    # 3. THÔNG TIN KHÁCH HÀNG & GIAO DỊCH (Góc phải ở cột K)
     ws_bg["A6"] = "Kính gửi:"
     ws_bg["A7"] = "Người nhận:"
     ws_bg["A8"] = "Email/Sđt:"
@@ -780,10 +774,10 @@ def generate_direct_input_excel(raw_input_df):
             horizontal="left", vertical="center"
         )
 
-    ws_bg["I6"] = "Người gửi:"
-    ws_bg["I7"] = "Điện thoại:"
-    ws_bg["I8"] = "TPHCM, ngày tháng năm 2026"
-    for cell_id2 in ["I6", "I7", "I8"]:
+    ws_bg["K6"] = "Người gửi:"
+    ws_bg["K7"] = "Điện thoại:"
+    ws_bg["K8"] = "TPHCM, ngày tháng năm 2026"
+    for cell_id2 in ["K6", "K7", "K8"]:
         ws_bg[cell_id2].font = Font(name="Times New Roman", size=10, bold=True)
         ws_bg[cell_id2].alignment = Alignment(
             horizontal="right", vertical="center"
@@ -791,19 +785,19 @@ def generate_direct_input_excel(raw_input_df):
 
     ws_bg["A9"] = "Nội dung:"
     ws_bg["A9"].font = Font(name="Times New Roman", size=10, bold=True)
-    ws_bg.merge_cells("A9:I9")
+    ws_bg.merge_cells("A9:K9")
 
-    # Khung viền phần thông tin khách hàng (từ cột 1 -> 9)
+    # Khung viền phần thông tin khách hàng (từ cột 1 -> 11)
     for r in range(6, 9):
-        for c in range(1, 10):
+        for c in range(1, 12):
             cell = ws_bg.cell(row=r, column=c)
             cell.border = Border(
                 top=thin_side if r == 6 else cell.border.top,
                 bottom=thin_side if r == 8 else cell.border.bottom,
                 left=thin_side if c == 1 else cell.border.left,
-                right=thin_side if c == 9 else cell.border.right,
+                right=thin_side if c == 11 else cell.border.right,
             )
-    for c in range(1, 10):
+    for c in range(1, 12):
         ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
 
     ws_bg["A10"] = (
@@ -814,28 +808,21 @@ def generate_direct_input_excel(raw_input_df):
     ws_bg["A10"].font = Font(name="Times New Roman", size=10, italic=True)
     ws_bg["A10"].alignment = align_left
     ws_bg.row_dimensions[10].height = 35
-    ws_bg.merge_cells("A10:I10")
+    ws_bg.merge_cells("A10:K10")
 
-    # 4. TIÊU ĐỀ BẢNG THIẾT BỊ (Thêm Thời gian bảo hành & Ghi chú vào sau Thành tiền)
+    # 4. TIÊU ĐỀ BẢNG DỮ LIỆU (Đúng 11 cột yêu cầu)
     headers = [
-        # Báo giá khách hàng (A -> I)
-        ("A11", "Stt"),
+        ("A11", "STT"),
         ("B11", "Tên hàng hóa/Dịch vụ"),
-        ("C11", "Nhãn hiệu/\nXuất xứ"),
-        ("D11", "ĐVT"),
-        ("E11", "Số lượng"),
-        ("F11", "Đơn giá\n(VNĐ)"),
-        ("G11", "Thành tiền\n(VNĐ)"),
-        ("H11", "Thời gian\nbảo hành"),
-        ("I11", "Ghi chú"),
-        # Dữ liệu nội bộ (J -> P)
-        ("J11", "Margin\nThiết bị"),
-        ("K11", "ĐG COST\nThiết bị"),
-        ("L11", "TT COST\nThiết bị"),
-        ("M11", "Margin\nLắp đặt"),
-        ("N11", "ĐG COST\nLắp đặt"),
-        ("O11", "TT COST\nLắp đặt"),
-        ("P11", "NCC"),
+        ("C11", "Mã hàng"),
+        ("D11", "Hãng/\nXuất xứ"),
+        ("E11", "ĐVT"),
+        ("F11", "Số lượng"),
+        ("G11", "Đơn giá\n(VNĐ)"),
+        ("H11", "Thành tiền\n(VNĐ)"),
+        ("I11", "MARGIN"),
+        ("J11", "ĐG COST"),
+        ("K11", "TT COST"),
     ]
 
     for cell_id, text in headers:
@@ -880,6 +867,7 @@ def generate_direct_input_excel(raw_input_df):
             or row.get("Mô tả")
             or ""
         )
+        ma_hang = row.get("Mã hàng") or ""
         brand = (
             row.get("Hãng/Xuất xứ")
             or row.get("Hãng/\nXuất xứ")
@@ -889,74 +877,56 @@ def generate_direct_input_excel(raw_input_df):
         unit = row.get("ĐVT") or "Cái"
         qty = clean_currency(row.get("Số lượng", 1))
 
-        warranty = (
-            row.get("Thời gian bảo hành")
-            or row.get("Bảo hành")
-            or row.get("Thời gian BH")
-            or ""
+        margin = parse_margin(
+            row.get("Margin") or row.get("Margin Thiết bị") or 0
         )
-        note = row.get("Ghi chú") or ""
-
-        margin_tb = parse_margin(
-            row.get("Margin Thiết bị") or row.get("Margin") or 0
-        )
-        cost_tb = parse_formula_or_value(
-            row.get("ĐG COST Thiết bị") or row.get("Giá Cost") or 0
+        cost = parse_formula_or_value(
+            row.get("Đơn giá COST") or row.get("ĐG COST Thiết bị") or row.get("Giá Cost") or 0
         )
 
-        margin_ld = parse_margin(row.get("Margin Lắp đặt") or 0)
-        cost_ld = parse_formula_or_value(row.get("ĐG COST Lắp đặt") or 0)
-
-        ncc = row.get("NCC") or ""
-
-        # Dữ liệu khách hàng (A -> I)
+        # Ghi các giá trị vào các cột A -> K
         ws_bg.cell(row=r, column=1, value=i + 1).alignment = align_center
         ws_bg.cell(row=r, column=2, value=name).alignment = align_left
-        ws_bg.cell(row=r, column=3, value=brand).alignment = align_center
-        ws_bg.cell(row=r, column=4, value=unit).alignment = align_center
-        ws_bg.cell(row=r, column=5, value=qty).alignment = align_center
+        ws_bg.cell(row=r, column=3, value=ma_hang).alignment = align_center
+        ws_bg.cell(row=r, column=4, value=brand).alignment = align_center
+        ws_bg.cell(row=r, column=5, value=unit).alignment = align_center
+        ws_bg.cell(row=r, column=6, value=qty).alignment = align_center
 
+        # Đơn giá (VNĐ) = ROUNDUP(Cost / (1 - Margin), -3)
         ws_bg.cell(
-            row=r, column=6, value=f"=ROUNDUP(K{r}/(1-J{r}),-3)"
+            row=r, column=7, value=f"=ROUNDUP(J{r}/(1-I{r}),-3)"
         ).number_format = num_format_vnd
+
+        # Thành tiền (VNĐ) = Số lượng * Đơn giá
         ws_bg.cell(
-            row=r, column=7, value=f"=E{r}*F{r}"
+            row=r, column=8, value=f"=F{r}*G{r}"
         ).number_format = num_format_vnd
 
-        ws_bg.cell(row=r, column=8, value=warranty).alignment = align_center
-        ws_bg.cell(row=r, column=9, value=note).alignment = align_left
-
-        # Dữ liệu nội bộ (J -> P)
-        ws_bg.cell(row=r, column=10, value=margin_tb).number_format = (
+        # MARGIN
+        ws_bg.cell(row=r, column=9, value=margin).number_format = (
             num_format_percent
         )
-        ws_bg.cell(row=r, column=11, value=cost_tb).number_format = (
+
+        # ĐG COST
+        ws_bg.cell(row=r, column=10, value=cost).number_format = (
             num_format_vnd
         )
+
+        # TT COST = Số lượng * ĐG COST
         ws_bg.cell(
-            row=r, column=12, value=f"=E{r}*K{r}"
+            row=r, column=11, value=f"=F{r}*J{r}"
         ).number_format = num_format_vnd
 
-        ws_bg.cell(row=r, column=13, value=margin_ld).number_format = (
-            num_format_percent
-        )
-        ws_bg.cell(row=r, column=14, value=cost_ld).number_format = (
-            num_format_vnd
-        )
-        ws_bg.cell(
-            row=r, column=15, value=f"=E{r}*N{r}"
-        ).number_format = num_format_vnd
-
-        ws_bg.cell(row=r, column=16, value=ncc).alignment = align_center
-
-        for col_idx in range(1, 17):
+        for col_idx in range(1, 12):
             c = ws_bg.cell(row=r, column=col_idx)
             c.border = thin_border
             c.font = Font(name="Times New Roman", size=10)
-            if col_idx in [6, 7, 11, 12, 14, 15]:
+            if col_idx in [7, 8, 10, 11]:
                 c.alignment = align_right
-            elif col_idx in [8, 10, 13, 16]:
+            elif col_idx in [1, 3, 4, 5, 6, 9]:
                 c.alignment = align_center
+            else:
+                c.alignment = align_left
 
     end_device_row = start_row + n_rows - 1 if n_rows > 0 else start_row
 
@@ -964,20 +934,20 @@ def generate_direct_input_excel(raw_input_df):
     r_vat = r_subtotal + 1
     r_total = r_vat + 1
 
-    # Dòng 1: THÀNH TIỀN TRƯỚC THUẾ (Gộp A -> F, Giá trị ở cột G)
+    # Dòng 1: THÀNH TIỀN TRƯỚC THUẾ (Gộp A -> G, Giá trị ở cột H)
     ws_bg.cell(
         row=r_subtotal, column=1, value="THÀNH TIỀN TRƯỚC THUẾ"
     ).font = Font(name="Times New Roman", size=10, bold=True)
     ws_bg.cell(row=r_subtotal, column=1).alignment = align_center
     ws_bg.merge_cells(
-        start_row=r_subtotal, start_column=1, end_row=r_subtotal, end_column=6
+        start_row=r_subtotal, start_column=1, end_row=r_subtotal, end_column=7
     )
 
     val_sub = ws_bg.cell(
         row=r_subtotal,
-        column=7,
+        column=8,
         value=(
-            f"=SUM(G{start_row}:G{end_device_row})" if n_rows > 0 else 0
+            f"=SUM(H{start_row}:H{end_device_row})" if n_rows > 0 else 0
         ),
     )
     val_sub.font = Font(name="Times New Roman", size=10, bold=True)
@@ -990,10 +960,10 @@ def generate_direct_input_excel(raw_input_df):
     )
     ws_bg.cell(row=r_vat, column=1).alignment = align_center
     ws_bg.merge_cells(
-        start_row=r_vat, start_column=1, end_row=r_vat, end_column=6
+        start_row=r_vat, start_column=1, end_row=r_vat, end_column=7
     )
 
-    val_vat = ws_bg.cell(row=r_vat, column=7, value=f"=G{r_subtotal}*8%")
+    val_vat = ws_bg.cell(row=r_vat, column=8, value=f"=H{r_subtotal}*8%")
     val_vat.font = Font(name="Times New Roman", size=10, bold=True)
     val_vat.alignment = align_right
     val_vat.number_format = num_format_vnd
@@ -1004,109 +974,109 @@ def generate_direct_input_excel(raw_input_df):
     )
     ws_bg.cell(row=r_total, column=1).alignment = align_center
     ws_bg.merge_cells(
-        start_row=r_total, start_column=1, end_row=r_total, end_column=6
+        start_row=r_total, start_column=1, end_row=r_total, end_column=7
     )
 
     val_tot = ws_bg.cell(
-        row=r_total, column=7, value=f"=G{r_subtotal}+G{r_vat}"
+        row=r_total, column=8, value=f"=H{r_subtotal}+H{r_vat}"
     )
     val_tot.font = Font(name="Times New Roman", size=10, bold=True)
     val_tot.alignment = align_right
     val_tot.number_format = num_format_vnd
 
-    # Kẻ khung và tô màu xám cho phần tổng tiền (Từ Cột A -> Cột I)
+    # Kẻ khung và tô màu xám cho phần tổng tiền (Từ Cột A -> Cột K)
     gray_fill = PatternFill(
         start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
     )
     for r_idx in [r_subtotal, r_vat, r_total]:
-        for c_idx in range(1, 10):
+        for c_idx in range(1, 12):
             cell = ws_bg.cell(row=r_idx, column=c_idx)
             cell.border = thin_border
             cell.fill = gray_fill
 
-    # 5. ĐIỀU KIỆN THƯƠNG MẠI (Gộp từ A -> I)
+    # 5. ĐIỀU KIỆN THƯƠNG MẠI (Gộp từ A -> K)
     r_terms_start = r_total + 1
     terms_bg = [
         (
-            f"A{r_terms_start}:I{r_terms_start}",
+            f"A{r_terms_start}:K{r_terms_start}",
             "Điều kiện thương mại:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+1}:I{r_terms_start+1}",
+            f"A{r_terms_start+1}:K{r_terms_start+1}",
             "1. Địa điểm thực hiện:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+2}:I{r_terms_start+2}",
+            f"A{r_terms_start+2}:K{r_terms_start+2}",
             "   - Phạm vi Thành phố Hồ Chí Minh",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+3}:I{r_terms_start+3}",
+            f"A{r_terms_start+3}:K{r_terms_start+3}",
             "2. Giá đã bao gồm:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+4}:I{r_terms_start+4}",
+            f"A{r_terms_start+4}:K{r_terms_start+4}",
             "   - Chi phí vận chuyển, lắp đặt do bên Bán chịu.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+5}:I{r_terms_start+5}",
+            f"A{r_terms_start+5}:K{r_terms_start+5}",
             "3. Thanh toán:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+6}:I{r_terms_start+6}",
+            f"A{r_terms_start+6}:K{r_terms_start+6}",
             "   - Thanh toán 100% ngay sau khi bàn giao",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+7}:I{r_terms_start+7}",
+            f"A{r_terms_start+7}:K{r_terms_start+7}",
             "4. Thời gian thực hiện:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+8}:I{r_terms_start+8}",
+            f"A{r_terms_start+8}:K{r_terms_start+8}",
             "   - Ngay sau khi xác nhận đơn hàng.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+9}:I{r_terms_start+9}",
+            f"A{r_terms_start+9}:K{r_terms_start+9}",
             "5. Thời gian bảo hành:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+10}:I{r_terms_start+10}",
+            f"A{r_terms_start+10}:K{r_terms_start+10}",
             "   - BH thiết bị theo chính sách của hãng.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+11}:I{r_terms_start+11}",
+            f"A{r_terms_start+11}:K{r_terms_start+11}",
             "6. Thời hạn chào giá:",
             True,
             False,
         ),
         (
-            f"A{r_terms_start+12}:I{r_terms_start+12}",
+            f"A{r_terms_start+12}:K{r_terms_start+12}",
             "   - 07 ngày kể từ ngày chào giá.",
             False,
             False,
         ),
         (
-            f"A{r_terms_start+13}:I{r_terms_start+13}",
+            f"A{r_terms_start+13}:K{r_terms_start+13}",
             "Chúng tôi rất mong được hợp tác với Quý Đơn vị.",
             False,
             True,
@@ -1129,29 +1099,24 @@ def generate_direct_input_excel(raw_input_df):
         )
         ws_bg.merge_cells(range_str)
 
-    # Chữ ký Công ty ở cột I
+    # Chữ ký Công ty ở cột K
     r_sign = r_terms_start + 15
-    ws_bg[f"I{r_sign}"] = "Công ty TNHH Công Nghệ DVC"
-    ws_bg[f"I{r_sign}"].font = Font(name="Times New Roman", size=10, bold=True)
-    ws_bg[f"I{r_sign}"].alignment = align_center
+    ws_bg[f"K{r_sign}"] = "Công ty TNHH Công Nghệ DVC"
+    ws_bg[f"K{r_sign}"].font = Font(name="Times New Roman", size=10, bold=True)
+    ws_bg[f"K{r_sign}"].alignment = align_center
 
     col_widths_bg = {
-        "A": 6,
-        "B": 35,
-        "C": 15,
-        "D": 8,
-        "E": 9,
-        "F": 15,
-        "G": 16,
-        "H": 14,
-        "I": 20,
-        "J": 12,
-        "K": 15,
-        "L": 16,
-        "M": 12,
-        "N": 15,
-        "O": 16,
-        "P": 12,
+        "A": 6,   # STT
+        "B": 35,  # Tên hàng hóa/Dịch vụ
+        "C": 15,  # Mã hàng
+        "D": 15,  # Hãng/Xuất xứ
+        "E": 8,   # ĐVT
+        "F": 9,   # Số lượng
+        "G": 15,  # Đơn giá (VNĐ)
+        "H": 16,  # Thành tiền (VNĐ)
+        "I": 12,  # MARGIN
+        "J": 15,  # ĐG COST
+        "K": 16,  # TT COST
     }
     for col_letter, width in col_widths_bg.items():
         ws_bg.column_dimensions[col_letter].width = width
@@ -1186,44 +1151,34 @@ with col_manual_btn:
 if st.session_state.show_manual_input:
     st.markdown("---")
     st.subheader("Bảng nhập thông tin báo giá trực tiếp")
-    st.caption("💡 **Mẹo:** Ở cột **ĐG COST**, bạn có thể nhập số trực tiếp (vd: `100000`) hoặc gõ công thức tính toán (vd: `100000/1.08` hay `50000*2`). Excel sẽ giữ nguyên công thức này khi xuất file!")
+    st.caption("💡 **Mẹo:** Ở cột **Đơn giá COST**, bạn có thể nhập số trực tiếp (vd: `100000`) hoặc gõ công thức tính toán (vd: `100000/1.08` hay `50000*2`). Excel sẽ giữ nguyên công thức này khi xuất file!")
 
     sample_manual_df = pd.DataFrame([
         {
-            "Stt": 1,
+            "STT": 1,
             "Thiết bị": "",
             "Mã hàng": "",
             "Hãng/Xuất xứ": "",
             "Mô tả": "",
             "ĐVT": "Cái",
             "Số lượng": 1,
-            "Thời gian bảo hành": "",
-            "Ghi chú": "",
-            "Margin Thiết bị": "",
-            "ĐG COST Thiết bị": "0",
-            "Margin Lắp đặt": "",
-            "ĐG COST Lắp đặt": "0",
-            "NCC": "",
-            "NOTE": ""
+            "Margin": "",
+            "Đơn giá COST": "0",
+            "NCC": ""
         }
     ])
 
     column_configs = {
-        "Stt": st.column_config.NumberColumn("Stt", width="small", min_value=1, step=1),
+        "STT": st.column_config.NumberColumn("STT", width="small", min_value=1, step=1),
         "Thiết bị": st.column_config.TextColumn("Thiết bị", width="large"),
         "Mã hàng": st.column_config.TextColumn("Mã hàng", width="medium"),
         "Hãng/Xuất xứ": st.column_config.TextColumn("Hãng/Xuất xứ", width="medium"),
         "Mô tả": st.column_config.TextColumn("Mô tả", width="large"),
         "ĐVT": st.column_config.SelectboxColumn("ĐVT", width="small", options=["Cái", "Bộ", "Mét", "Cuộn", "Lô", "Hệ thống", "Gói"], required=True),
         "Số lượng": st.column_config.NumberColumn("Số lượng", width="small", min_value=1, step=1, default=1),
-        "Thời gian bảo hành": st.column_config.TextColumn("Thời gian bảo hành", width="medium"),
-        "Ghi chú": st.column_config.TextColumn("Ghi chú", width="medium"),
-        "Margin Thiết bị": st.column_config.TextColumn("Margin Thiết bị", width="small"),
-        "ĐG COST Thiết bị": st.column_config.TextColumn("ĐG COST Thiết bị", width="medium", help="Nhập số hoặc phép tính (vd: 100000/1.08)"),
-        "Margin Lắp đặt": st.column_config.TextColumn("Margin Lắp đặt", width="small"),
-        "ĐG COST Lắp đặt": st.column_config.TextColumn("ĐG COST Lắp đặt", width="medium", help="Nhập số hoặc phép tính (vd: 50000/1.08)"),
+        "Margin": st.column_config.TextColumn("Margin", width="small"),
+        "Đơn giá COST": st.column_config.TextColumn("Đơn giá COST", width="medium", help="Nhập số hoặc phép tính (vd: 100000/1.08)"),
         "NCC": st.column_config.TextColumn("NCC", width="medium"),
-        "NOTE": st.column_config.TextColumn("NOTE", width="medium"),
     }
 
     edited_manual_df = st.data_editor(
