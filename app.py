@@ -797,7 +797,7 @@ def generate_direct_input_excel(raw_input_df):
                 left=thin_side if c == 1 else cell.border.left,
                 right=thin_side if c == 9 else cell.border.right,
             )
-    for c in range(1, 10):
+    for c in range(1, 9):
         ws_bg.cell(row=10, column=c).border = Border(bottom=thin_side)
 
     ws_bg["A10"] = (
