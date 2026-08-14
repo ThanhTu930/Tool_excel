@@ -996,10 +996,15 @@ def generate_direct_input_excel(raw_input_df):
     val_tot.number_format = num_format_vnd
 
     # Kẻ khung cho phần tổng tiền (chỉ kẻ từ Cột A -> Cột G)
+
+    gray_fill = PatternFill(
+        start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
+    )
     for r_idx in [r_subtotal, r_vat, r_total]:
         for c_idx in range(1, 8):
-            ws_bg.cell(row=r_idx, column=c_idx).border = thin_border
-
+            cell = ws_bg.cell(row=r_idx, column=c_idx)
+            cell.border = thin_border
+            cell.fill = gray_fill
     # 5. ĐIỀU KIỆN THƯƠNG MẠI (Chỉ gộp A -> G)
     r_terms_start = r_total + 1
     terms_bg = [
