@@ -328,8 +328,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
         for col_idx, col_name in enumerate(form_columns, 1):
             ws_ct.cell(row=4, column=col_idx, value=col_name)
 
-        ws_ct.merge_cells("B2:J2")
-        title_ct = ws_ct["B2"]
+        ws_ct.merge_cells("A2:K2")
+        title_ct = ws_ct["A2"]
         title_ct.value = "BẢNG GIÁ CHI TIẾT"
         title_ct.font = Font(name="Times New Roman", size=18, bold=True)
         title_ct.alignment = Alignment(horizontal="center", vertical="center")
