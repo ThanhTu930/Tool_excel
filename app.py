@@ -789,15 +789,15 @@ def generate_direct_input_excel(raw_input_df):
 
     # Khung viền phần thông tin khách hàng (từ cột 1 -> 11)
     for r in range(6, 9):
-        for c in range(1, 12):
+        for c in range(1, 9):
             cell = ws_bg.cell(row=r, column=c)
             cell.border = Border(
                 top=thin_side if r == 6 else cell.border.top,
                 bottom=thin_side if r == 8 else cell.border.bottom,
                 left=thin_side if c == 1 else cell.border.left,
-                right=thin_side if c == 11 else cell.border.right,
+                right=thin_side if c == 9 else cell.border.right,
             )
-    for c in range(1, 12):
+    for c in range(1, 9):
         ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
 
     ws_bg["A10"] = (
@@ -989,7 +989,7 @@ def generate_direct_input_excel(raw_input_df):
         start_color="D9D9D9", end_color="D9D9D9", fill_type="solid"
     )
     for r_idx in [r_subtotal, r_vat, r_total]:
-        for c_idx in range(1, 12):
+        for c_idx in range(1, 9):
             cell = ws_bg.cell(row=r_idx, column=c_idx)
             cell.border = thin_border
             cell.fill = gray_fill
