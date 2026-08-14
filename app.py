@@ -686,7 +686,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             )
             first_cell.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
-        ws_bg.row_dimensions[21].height = 35
+        ws_bg.row_dimensions[21].height = 40
 
         ws_bg["A28"] = "   - 30 ngày"
         ws_bg["A28"].font = Font(name="Times New Roman", size=10, bold=False)
@@ -700,7 +700,171 @@ def process_dataframe_and_generate_excel(raw_input_df):
         for col_letter, width in col_widths_bg.items():
             ws_bg.column_dimensions[col_letter].width = width
 
-        sheet_order = ["BÁO GIÁ", "GUI_KH", "CHI TIẾT"]
+        # =========================================================
+        # D. TẠO VÀ XỬ LÝ SHEET PAKD (PHƯƠNG ÁN KINH DOANH)
+        # =========================================================
+        ws_pakd = writer.book.create_sheet(title="PAKD")
+
+        # 1. TIÊU ĐỀ HEADERS TRÊN CÙNG
+        ws_pakd.merge_cells("A1:O1")
+        ws_pakd["A1"] = "PHƯƠNG ÁN KINH DOANH"
+        ws_pakd["A1"].font = Font(name="Times New Roman", size=16, bold=True)
+        ws_pakd["A1"].alignment = Alignment(horizontal="center", vertical="center")
+
+        ws_pakd.merge_cells("A2:O2")
+        ws_pakd["A2"] = "KHÁCH HÀNG: NRAST"
+        ws_pakd["A2"].font = Font(name="Times New Roman", size=11, bold=True)
+        ws_pakd["A2"].alignment = Alignment(horizontal="center", vertical="center")
+
+        ws_pakd.merge_cells("A3:O3")
+        ws_pakd["A3"] = "DỰ ÁN: LED"
+        ws_pakd["A3"].font = Font(name="Times New Roman", size=11, bold=True)
+        ws_pakd["A3"].alignment = Alignment(horizontal="center", vertical="center")
+
+        # 2. CẤU TRÚC BẢNG TIÊU ĐỀ (Cột 2 tầng)
+        headers_pakd_merged = [
+            ("A5:A6", "STT"),
+            ("B5:B6", "TÊN DỰ ÁN/\nTHIẾT BỊ"),
+            ("C5:C6", "ĐVT"),
+            ("D5:D6", "SL"),
+            ("E5:F5", "ĐẦU VÀO"),
+            ("G5:H5", "ĐẦU RA"),
+            ("I5:J5", "LÃI GỘP"),
+            ("K5:L5", "CPKH"),
+            ("M5:N5", "LG SAU\nCPKH"),
+            ("O5:O6", "GHI CHÚ"),
+        ]
+
+        for rng, txt in headers_pakd_merged:
+            ws_pakd.merge_cells(rng)
+            top_left = rng.split(":")[0]
+            ws_pakd[top_left] = txt
+
+        headers_pakd_sub = [
+            ("E6", "ĐƠN GIÁ"), ("F6", "THÀNH TIỀN"),
+            ("G6", "ĐƠN GIÁ"), ("H6", "THÀNH TIỀN"),
+            ("I6", "GIÁ TRỊ"), ("J6", "TỶ LỆ"),
+            ("K6", "GIÁ TRỊ"), ("L6", "TỶ LỆ"),
+            ("M6", "GIÁ TRỊ"), ("N6", "TỶ LỆ")
+        ]
+
+        for cell_id, txt in headers_pakd_sub:
+            ws_pakd[cell_id] = txt
+
+        # Định dạng Header Bảng
+        for r in range(5, 7):
+            ws_pakd.row_dimensions[r].height = 24
+            for c in range(1, 16):
+                cell = ws_pakd.cell(row=r, column=c)
+                cell.font = Font(name="Times New Roman", size=10, bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+                cell.border = thin_border
+
+        # 3. LẤY TẤT CẢ DÒNG HÀNG HÓA TỪ SHEET CHI TIẾT
+        item_rows_ct = []
+        if n_sec1 > 0:
+            item_rows_ct.extend(range(start_r_sec1, end_r_sec1 + 1))
+        if n_sec2 > 0:
+            item_rows_ct.extend(range(start_r_sec2, end_r_sec2 + 1))
+
+        start_r_pakd = 7
+        n_pakd_items = len(item_rows_ct)
+
+        for idx, r_ct in enumerate(item_rows_ct, 1):
+            r = start_r_pakd + idx - 1
+
+            # STT, Thiết bị, ĐVT, Số lượng (Liên kết từ CHI TIẾT)
+            ws_pakd.cell(row=r, column=1, value=idx).alignment = align_center
+            ws_pakd.cell(row=r, column=2, value=f"='CHI TIẾT'!B{r_ct}").alignment = align_left
+            ws_pakd.cell(row=r, column=3, value=f"='CHI TIẾT'!F{r_ct}").alignment = align_center
+            ws_pakd.cell(row=r, column=4, value=f"='CHI TIẾT'!G{r_ct}").alignment = align_center
+
+            # ĐẦU VÀO: Đơn giá Cost (lấy từ cột M CHI TIẾT) & Thành tiền (=SL * ĐG Đầu vào)
+            ws_pakd.cell(row=r, column=5, value=f"='CHI TIẾT'!M{r_ct}").number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=6, value=f"=D{r}*E{r}").number_format = num_format_vnd
+
+            # ĐẦU RA: Đơn giá Bán (lấy từ cột H CHI TIẾT) & Thành tiền (=SL * ĐG Đầu ra)
+            ws_pakd.cell(row=r, column=7, value=f"='CHI TIẾT'!H{r_ct}").number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=8, value=f"=D{r}*G{r}").number_format = num_format_vnd
+
+            # LÃI GỘP: Giá trị (=Thành tiền đầu ra - Thành tiền đầu vào) & Tỷ lệ (=Giá trị / Thành tiền đầu ra)
+            ws_pakd.cell(row=r, column=9, value=f"=H{r}-F{r}").number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=10, value=f"=IF(H{r}=0,0,I{r}/H{r})").number_format = num_format_percent
+
+            # CPKH: Giá trị & Tỷ lệ (mặc định để trống như mẫu)
+            ws_pakd.cell(row=r, column=11, value="").number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=12, value="").number_format = num_format_percent
+
+            # LG SAU CPKH: Giá trị & Tỷ lệ
+            ws_pakd.cell(row=r, column=13, value=f"=I{r}-IF(ISNUMBER(K{r}),K{r},0)").number_format = num_format_vnd
+            ws_pakd.cell(row=r, column=14, value=f"=IF(H{r}=0,0,M{r}/H{r})").number_format = num_format_percent
+
+            # GHI CHÚ
+            ws_pakd.cell(row=r, column=15, value=f"='CHI TIẾT'!K{r_ct}").alignment = align_left
+
+            # Viền và căn lề cho từng ô
+            for c_idx in range(1, 16):
+                cell = ws_pakd.cell(row=r, column=c_idx)
+                cell.border = thin_border
+                cell.font = Font(name="Times New Roman", size=10)
+                if c_idx in [5, 6, 7, 8, 9, 11, 13]:
+                    cell.alignment = align_right
+                elif c_idx in [1, 3, 4, 10, 12, 14]:
+                    cell.alignment = align_center
+
+        end_r_pakd = start_r_pakd + n_pakd_items - 1 if n_pakd_items > 0 else start_r_pakd
+        tot_r_pakd = end_r_pakd + 1
+
+        # 4. DÒNG THÀNH TIỀN TRƯỚC THUẾ (TỔNG CỘNG)
+        ws_pakd.merge_cells(f"A{tot_r_pakd}:D{tot_r_pakd}")
+        ws_pakd.cell(row=tot_r_pakd, column=1, value="THÀNH TIỀN TRƯỚC THUẾ").font = Font(name="Times New Roman", size=10, bold=True)
+        ws_pakd.cell(row=tot_r_pakd, column=1).alignment = Alignment(horizontal="left", vertical="center")
+
+        if n_pakd_items > 0:
+            ws_pakd.cell(row=tot_r_pakd, column=6, value=f"=SUM(F{start_r_pakd}:F{end_r_pakd})").number_format = num_format_vnd
+            ws_pakd.cell(row=tot_r_pakd, column=8, value=f"=SUM(H{start_r_pakd}:H{end_r_pakd})").number_format = num_format_vnd
+        else:
+            ws_pakd.cell(row=tot_r_pakd, column=6, value=0).number_format = num_format_vnd
+            ws_pakd.cell(row=tot_r_pakd, column=8, value=0).number_format = num_format_vnd
+
+        ws_pakd.cell(row=tot_r_pakd, column=9, value=f"=H{tot_r_pakd}-F{tot_r_pakd}").number_format = num_format_vnd
+        ws_pakd.cell(row=tot_r_pakd, column=10, value=f"=IF(H{tot_r_pakd}=0,0,I{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+
+        ws_pakd.cell(row=tot_r_pakd, column=11, value=f"=IF(COUNT(K{start_r_pakd}:K{end_r_pakd})>0,SUM(K{start_r_pakd}:K{end_r_pakd}),0)").number_format = num_format_vnd
+        ws_pakd.cell(row=tot_r_pakd, column=12, value=f"=IF(H{tot_r_pakd}=0,0,K{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+
+        ws_pakd.cell(row=tot_r_pakd, column=13, value=f"=I{tot_r_pakd}-K{tot_r_pakd}").number_format = num_format_vnd
+        ws_pakd.cell(row=tot_r_pakd, column=14, value=f"=IF(H{tot_r_pakd}=0,0,M{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+
+        for c_idx in range(1, 16):
+            cell = ws_pakd.cell(row=tot_r_pakd, column=c_idx)
+            cell.border = thin_border
+            cell.font = Font(name="Times New Roman", size=10, bold=True)
+            if c_idx in [5, 6, 7, 8, 9, 11, 13]:
+                cell.alignment = align_right
+            else:
+                cell.alignment = align_center
+
+        # 5. KHUNG CHỮ KÝ DƯỚI BẢNG
+        sig_r = tot_r_pakd + 3
+        ws_pakd.merge_cells(f"B{sig_r}:D{sig_r}")
+        ws_pakd.cell(row=sig_r, column=2, value="Bộ phận trình PAKD").font = Font(name="Times New Roman", size=11, bold=True)
+        ws_pakd.cell(row=sig_r, column=2).alignment = align_center
+
+        ws_pakd.merge_cells(f"I{sig_r}:M{sig_r}")
+        ws_pakd.cell(row=sig_r, column=9, value="Phê duyệt").font = Font(name="Times New Roman", size=11, bold=True)
+        ws_pakd.cell(row=sig_r, column=9).alignment = align_center
+
+        # 6. ĐỘ RỘNG CÁC CỘT CHUẨN
+        col_widths_pakd = {
+            "A": 6, "B": 32, "C": 8, "D": 8, "E": 14, "F": 16,
+            "G": 14, "H": 16, "I": 15, "J": 9, "K": 12, "L": 9,
+            "M": 15, "N": 9, "O": 15
+        }
+        for col_letter, width in col_widths_pakd.items():
+            ws_pakd.column_dimensions[col_letter].width = width
+
+        sheet_order = ["BÁO GIÁ", "GUI_KH", "CHI TIẾT", "PAKD"]
         writer.book._sheets = [writer.book[s] for s in sheet_order if s in writer.book.sheetnames]
 
     return output.getvalue()
