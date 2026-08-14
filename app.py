@@ -1107,13 +1107,10 @@ def generate_direct_input_excel(raw_input_df):
 
     # Chữ ký Công ty ở cột G
     r_sign = r_terms_start + 15
-    ws_bg[f"G{r_sign}"] = "Công ty TNHH Công Nghệ DVC"
-    ws_bg[f"G{r_sign}"].font = Font(name="Times New Roman", size=10, bold=True)
-    ws_bg[f"G{r_sign}"].alignment = align_center
-
-    # 6. ĐẶT VÙNG IN CỐ ĐỊNH (Print Area chỉ từ A1 -> G...)
-    ws_bg.print_area = f"A1:G{r_sign+2}"
-
+    ws_bg[f"F{r_sign}"] = "Công ty TNHH Công Nghệ DVC"
+    ws_bg[f"F{r_sign}"].font = Font(name="Times New Roman", size=10, bold=True)
+    ws_bg[f"F{r_sign}"].alignment = align_center
+    
     col_widths_bg = {
         "A": 6,
         "B": 35,
@@ -1123,11 +1120,11 @@ def generate_direct_input_excel(raw_input_df):
         "F": 15,
         "G": 16,
         "H": 12,
-        "I": 15,
-        "J": 16,
+        "I": 12,
+        "J": 12,
         "K": 12,
-        "L": 15,
-        "M": 16,
+        "L": 12,
+        "M": 12,
         "N": 12,
     }
     for col_letter, width in col_widths_bg.items():
