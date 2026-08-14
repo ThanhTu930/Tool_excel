@@ -790,9 +790,9 @@ def generate_direct_input_excel(raw_input_df):
         ("E11", "Số lượng"),
         ("F11", "Đơn giá\n(VNĐ)"),
         ("G11", "Thành tiền\n(VNĐ)"),
-        ("H11", "Margin"),
-        ("I11", "Giá Cost"),
-        ("J11", "Thành tiền cost"),
+        ("H11", "MARGIN"),
+        ("I11", "ĐƠN GIÁ COST"),
+        ("J11", "THÀNH TIỀN COST"),
         ("K11", "NCC"),
     ]
 
@@ -836,7 +836,7 @@ def generate_direct_input_excel(raw_input_df):
         ws_bg.cell(row=r, column=4, value=unit).alignment = align_center
         ws_bg.cell(row=r, column=5, value=qty).alignment = align_center
 
-        ws_bg.cell(row=r, column=6, value=f"=IF(H{r}=1, I{r}, ROUNDUP(I{r}/(1-H{r}), -3))").number_format = num_format_vnd
+        ws_bg.cell(row=r, column=6, value=f"=ROUNDUP(I{r}/(1-H{r}),-3)").number_format = num_format_vnd
         ws_bg.cell(row=r, column=7, value=f"=E{r}*F{r}").number_format = num_format_vnd
         ws_bg.cell(row=r, column=8, value=margin).number_format = num_format_percent
         ws_bg.cell(row=r, column=9, value=cost).number_format = num_format_vnd
@@ -875,7 +875,7 @@ def generate_direct_input_excel(raw_input_df):
     cell_vat.font = Font(name="Times New Roman", size=10, bold=True)
     cell_vat.alignment = align_center
 
-    val_vat = ws_bg.cell(row=r_vat, column=7, value=f"=G{r_subtotal}*0%")
+    val_vat = ws_bg.cell(row=r_vat, column=7, value=f"=G{r_subtotal}*8%")
     val_vat.font = Font(name="Times New Roman", size=10, bold=True)
     val_vat.alignment = align_right
     val_vat.number_format = num_format_vnd
@@ -908,9 +908,10 @@ def generate_direct_input_excel(raw_input_df):
         (f"A{r_terms_start+7}:G{r_terms_start+7}", "4. Thời gian thực hiện:", True, False),
         (f"A{r_terms_start+8}:G{r_terms_start+8}", "   - Ngay sau khi xác nhận đơn hàng.", False, False),
         (f"A{r_terms_start+9}:G{r_terms_start+9}", "5. Thời gian bảo hành:", True, False),
-        (f"A{r_terms_start+10}:G{r_terms_start+10}", "6. Thời hạn chào giá:", True, False),
-        (f"A{r_terms_start+11}:G{r_terms_start+11}", "   - 07 ngày kể từ ngày chào giá.", False, False),
-        (f"A{r_terms_start+12}:G{r_terms_start+12}", "Chúng tôi rất mong được hợp tác với Quý Đơn vị.", False, True),
+        (f"A{r_terms_start+9}:G{r_terms_start+10}", "  - BH thiết bị theo chính sách của hãng sản xuất. ", True, False),
+        (f"A{r_terms_start+10}:G{r_terms_start+11}", "6. Thời hạn chào giá:", True, False),
+        (f"A{r_terms_start+11}:G{r_terms_start+12}", "   - 07 ngày kể từ ngày chào giá.", False, False),
+        (f"A{r_terms_start+12}:G{r_terms_start+13}", "Chúng tôi rất mong được hợp tác với Quý Đơn vị.", False, True),
     ]
 
     for range_str, text, is_bold, is_italic in terms_bg:
