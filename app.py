@@ -793,9 +793,9 @@ def generate_direct_input_excel(raw_input_df):
             cell = ws_bg.cell(row=r, column=c)
             cell.border = Border(
                 top=thin_side if r == 6 else cell.border.top,
-                bottom=thin_side if r == 9 else cell.border.bottom,
+                bottom=thin_side if r == 8 else cell.border.bottom,
                 left=thin_side if c == 1 else cell.border.left,
-                right=thin_side if c == 8 else cell.border.right,
+                right=thin_side if c == 9 else cell.border.right,
             )
     for c in range(1, 8):
         ws_bg.cell(row=9, column=c).border = Border(bottom=thin_side)
