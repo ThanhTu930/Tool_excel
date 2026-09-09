@@ -277,7 +277,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
     raw_input_df.columns = cols
 
     if "Thiết bị" in raw_input_df.columns:
-        valid_raw = raw_input_df[raw_input_df["Thiết bị"].fillna().astype(str).str.strip().ne("")].reset_index(drop=True)
+        valid_raw = raw_input_df[raw_input_df["Thiết bị"].fillna("").astype(str).str.strip().ne("")].reset_index(drop=True)
     else:
         valid_raw = raw_input_df.copy()
 
