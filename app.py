@@ -455,8 +455,13 @@ def process_dataframe_and_generate_excel(raw_input_df):
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K"]:
                 ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
 
-            ws_kh[f"I{r}"] = f"=G{r}*H{r}"
-
+            if r == 5:
+                # Nếu là dòng I, Thành tiền = SUM các dòng con bên dưới
+                ws_kh[f"I{r}"] = f"=SUM(I{start_r_sec1}:I{end_r_sec1})" if n_sec1 > 0 else 0
+            else:
+                # Với dòng con và dòng II, Thành tiền = Số lượng * Đơn giá
+                ws_kh[f"I{r}"] = f"=G{r}*H{r}"
+                
             is_bold = r in (5, r_sec2_title)
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
                 c = ws_kh[f"{col_letter}{r}"]
