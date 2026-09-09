@@ -426,7 +426,170 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
                 if r == tot_row_ct:
                     cell.fill = gray_fill
+        # =========================================================
+        # TẠO BẢNG TỔNG HỢP CHI PHÍ MỚI TRONG SHEET CHI TIẾT
+        # (Vị trí: cách dòng cuối 2 dòng, cách cột cuối (S) 2 cột -> Cột V)
+        # =========================================================
+        start_r_summary = tot_row_ct + 3  # Cách dòng cuối 2 dòng
+        start_c_summary = 22  # Cột V (Cột 22, cách cột S 2 cột)
 
+        font_bold = Font(name="Times New Roman", size=10, bold=True)
+        font_regular = Font(name="Times New Roman", size=10, bold=False)
+
+        summary_rows = [
+            # Row 1: Headers chính
+            [
+                (
+                    "V",
+                    "Chi phí triển khai dự kiến",
+                    font_bold,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_bold, align_right, None),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "COST", font_bold, align_right, None),
+                ("Z", "GIÁ BÁN", font_bold, align_right, None),
+                ("AA", "MARGIN", font_bold, align_right, None),
+                ("AB", "TỔNG TRƯỚC THUẾ", font_bold, align_left, None),
+            ],
+            # Row 2
+            [
+                (
+                    "V",
+                    "   Nhân công lắp đặt",
+                    font_regular,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, num_format_vnd),
+                ("Z", "", font_regular, align_right, num_format_vnd),
+                ("AA", "", font_regular, align_right, num_format_percent),
+                ("AB", "Thiết bị", font_regular, align_left, None),
+            ],
+            # Row 3
+            [
+                ("V", "   Vận chuyển", font_regular, align_left, None),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, num_format_vnd),
+                ("Z", "", font_regular, align_right, num_format_vnd),
+                ("AA", "", font_regular, align_right, num_format_percent),
+                ("AB", "Chi phí lắp đặt", font_regular, align_left, None),
+            ],
+            # Row 4
+            [
+                ("V", "", font_regular, align_left, None),
+                ("W", "", font_regular, align_right, None),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, num_format_vnd),
+                ("Z", "", font_regular, align_right, num_format_vnd),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "T&C", font_regular, align_left, None),
+            ],
+            # Row 5
+            [
+                (
+                    "V",
+                    "Di chuyển (vé xe, xe cty, xăng ...)",
+                    font_regular,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, num_format_vnd),
+                ("Z", "", font_regular, align_right, num_format_vnd),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "Chi phí quản lý", font_regular, align_left, None),
+            ],
+            # Row 6
+            [
+                ("V", "Thuê chỗ ở", font_regular, align_left, None),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, None),
+                ("Z", "", font_regular, align_right, None),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "", font_regular, align_left, None),
+            ],
+            # Row 7
+            [
+                (
+                    "V",
+                    "Nghiệm thu, hướng dẫn sử dụng",
+                    font_regular,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, None),
+                ("Z", "", font_regular, align_right, None),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "", font_regular, align_left, None),
+            ],
+            # Row 8
+            [
+                (
+                    "V",
+                    "Mua, thuê dụng cụ thi công",
+                    font_regular,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, None),
+                ("Z", "", font_regular, align_right, None),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "", font_regular, align_left, None),
+            ],
+            # Row 9
+            [
+                (
+                    "V",
+                    "Chi phí khác (ATLĐ, Bảo hiểm, ...)",
+                    font_regular,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_regular, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, None),
+                ("Z", "", font_regular, align_right, None),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "", font_regular, align_left, None),
+            ],
+            # Row 10
+            [
+                (
+                    "V",
+                    "Chi phí nhân sự quản lý dự án",
+                    font_bold,
+                    align_left,
+                    None,
+                ),
+                ("W", "", font_bold, align_right, num_format_vnd),
+                ("X", "", font_regular, align_center, None),
+                ("Y", "", font_regular, align_right, None),
+                ("Z", "", font_regular, align_right, None),
+                ("AA", "", font_regular, align_right, None),
+                ("AB", "", font_regular, align_left, None),
+            ],
+        ]
+
+        for offset_r, row_data in enumerate(summary_rows):
+            curr_r = start_r_summary + offset_r
+            for col_letter, val, font_style, align_style, fmt in row_data:
+                cell = ws_ct[f"{col_letter}{curr_r}"]
+                cell.value = val
+                cell.font = font_style
+                cell.alignment = align_style
+                if fmt:
+                    cell.number_format = fmt
         # =========================================================
         # B. TẠO VÀ XỬ LÝ SHEET GUI_KH
         # =========================================================
