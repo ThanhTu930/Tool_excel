@@ -341,7 +341,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
         # --- II. CHI PHÍ TRIỂN KHAI (DÒNG ĐỘC LẬP CHÍNH THỨC) ---
         r_sec2_title = end_r_sec1 + 1 if n_sec1 > 0 else start_r_sec1
-        r_cp = r_sec2_title  # Dòng II chính là dòng dữ liệu chi phí triển khai
+        r_cp = r_sec2_title
 
         ws_ct.cell(row=r_cp, column=1, value="II").alignment = Alignment(horizontal="center", vertical="center")
         ws_ct.cell(row=r_cp, column=2, value="Chi phí triển khai").font = Font(name="Times New Roman", size=10, bold=True)
@@ -349,7 +349,6 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=r_cp, column=6, value="Gói")
         ws_ct.cell(row=r_cp, column=7, value=1)
         
-        # Áp dụng Margin và công thức trực tiếp tại dòng II
         ws_ct.cell(row=r_cp, column=12, value=default_margin_tb)
         ws_ct.cell(row=r_cp, column=13, value=0).number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=15, value=default_margin_ld)
@@ -380,7 +379,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
         col_widths_ct = {
             "A": 5, "B": 28, "C": 10, "D": 10, "E": 18,
             "F": 5, "G": 9, "H": 10, "I": 12, "J": 12, "K": 12,
-            "L": 8, "M": 10, "N": 10, "O": 8, "P": 10, "Q": 10, "R": 7, "S": 8
+            "L": 8, "M": 10, "N": 10, "O": 8, "P": 10, "Q": 10, "R": 7, "S": 8,
+            "U": 35, "V": 18, "W": 5, "X": 15, "Y": 15, "Z": 10, "AA": 25
         }
         for col_letter, width in col_widths_ct.items():
             ws_ct.column_dimensions[col_letter].width = width
@@ -426,159 +426,96 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
                 if r == tot_row_ct:
                     cell.fill = gray_fill
+
         # =========================================================
         # TẠO BẢNG TỔNG HỢP CHI PHÍ MỚI TRONG SHEET CHI TIẾT
-        # (Vị trí: cách dòng cuối 2 dòng, cách cột cuối (S) 2 cột -> Cột V)
+        # (Vị trí: cách cột S 1 cột -> Cột U)
         # =========================================================
         start_r_summary = tot_row_ct + 3  # Cách dòng cuối 2 dòng
-        start_c_summary = 22  # Cột V (Cột 22, cách cột S 2 cột)
-
         font_bold = Font(name="Times New Roman", size=10, bold=True)
         font_regular = Font(name="Times New Roman", size=10, bold=False)
 
         summary_rows = [
-            # Row 1: Headers chính
-            [
-                (
-                    "V",
-                    "Chi phí triển khai dự kiến",
-                    font_bold,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_bold, align_right, None),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "COST", font_bold, align_right, None),
-                ("Z", "GIÁ BÁN", font_bold, align_right, None),
-                ("AA", "MARGIN", font_bold, align_right, None),
-                ("AB", "TỔNG TRƯỚC THUẾ", font_bold, align_left, None),
-            ],
+            # Row 1
+            [("U", "Chi phí triển khai dự kiến", font_bold, align_right, None),
+             ("V", "", font_bold, align_right, None),
+             ("W", "", font_regular, align_center, None),
+             ("X", "COST", font_bold, align_right, None),
+             ("Y", "GIÁ BÁN", font_bold, align_right, None),
+             ("Z", "MARGIN", font_bold, align_right, None),
+             ("AA", "TỔNG TRƯỚC THUẾ", font_bold, align_left, None)],
             # Row 2
-            [
-                (
-                    "V",
-                    "   Nhân công lắp đặt",
-                    font_regular,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, num_format_vnd),
-                ("Z", "", font_regular, align_right, num_format_vnd),
-                ("AA", "", font_regular, align_right, num_format_percent),
-                ("AB", "Thiết bị", font_regular, align_left, None),
-            ],
+            [("U", "Nhân công lắp đặt", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, num_format_vnd),
+             ("Y", "", font_regular, align_right, num_format_vnd),
+             ("Z", "", font_regular, align_right, num_format_percent),
+             ("AA", "Thiết bị", font_regular, align_left, None)],
             # Row 3
-            [
-                ("V", "   Vận chuyển", font_regular, align_left, None),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, num_format_vnd),
-                ("Z", "", font_regular, align_right, num_format_vnd),
-                ("AA", "", font_regular, align_right, num_format_percent),
-                ("AB", "Chi phí lắp đặt", font_regular, align_left, None),
-            ],
+            [("U", "Vận chuyển", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, num_format_vnd),
+             ("Y", "", font_regular, align_right, num_format_vnd),
+             ("Z", "", font_regular, align_right, num_format_percent),
+             ("AA", "Chi phí lắp đặt", font_regular, align_left, None)],
             # Row 4
-            [
-                ("V", "", font_regular, align_left, None),
-                ("W", "", font_regular, align_right, None),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, num_format_vnd),
-                ("Z", "", font_regular, align_right, num_format_vnd),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "T&C", font_regular, align_left, None),
-            ],
+            [("U", "", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, None),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, num_format_vnd),
+             ("Y", "", font_regular, align_right, num_format_vnd),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "T&C", font_regular, align_left, None)],
             # Row 5
-            [
-                (
-                    "V",
-                    "Di chuyển (vé xe, xe cty, xăng ...)",
-                    font_regular,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, num_format_vnd),
-                ("Z", "", font_regular, align_right, num_format_vnd),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "Chi phí quản lý", font_regular, align_left, None),
-            ],
+            [("U", "Di chuyển (vé xe, xe cty, xăng ...)", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, num_format_vnd),
+             ("Y", "", font_regular, align_right, num_format_vnd),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "Chi phí quản lý", font_regular, align_left, None)],
             # Row 6
-            [
-                ("V", "Thuê chỗ ở", font_regular, align_left, None),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, None),
-                ("Z", "", font_regular, align_right, None),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "", font_regular, align_left, None),
-            ],
+            [("U", "Thuê chỗ ở", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)],
             # Row 7
-            [
-                (
-                    "V",
-                    "Nghiệm thu, hướng dẫn sử dụng",
-                    font_regular,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, None),
-                ("Z", "", font_regular, align_right, None),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "", font_regular, align_left, None),
-            ],
+            [("U", "Nghiệm thu, hướng dẫn sử dụng", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)],
             # Row 8
-            [
-                (
-                    "V",
-                    "Mua, thuê dụng cụ thi công",
-                    font_regular,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, None),
-                ("Z", "", font_regular, align_right, None),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "", font_regular, align_left, None),
-            ],
+            [("U", "Mua, thuê dụng cụ thi công", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)],
             # Row 9
-            [
-                (
-                    "V",
-                    "Chi phí khác (ATLĐ, Bảo hiểm, ...)",
-                    font_regular,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_regular, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, None),
-                ("Z", "", font_regular, align_right, None),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "", font_regular, align_left, None),
-            ],
+            [("U", "Chi phí khác (ATLĐ, Bảo hiểm, ...)", font_regular, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)],
             # Row 10
-            [
-                (
-                    "V",
-                    "Chi phí nhân sự quản lý dự án",
-                    font_bold,
-                    align_left,
-                    None,
-                ),
-                ("W", "", font_bold, align_right, num_format_vnd),
-                ("X", "", font_regular, align_center, None),
-                ("Y", "", font_regular, align_right, None),
-                ("Z", "", font_regular, align_right, None),
-                ("AA", "", font_regular, align_right, None),
-                ("AB", "", font_regular, align_left, None),
-            ],
+            [("U", "Chi phí nhân sự quản lý dự án", font_bold, align_right, None),
+             ("V", "", font_bold, align_right, num_format_vnd),
+             ("W", "", font_regular, align_center, None),
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)]
         ]
 
         for offset_r, row_data in enumerate(summary_rows):
@@ -590,6 +527,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 cell.alignment = align_style
                 if fmt:
                     cell.number_format = fmt
+
         # =========================================================
         # B. TẠO VÀ XỬ LÝ SHEET GUI_KH
         # =========================================================
@@ -619,10 +557,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
 
             if r == 5:
-                # Nếu là dòng I, Thành tiền = SUM các dòng con bên dưới
                 ws_kh[f"I{r}"] = f"=SUM(I{start_r_sec1}:I{end_r_sec1})" if n_sec1 > 0 else 0
             else:
-                # Với dòng con và dòng II, Thành tiền = Số lượng * Đơn giá
                 ws_kh[f"I{r}"] = f"=G{r}*H{r}"
                 
             is_bold = r in (5, r_sec2_title)
@@ -898,7 +834,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 cell.border = thin_border
 
         item_rows_ct = list(range(start_r_sec1, end_r_sec1 + 1)) if n_sec1 > 0 else []
-        item_rows_ct.append(r_sec2_title)  # Thêm dòng II Chi phí triển khai
+        item_rows_ct.append(r_sec2_title)
 
         start_r_pakd = 7
         n_pakd_items = len(item_rows_ct)
