@@ -205,7 +205,7 @@ def parse_margin(val):
     return clean_val
 
 
-# --- 5. HÀM Chuẩn hóa Dataframe ---
+# --- 5. HÀM CHUẨN HÓA DATAFRAME ---
 def standardize_df(input_df):
     def get_col_val(df, possible_names, default=""):
         for name in possible_names:
@@ -285,12 +285,11 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
     if not df_sec1.empty:
         df_sec1["STT"] = range(1, len(df_sec1) + 1)
-        # Lấy Margin từ dòng thiết bị cuối cùng được nhập
         default_margin_tb = df_sec1["Margin Thiết bị"].iloc[-1]
         default_margin_ld = df_sec1["Margin Lắp đặt"].iloc[-1]
     else:
         default_margin_tb = 0.2
-        default_margin_ld = 0.2
+        default_margin_ld = 0.0
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -340,32 +339,26 @@ def process_dataframe_and_generate_excel(raw_input_df):
             ws_ct.cell(row=5, column=9, value=0).number_format = num_format_vnd
         ws_ct.cell(row=5, column=9).font = Font(name="Times New Roman", size=10, bold=True)
 
-        # --- II. CHI PHÍ TRIỂN KHAI (TỰ ĐỘNG KHỞI TẠO DÒNG MỤC II) ---
+        # --- II. CHI PHÍ TRIỂN KHAI (DÒNG ĐỘC LẬP CHÍNH THỨC) ---
         r_sec2_title = end_r_sec1 + 1 if n_sec1 > 0 else start_r_sec1
-        ws_ct.cell(row=r_sec2_title, column=1, value="II").alignment = Alignment(horizontal="center", vertical="center")
-        ws_ct.cell(row=r_sec2_title, column=2, value="Chi phí triển khai").font = Font(name="Times New Roman", size=10, bold=True)
+        r_cp = r_sec2_title  # Dòng II chính là dòng dữ liệu chi phí triển khai
 
-        r_cp = r_sec2_title + 1
-        ws_ct.cell(row=r_cp, column=1, value=1)
-        ws_ct.cell(row=r_cp, column=2, value="Chi phí triển khai")
+        ws_ct.cell(row=r_cp, column=1, value="II").alignment = Alignment(horizontal="center", vertical="center")
+        ws_ct.cell(row=r_cp, column=2, value="Chi phí triển khai").font = Font(name="Times New Roman", size=10, bold=True)
         ws_ct.cell(row=r_cp, column=4, value="Việt Nam")
         ws_ct.cell(row=r_cp, column=6, value="Gói")
         ws_ct.cell(row=r_cp, column=7, value=1)
         
-        # Áp dụng Margin tự động từ file mẫu
+        # Áp dụng Margin và công thức trực tiếp tại dòng II
         ws_ct.cell(row=r_cp, column=12, value=default_margin_tb)
         ws_ct.cell(row=r_cp, column=13, value=0).number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=15, value=default_margin_ld)
         ws_ct.cell(row=r_cp, column=16, value=0).number_format = num_format_vnd
 
-        # Áp dụng công thức tính tự động cho dòng Chi phí triển khai
         ws_ct.cell(row=r_cp, column=8, value=f"=ROUNDUP(M{r_cp}/(1-L{r_cp}), -3)").number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=9, value=f"=G{r_cp}*H{r_cp}").number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=14, value=f"=G{r_cp}*M{r_cp}").number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=17, value=f"=G{r_cp}*P{r_cp}").number_format = num_format_vnd
-
-        ws_ct.cell(row=r_sec2_title, column=9, value=f"=I{r_cp}").number_format = num_format_vnd
-        ws_ct.cell(row=r_sec2_title, column=9).font = Font(name="Times New Roman", size=10, bold=True)
 
         # --- TỔNG CỘNG ---
         tot_row_ct = r_cp + 1
@@ -376,6 +369,13 @@ def process_dataframe_and_generate_excel(raw_input_df):
 
         ws_ct.cell(row=tot_row_ct, column=9, value=f"=I5+I{r_sec2_title}").number_format = num_format_vnd
         ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=10, bold=True)
+
+        if n_sec1 > 0:
+            ws_ct.cell(row=tot_row_ct, column=14, value=f"=SUM(N{start_r_sec1}:N{end_r_sec1})+N{r_sec2_title}").number_format = num_format_vnd
+            ws_ct.cell(row=tot_row_ct, column=17, value=f"=SUM(Q{start_r_sec1}:Q{end_r_sec1})+Q{r_sec2_title}").number_format = num_format_vnd
+        else:
+            ws_ct.cell(row=tot_row_ct, column=14, value=f"=N{r_sec2_title}").number_format = num_format_vnd
+            ws_ct.cell(row=tot_row_ct, column=17, value=f"=Q{r_sec2_title}").number_format = num_format_vnd
 
         col_widths_ct = {
             "A": 5, "B": 28, "C": 10, "D": 10, "E": 18,
@@ -455,10 +455,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K"]:
                 ws_kh[f"{col_letter}{r}"] = f"=IF('CHI TIẾT'!{col_letter}{r}=\"\",\"\",'CHI TIẾT'!{col_letter}{r})"
 
-            if r in (5, r_sec2_title):
-                ws_kh[f"I{r}"] = f"='CHI TIẾT'!I{r}"
-            else:
-                ws_kh[f"I{r}"] = f"=G{r}*H{r}"
+            ws_kh[f"I{r}"] = f"=G{r}*H{r}"
 
             is_bold = r in (5, r_sec2_title)
             for col_letter in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]:
@@ -733,7 +730,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
                 cell.border = thin_border
 
         item_rows_ct = list(range(start_r_sec1, end_r_sec1 + 1)) if n_sec1 > 0 else []
-        item_rows_ct.append(r_cp)  # Bao gồm cả dòng Chi phí triển khai
+        item_rows_ct.append(r_sec2_title)  # Thêm dòng II Chi phí triển khai
 
         start_r_pakd = 7
         n_pakd_items = len(item_rows_ct)
@@ -786,10 +783,10 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_pakd.cell(row=tot_r_pakd, column=10, value=f"=I{tot_r_pakd}/H{tot_r_pakd}").number_format = num_format_percent
 
         ws_pakd.cell(row=tot_r_pakd, column=11, value=0).number_format = num_format_vnd
-        ws_pakd.cell(row=tot_r_pakd, column=12, value=f"=K{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+        ws_pakd.cell(row=tot_r_pakd, column=12, value=f"=K{tot_r_pakd}/H{tot_r_pakd}").number_format = num_format_percent
 
         ws_pakd.cell(row=tot_r_pakd, column=13, value=0).number_format = num_format_vnd
-        ws_pakd.cell(row=tot_r_pakd, column=14, value=f"=M{tot_r_pakd}/H{tot_r_pakd})").number_format = num_format_percent
+        ws_pakd.cell(row=tot_r_pakd, column=14, value=f"=M{tot_r_pakd}/H{tot_r_pakd}").number_format = num_format_percent
 
         for c_idx in range(1, 16):
             cell = ws_pakd.cell(row=tot_r_pakd, column=c_idx)
@@ -1219,6 +1216,7 @@ def generate_direct_input_excel(raw_input_df):
 
     wb.save(output)
     return output.getvalue()
+
 
 # --- 7. GIAO DIỆN TẢI FORM MẪU & NHẬP TRỰC TIẾP ---
 if "show_manual_input" not in st.session_state:
