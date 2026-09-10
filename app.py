@@ -370,8 +370,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=tot_row_ct, column=9).font = Font(name="Times New Roman", size=10, bold=True)
 
         if n_sec1 > 0:
-            ws_ct.cell(row=tot_row_ct, column=14, value=f"=SUM(N{start_r_sec1}:N{end_r_sec1})+N{r_sec2_title}").number_format = num_format_vnd
-            ws_ct.cell(row=tot_row_ct, column=17, value=f"=SUM(Q{start_r_sec1}:Q{end_r_sec1})+Q{r_sec2_title}").number_format = num_format_vnd
+            ws_ct.cell(row=tot_row_ct, column=14, value=f"=SUM(N{start_r_sec1}:N{end_r_sec1})").number_format = num_format_vnd
+            ws_ct.cell(row=tot_row_ct, column=17, value=f"=SUM(Q{start_r_sec1}:Q{end_r_sec1})").number_format = num_format_vnd
         else:
             ws_ct.cell(row=tot_row_ct, column=14, value=f"=N{r_sec2_title}").number_format = num_format_vnd
             ws_ct.cell(row=tot_row_ct, column=17, value=f"=Q{r_sec2_title}").number_format = num_format_vnd
