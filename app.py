@@ -435,56 +435,74 @@ def process_dataframe_and_generate_excel(raw_input_df):
         font_bold = Font(name="Times New Roman", size=10, bold=True)
         font_regular = Font(name="Times New Roman", size=10, bold=False)
 
+        # Tính toán các dòng trong bảng summary dựa trên start_r_summary
+        r_sum_title = start_r_summary      # Dòng 1: Header / Chi phí triển khai
+        r_nc = start_r_summary + 1         # Dòng 2: Nhân công lắp đặt / Tổng trước thuế
+        r_vc = start_r_summary + 2         # Dòng 3: Vận chuyển / Thiết bị
+        r_ld = start_r_summary + 3         # Dòng 4: Lắp đặt
+        r_dc = start_r_summary + 4         # Dòng 5: Di chuyển / T&C
+        r_to = start_r_summary + 5         # Dòng 6: Thuê chỗ ở / Chi phí quản lý
+        r_nt = start_r_summary + 6         # Dòng 7: Nghiệm thu
+        r_dc_thi_cong = start_r_summary + 7# Dòng 8: Mua/thuê dụng cụ
+        r_cp_khac = start_r_summary + 8    # Dòng 9: Chi phí khác
+        r_pm = start_r_summary + 9         # Dòng 10: Chi phí nhân sự QLDA
+
         summary_rows = [
-            # Row 1
+            # Row 1: Tiêu đề danh mục & Header các cột bên phải
             [("U", "Chi phí triển khai dự kiến", font_bold, align_right, None),
-             ("V", "", font_regular, align_right, num_format_vnd),
+             ("V", f"=SUM(V{r_nc}:V{r_pm})", font_bold, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
              ("X", "COST", font_bold, align_center, None),
              ("Y", "GIÁ BÁN", font_bold, align_center, None),
              ("Z", "MARGIN", font_bold, align_center, None),
              ("AA", "", font_bold, align_left, None)],
-            # Row 2
+            
+            # Row 2: Nhân công & Tổng trước thuế
             [("U", "Nhân công lắp đặt", font_regular, align_right, None),
-             ("V", "", font_regular, align_right, num_format_vnd),
+             ("V", f"=Q{tot_row_ct}", font_regular, align_right, num_format_vnd), # Lấy Thành tiền COST lắp đặt từ ô Q tổng
              ("W", "", font_regular, align_center, None),
-             ("X", "", font_regular, align_right, num_format_vnd),
-             ("Y", "", font_regular, align_right, num_format_vnd),
-             ("Z", "", font_regular, align_right, num_format_percent),
-             ("AA", "TỔNG TRƯỚC THUẾ", font_bold, align_center, None)],
-            # Row 3
+             ("X", f"=SUM(X{r_vc}:X{r_to})", font_bold, align_right, num_format_vnd), # SUM Cost từ Thiết bị đến CPQL
+             ("Y", f"=SUM(Y{r_vc}:Y{r_to})", font_bold, align_right, num_format_vnd), # SUM Giá bán từ Thiết bị đến CPQL
+             ("Z", f"=IF(Y{r_nc}=0,0,(Y{r_nc}-X{r_nc})/Y{r_nc})", font_bold, align_right, num_format_percent), # Margin = (Giá bán - Cost) / Giá bán
+             ("AA", "TỔNG TRƯỚC THUẾ", font_bold, align_left, None)],
+            
+            # Row 3: Vận chuyển & Thiết bị
             [("U", "Vận chuyển", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", "", font_regular, align_right, num_format_vnd),
-             ("Y", "", font_regular, align_right, num_format_vnd),
-             ("Z", "", font_regular, align_right, num_format_percent),
+             ("X", f"=N{tot_row_ct}", font_regular, align_right, num_format_vnd), # COST Thiết bị lấy từ TT COST Thiết bị (Cột N)
+             ("Y", "=I5", font_regular, align_right, num_format_vnd),              # GIÁ BÁN Thiết bị lấy từ Thành tiền I5
+             ("Z", f"=IF(Y{r_vc}=0,0,(Y{r_vc}-X{r_vc})/Y{r_vc})", font_regular, align_right, num_format_percent),
              ("AA", "Thiết bị", font_regular, align_left, None)],
-            # Row 4
+            
+            # Row 4: Lắp đặt
             [("U", "", font_regular, align_right, None),
              ("V", "", font_regular, align_right, None),
              ("W", "", font_regular, align_center, None),
-             ("X", "", font_regular, align_right, num_format_vnd),
-             ("Y", "", font_regular, align_right, num_format_vnd),
-             ("Z", "", font_regular, align_right, None),
+             ("X", f"=Q{tot_row_ct}", font_regular, align_right, num_format_vnd), # COST Lắp đặt lấy từ TT COST Lắp đặt (Cột Q)
+             ("Y", f"=I{r_sec2_title}", font_regular, align_right, num_format_vnd),# GIÁ BÁN Lắp đặt lấy từ dòng II (Chi phí triển khai)
+             ("Z", f"=IF(Y{r_ld}=0,0,(Y{r_ld}-X{r_ld})/Y{r_ld})", font_regular, align_right, num_format_percent),
              ("AA", "Lắp đặt", font_regular, align_left, None)],
-            # Row 5
+            
+            # Row 5: Di chuyển & T&C
             [("U", "Di chuyển (vé xe, xe cty, xăng ...)", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", "", font_regular, align_right, num_format_vnd),
-             ("Y", "", font_regular, align_right, num_format_vnd),
-             ("Z", "", font_regular, align_right, None),
+             ("X", 0, font_regular, align_right, num_format_vnd),
+             ("Y", 0, font_regular, align_right, num_format_vnd),
+             ("Z", f"=IF(Y{r_dc}=0,0,(Y{r_dc}-X{r_dc})/Y{r_dc})", font_regular, align_right, num_format_percent),
              ("AA", "T&C", font_regular, align_left, None)],
-            # Row 6
+            
+            # Row 6: Thuê chỗ ở & Chi phí quản lý
             [("U", "Thuê chỗ ở", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", "", font_regular, align_right, num_format_vnd),
-             ("Y", "", font_regular, align_right, num_format_vnd),
-             ("Z", "", font_regular, align_right, None),
+             ("X", 0, font_regular, align_right, num_format_vnd),
+             ("Y", 0, font_regular, align_right, num_format_vnd),
+             ("Z", f"=IF(Y{r_to}=0,0,(Y{r_to}-X{r_to})/Y{r_to})", font_regular, align_right, num_format_percent),
              ("AA", "Chi phí quản lý", font_regular, align_left, None)],
-            # Row 7
+            
+            # Row 7 đến 10: Các danh mục con còn lại
             [("U", "Nghiệm thu, hướng dẫn sử dụng", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
@@ -492,7 +510,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
              ("Y", "", font_regular, align_right, None),
              ("Z", "", font_regular, align_right, None),
              ("AA", "", font_regular, align_left, None)],
-            # Row 8
+            
             [("U", "Mua, thuê dụng cụ thi công", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
@@ -500,7 +518,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
              ("Y", "", font_regular, align_right, None),
              ("Z", "", font_regular, align_right, None),
              ("AA", "", font_regular, align_left, None)],
-            # Row 9
+            
             [("U", "Chi phí khác (ATLĐ, Bảo hiểm, ...)", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
@@ -508,7 +526,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
              ("Y", "", font_regular, align_right, None),
              ("Z", "", font_regular, align_right, None),
              ("AA", "", font_regular, align_left, None)],
-            # Row 10
+            
             [("U", "Chi phí nhân sự quản lý dự án", font_bold, align_right, None),
              ("V", "", font_bold, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
