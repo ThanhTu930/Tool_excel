@@ -438,7 +438,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         summary_rows = [
             # Row 1
             [("U", "Chi phí triển khai dự kiến", font_bold, align_right, None),
-             ("V", "", font_bold, align_right, None),
+             ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
              ("X", "COST", font_bold, align_center, None),
              ("Y", "GIÁ BÁN", font_bold, align_center, None),
