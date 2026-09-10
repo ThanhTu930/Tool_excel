@@ -352,7 +352,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=r_cp, column=12, value=default_margin_tb)
         ws_ct.cell(row=r_cp, column=13, value=0).number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=15, value=default_margin_ld)
-        ws_ct.cell(row=r_cp, column=16, value=0).number_format = num_format_vnd
+        ws_ct.cell(row=r_cp, column=16, value=f"=V{r_ld}").number_format = num_format_vnd
 
         ws_ct.cell(row=r_cp, column=8, value=f"=ROUNDUP(P{r_cp}/(1-O{r_cp}), -3)").number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=9, value=f"=G{r_cp}*H{r_cp}").number_format = num_format_vnd
