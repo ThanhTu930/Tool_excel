@@ -344,6 +344,13 @@ def process_dataframe_and_generate_excel(raw_input_df):
         r_sec2_title = end_r_sec1 + 1 if n_sec1 > 0 else start_r_sec1
         r_cp = r_sec2_title
 
+        tot_row_ct = r_cp + 1  # Dòng TỔNG CỘNG
+
+        # Vị trí dòng bắt đầu bảng Summary
+        start_r_summary = tot_row_ct + 3  
+        # Tính trước dòng Nhân công lắp đặt để dùng cho dòng II phía trên
+        r_nc = start_r_summary + 1
+        
         ws_ct.cell(row=r_cp, column=1, value="II").alignment = Alignment(
             horizontal="center", vertical="center"
         )
