@@ -340,25 +340,41 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=5, column=9).font = Font(name="Times New Roman", size=10, bold=True)
 
         # --- II. CHI PHÍ TRIỂN KHAI (DÒNG ĐỘC LẬP CHÍNH THỨC) ---
+        # --- II. CHI PHÍ TRIỂN KHAI (DÒNG ĐỘC LẬP CHÍNH THỨC) ---
         r_sec2_title = end_r_sec1 + 1 if n_sec1 > 0 else start_r_sec1
         r_cp = r_sec2_title
 
-        ws_ct.cell(row=r_cp, column=1, value="II").alignment = Alignment(horizontal="center", vertical="center")
-        ws_ct.cell(row=r_cp, column=2, value="Chi phí triển khai").font = Font(name="Times New Roman", size=10, bold=True)
+        ws_ct.cell(row=r_cp, column=1, value="II").alignment = Alignment(
+            horizontal="center", vertical="center"
+        )
+        ws_ct.cell(
+            row=r_cp, column=2, value="Chi phí triển khai"
+        ).font = Font(name="Times New Roman", size=10, bold=True)
         ws_ct.cell(row=r_cp, column=4, value="Việt Nam")
         ws_ct.cell(row=r_cp, column=6, value="Gói")
         ws_ct.cell(row=r_cp, column=7, value=1)
-        
+
         ws_ct.cell(row=r_cp, column=12, value=default_margin_tb)
         ws_ct.cell(row=r_cp, column=13, value=0).number_format = num_format_vnd
         ws_ct.cell(row=r_cp, column=15, value=default_margin_ld)
-        ws_ct.cell(row=r_cp, column=16, value=f"=V{r_nc}").number_format = num_format_vnd
 
-        ws_ct.cell(row=r_cp, column=8, value=f"=ROUNDUP(P{r_cp}/(1-O{r_cp}), -3)").number_format = num_format_vnd
-        ws_ct.cell(row=r_cp, column=9, value=f"=G{r_cp}*H{r_cp}").number_format = num_format_vnd
-        ws_ct.cell(row=r_cp, column=14, value=f"=G{r_cp}*M{r_cp}").number_format = num_format_vnd
-        ws_ct.cell(row=r_cp, column=17, value=f"=G{r_cp}*P{r_cp}").number_format = num_format_vnd
+        # CHANGE HERE: Thay =V{r_ld} thành =V{r_nc}
+        ws_ct.cell(row=r_cp, column=16, value=f"=V{r_nc}").number_format = (
+            num_format_vnd
+        )
 
+        ws_ct.cell(
+            row=r_cp, column=8, value=f"=ROUNDUP(P{r_cp}/(1-O{r_cp}), -3)"
+        ).number_format = num_format_vnd
+        ws_ct.cell(
+            row=r_cp, column=9, value=f"=G{r_cp}*H{r_cp}"
+        ).number_format = num_format_vnd
+        ws_ct.cell(
+            row=r_cp, column=14, value=f"=G{r_cp}*M{r_cp}"
+        ).number_format = num_format_vnd
+        ws_ct.cell(
+            row=r_cp, column=17, value=f"=G{r_cp}*P{r_cp}"
+        ).number_format = num_format_vnd
         # --- TỔNG CỘNG ---
         tot_row_ct = r_cp + 1
         ws_ct.merge_cells(start_row=tot_row_ct, start_column=1, end_row=tot_row_ct, end_column=8)
