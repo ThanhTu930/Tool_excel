@@ -550,7 +550,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
              ("Z", "", font_regular, align_right, None),
              ("AA", "", font_regular, align_left, None)],
             
-            [("U", "Chi phí nhân sự quản lý dự án", font_bold, align_right, None),
+            [("U", "Chi phí nhân sự quản lý dự án", font_regular, align_right, None),
              ("V", "", font_bold, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
              ("X", "", font_regular, align_right, None),
