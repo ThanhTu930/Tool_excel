@@ -349,7 +349,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         # Vị trí dòng bắt đầu bảng Summary
         start_r_summary = tot_row_ct + 3  
         # Tính trước dòng Nhân công lắp đặt để dùng cho dòng II phía trên
-        r_sum_title = start_r_summary + 1
+        r_sum_title = start_r_summary
         
         ws_ct.cell(row=r_cp, column=1, value="II").alignment = Alignment(
             horizontal="center", vertical="center"
