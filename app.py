@@ -520,7 +520,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             [("U", "Thuê chỗ ở", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", 0, font_regular, align_right, num_format_vnd),
+             ("X", f"=SUM(V{r_vc}:V{r_pm})", font_regular, align_right, num_format_vnd),
              ("Y", 0, font_regular, align_right, num_format_vnd),
              ("Z", f"=IF(Y{r_to}=0,0,(Y{r_to}-X{r_to})/Y{r_to})", font_regular, align_right, num_format_percent),
              ("AA", "Chi phí quản lý", font_regular, align_left, None)],
