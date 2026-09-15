@@ -366,7 +366,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
         ws_ct.cell(row=r_cp, column=15, value=default_margin_ld)
 
         # CHANGE HERE: Thay =V{r_ld} thành =V{r_nc}
-        ws_ct.cell(row=r_cp, column=16, value=f"=V{r_nc}").number_format = (
+        ws_ct.cell(row=r_cp, column=16, value=f"=V{r_sum_title}").number_format = (
             num_format_vnd
         )
 
