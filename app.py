@@ -511,10 +511,10 @@ def process_dataframe_and_generate_excel(raw_input_df):
             [("U", "Di chuyển (vé xe, xe cty, xăng ...)", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", "", font_regular, align_right, None),
-             ("Y", "", font_regular, align_right, None),
-             ("Z", "", font_regular, align_right, None),
-             ("AA", "", font_regular, align_left, None)],
+             ("X", f"=SUM(V{r_vc}:V{r_pm})", font_regular, align_right, num_format_vnd), # COST Lắp đặt lấy từ TT COST Lắp đặt (Cột Q)
+             ("Y", "", font_regular, align_center, None),
+             ("Z", "", font_regular, align_center, None),
+             ("AA", "Chi phí quản lý", font_regular, align_left, None)],
             
             # Row 6: Thuê chỗ ở & Chi phí quản lý
             [("U", "Thuê chỗ ở", font_regular, align_right, None),
