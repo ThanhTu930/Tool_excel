@@ -484,8 +484,8 @@ def process_dataframe_and_generate_excel(raw_input_df):
             [("U", "Nhân công lắp đặt", font_regular, align_right, None),
              ("V", f"=Q{tot_row_ct}", font_regular, align_right, num_format_vnd), # Lấy Thành tiền COST lắp đặt từ ô Q tổng
              ("W", "", font_regular, align_center, None),
-             ("X", f"=SUM(X{r_vc}:X{r_to})", font_bold, align_right, num_format_vnd), # SUM Cost từ Thiết bị đến CPQL
-             ("Y", f"=SUM(Y{r_vc}:Y{r_to})", font_bold, align_right, num_format_vnd), # SUM Giá bán từ Thiết bị đến CPQL
+             ("X", f"=SUM(X{r_vc}:X{r_ld})", font_bold, align_right, num_format_vnd), # SUM Cost từ Thiết bị đến CPQL
+             ("Y", f"=SUM(Y{r_vc}:Y{r_ld})", font_bold, align_right, num_format_vnd), # SUM Giá bán từ Thiết bị đến CPQL
              ("Z", f"=(Y{r_nc}-X{r_nc})/Y{r_nc}", font_bold, align_right, num_format_percent), # Margin = (Giá bán - Cost) / Giá bán
              ("AA", "TỔNG TRƯỚC THUẾ", font_bold, align_left, None)],
             
