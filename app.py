@@ -502,7 +502,7 @@ def process_dataframe_and_generate_excel(raw_input_df):
             [("U", "", font_regular, align_right, None),
              ("V", "", font_regular, align_right, None),
              ("W", "", font_regular, align_center, None),
-             ("X", f"=Q{tot_row_ct}", font_regular, align_right, num_format_vnd), # COST Lắp đặt lấy từ TT COST Lắp đặt (Cột Q)
+             ("X", f"=V{r_sum_title}", font_regular, align_right, num_format_vnd), # COST Lắp đặt lấy từ TT COST Lắp đặt (Cột Q)
              ("Y", f"=I{r_sec2_title}", font_regular, align_right, num_format_vnd),# GIÁ BÁN Lắp đặt lấy từ dòng II (Chi phí triển khai)
              ("Z", f"=(Y{r_ld}-X{r_ld})/Y{r_ld}", font_regular, align_right, num_format_percent),
              ("AA", "Lắp đặt", font_regular, align_left, None)],
@@ -511,19 +511,19 @@ def process_dataframe_and_generate_excel(raw_input_df):
             [("U", "Di chuyển (vé xe, xe cty, xăng ...)", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", 0, font_regular, align_right, num_format_vnd),
-             ("Y", 0, font_regular, align_right, num_format_vnd),
-             ("Z", f"=(Y{r_dc}-X{r_dc})/Y{r_dc}", font_regular, align_right, num_format_percent),
-             ("AA", "T&C", font_regular, align_left, None)],
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)],
             
             # Row 6: Thuê chỗ ở & Chi phí quản lý
             [("U", "Thuê chỗ ở", font_regular, align_right, None),
              ("V", "", font_regular, align_right, num_format_vnd),
              ("W", "", font_regular, align_center, None),
-             ("X", f"=SUM(V{r_vc}:V{r_pm})", font_regular, align_right, num_format_vnd),
-             ("Y", 0, font_regular, align_right, num_format_vnd),
-             ("Z", f"=(Y{r_to}-X{r_to})/Y{r_to}", font_regular, align_right, num_format_percent),
-             ("AA", "Chi phí quản lý", font_regular, align_left, None)],
+             ("X", "", font_regular, align_right, None),
+             ("Y", "", font_regular, align_right, None),
+             ("Z", "", font_regular, align_right, None),
+             ("AA", "", font_regular, align_left, None)],
             
             # Row 7 đến 10: Các danh mục con còn lại
             [("U", "Nghiệm thu, hướng dẫn sử dụng", font_regular, align_right, None),
